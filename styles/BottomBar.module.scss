@@ -1,0 +1,40 @@
+.navBar {
+  height: 75px;
+  // width: 500px;
+  border-radius: 12px;
+  background: var(--theme-bg);
+  position: absolute;
+  left: 55px;
+  right: 55px;
+  bottom: 32px;
+  // left: 50%;
+  // transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+}
+
+.navTab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.4s linear;
+  border-radius: 12px;
+  &:hover {
+    background: transparentize(#666666, .9);
+  }
+
+}
+.navTabText {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.navTabIcon {
+
+}
+.activeLink {
+  color: var(--theme-base);
+}

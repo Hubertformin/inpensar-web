@@ -1,8 +1,12 @@
+@import "colors";
+@import "grid";
 html,
 body {
+  height: 100%;
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+  background: var(--theme-bg) !important;
+  font-family: Inter, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
@@ -13,4 +17,24 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+.page-container {
+  padding: 1rem;
+  width: 750px;
+  position: absolute;
+  height: 100vh;
+  left: 50%;
+  // top: -10%;
+  transform: translateX( -50%);
+}
+.page-view {
+  height: 100%;
+  background: var( --theme-fg);
+  border-radius: 12px;
+}
+
+// ========= RESETS ======
+.chakra-modal__content {
+  background: var( --theme-fg) !important;
 }
