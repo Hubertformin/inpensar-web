@@ -2,7 +2,7 @@ import BottomNav from "../components/BottomBar";
 import {
     Button,
     ButtonGroup,
-    Divider, FormControl, FormLabel,
+    Divider, FormControl,
     Stat,
     StatGroup,
     StatHelpText,

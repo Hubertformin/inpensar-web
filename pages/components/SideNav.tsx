@@ -6,7 +6,7 @@ import {IoWalletOutline} from "react-icons/io5";
 import {BsPiggyBank} from "react-icons/bs";
 import {FiSettings} from "react-icons/fi";
 import {Avatar, Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
-import {BiChevronUp} from "react-icons/all";
+import {BiChevronUp} from "react-icons/bi";
 
 export default function SideNav() {
     return (
