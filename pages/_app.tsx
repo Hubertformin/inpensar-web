@@ -1,7 +1,8 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import '../styles/globals.scss';
 import theme from './theme';
-import {Head} from "next/document";
+import "react-datepicker/dist/react-datepicker.css";
+import {wrapper} from "../store";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -11,4 +12,4 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-export default MyApp
+export default wrapper.withRedux(MyApp)

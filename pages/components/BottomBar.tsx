@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from '../../styles/BottomBar.module.scss';
 import {TbLayoutDashboard, TbLayoutList} from "react-icons/tb";
-import {BsCreditCard2Back, BsPiggyBank} from "react-icons/bs";
+import {BsPiggyBank} from "react-icons/bs";
 import {FiSettings} from "react-icons/fi";
 import ActiveLink from "./ActiveLink";
 import {useRouter} from "next/router";
+import {IoWalletOutline} from "react-icons/io5";
 
 export default function BottomNav() {
     const router = useRouter();
@@ -36,7 +37,7 @@ export default function BottomNav() {
                 <ActiveLink href="/app/accounts" activeClassName={styles.activeLink}>
                     <div className={styles.navTab}>
                     <span className={styles.navTabIcon}>
-                        <BsCreditCard2Back size={24}/>
+                        <IoWalletOutline size={24}/>
                     </span>
                         <span className={styles.navTabText}>Accounts</span>
                     </div>

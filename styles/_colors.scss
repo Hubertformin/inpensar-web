@@ -1,9 +1,33 @@
-:root[data-theme=dark] {
+:root {
+  --theme-base: #673ab7;
+  --theme-base-dark: #5e35b1;
+  --red-80: #ef4444;
+  --green-80: #3caf50;
+  --blue-80: #1485e3;
+  --teal-80: #1da2b0;
+}
+
+:root[data-theme=light] {
   --theme-bg: #eee;
   --theme-fg: #fff;
-  --theme-base: #f5b06a;
+  --theme-input-border: #E2E8F0;
+  --theme-box-shadow: 0 6px 42px rgba(0, 0, 0, 0.25);
 }
 :root[data-theme=dark] {
   --theme-bg: #090A0A;
   --theme-fg: #202325;
+  --theme-input-border: rgba(255, 255, 255, 0.19);
+  --theme-box-shadow: 0 6px 42px rgba(0, 0, 0, 0.25);
+}
+
+.text-red-80 {
+  color: var(--red-80);
+}
+
+.text-green-80 {
+  color: var(--green-80);
+}
+
+.text-teal-80 {
+  color: var(--teal-80);
 }

@@ -11,7 +11,7 @@
 .categorySelectorControl {
   height: 40px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.19);
+  border: 1px solid var(--theme-input-border);
   // z-index: 100;
 }
 
@@ -44,6 +44,8 @@
   left: 0;
   right: 0;
   height: 0;
+  min-height: 0;
+  max-height: 0;
   padding: 0;
   border-radius: 8px;
   z-index: 104;
@@ -54,8 +56,9 @@
 }
 
 .dropdownWrapperActive {
-  // min-height: 75px;
-  height: 200px;
+  min-height: 65px;
+  height: auto;
+  max-height: 200px;
   padding: 12px 10px;
 }
 
@@ -67,6 +70,9 @@
     padding: 12px 15px;
     cursor: pointer;
     margin-bottom: 8px;
+    &:last-child {
+      margin-bottom: 0;
+    }
     &:hover {
       background: rgba(0, 0, 0, 0.1);
     }

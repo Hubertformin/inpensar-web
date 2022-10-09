@@ -2,153 +2,135 @@ import BottomNav from "../components/BottomBar";
 import {
     Button,
     ButtonGroup,
-    Divider, Select,
+    Divider, FormControl, FormLabel,
     Stat,
     StatGroup,
     StatHelpText,
     StatLabel,
-    StatNumber, Tab, TabList, Tabs,
-    useDisclosure,
+    StatNumber,
 } from "@chakra-ui/react";
-import {BiTransfer} from "react-icons/bi";
-import {RiShareCircleLine} from "react-icons/ri";
-import {TbDatabaseImport} from "react-icons/tb";
-import { BsGrid } from "react-icons/bs";
-import {useState} from "react";
+import Select from 'react-select';
+import DatePicker from 'react-datepicker';
+import React, {useEffect, useState} from "react";
 import AddTransaction from "../components/AddTransaction";
+import {Data} from "../../data";
+import TransactionsTable from "../components/TransactionsTable";
+import SideNav from "../components/SideNav";
+import {BsPlus} from "react-icons/bs";
+import {useSelector} from "react-redux";
+import {selectCategoriesState} from "../../store/slices/categories.slice";
 
 export default function TransactionsHome() {
+    const categoriesState = useSelector(selectCategoriesState);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [startDate, setStartDate] = React.useState(new Date());
+    const [categoriesSelectOptions, setCategoriesSelectOptions] = React.useState<{value: string, label: string}[]>([]);
+
+    useEffect(() => {
+        console.log(categoriesState)
+        let _categories = [
+            ...categoriesState.income.map(c => ({value: c.name, label: c.name})),
+            ...categoriesState.expenses.map(c => ({value: c.name, label: c.name}))
+        ];
+        // sort art
+        _categories.sort((a,b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0))
+        // add generic label
+        _categories.unshift({value: 'all', label: 'All'});
+        setCategoriesSelectOptions(_categories);
+    }, []);
 
     const onAddTransaction = (e) => {
         console.log(e);
     };
 
     return (
-        <div className="page-container">
-            <main className="page-view px-8 py-6">
-                <div className="toolbar mb-10 flex justify-between align-items-center">
-                    <h1 className="text-center text-2xl font-bold text-orange-500">Inpensar</h1>
-                    <div className="date">
-                        <h4 className="text-sm font-bold mb-3"></h4>
-                        <div className="actions flex">
-                            <div className="mr-3" style={{width: '100px'}}>
-                                <Select placeholder='Select Year'>
-                                    <option value='20221'>2021</option>
-                                    <option value='2022'>2022</option>
-                                </Select>
-                            </div>
-                            <div className="mr-3" style={{width: '140px'}}>
-                                <Select placeholder='Select Month'>
-                                    <option value="0">January</option>
-                                    <option value="1">February</option>
-                                    <option value="2">March</option>
-                                    <option value="3">April</option>
-                                    <option value="4">May</option>
-                                    <option value="5">June</option>
-                                    <option value="6">July</option>
-                                    <option value="7">August</option>
-                                    <option value="8">September</option>
-                                    <option value="9">October</option>
-                                    <option value="10">November</option>
-                                    <option value="11">December</option>
-                                </Select>
-                            </div>
-                            <div className="mr-3" style={{width: '100px'}}>
-                                <Select placeholder='Select Date'>
-                                    <option value="0">All</option>
-                                    <option value="1">1st</option>
-                                    <option value="2">2nd</option>
-                                    <option value="3">3rd</option>
-                                    <option value="4">4th</option>
-                                    <option value="5">5th</option>
-                                    <option value="6">6th</option>
-                                    <option value="7">7th</option>
-                                    <option value="8">8th</option>
-                                    <option value="9">9th</option>
-                                    <option value="10">10th</option>
-                                    <option value="11">11th</option>
-                                    <option value="12">12th</option>
-                                    <option value="13">13th</option>
-                                    <option value="14">14th</option>
-                                    <option value="15">15th</option>
-                                    <option value="16">16th</option>
-                                    <option value="17">17th</option>
-                                    <option value="18">18th</option>
-                                    <option value="19">19th</option>
-                                    <option value="20">20th</option>
-                                    <option value="21">21st</option>
-                                    <option value="22">22nd</option>
-                                    <option value="23">23rd</option>
-                                    <option value="24">24th</option>
-                                    <option value="25">25th</option>
-                                    <option value="26">26th</option>
-                                    <option value="27">27th</option>
-                                    <option value="28">28th</option>
-                                    <option value="29">29th</option>
-                                    <option value="30">30th</option>
-                                    <option value="31">31st</option>
-                                </Select>
+        <div className='__page_home'>
+            <SideNav />
+            <div className="page-container">
+                <main className="page-view px-6 py-6">
+                    <div className="toolbar mb-6 flex justify-between align-items-center">
+                        <h1 className="font-bold text-2xl">Transactions</h1>
+                        <div className="date">
+                            <div className="actions flex">
+                                {/*<Button onClick={toggleColorMode}>*/}
+                                {/*    Toggle {colorMode === 'light' ? 'Dark' : 'Light'}*/}
+                                {/*</Button>*/}
+                                {/*<div className="mr-3" style={{width: '100px'}}>*/}
+                                {/*    <Select placeholder='Year' options={[{label: '2022', value: '2022'}]} />*/}
+                                {/*</div>*/}
+                                <div className="mr-3" style={{width: '100px'}}>
+                                    <Select defaultInputValue={'all'} placeholder='Day' options={Data.month_days} />
+                                </div>
+                                <div className="mr-3" style={{width: '160px'}}>
+                                    {/*<Select placeholder='Month' options={Data.months} />*/}
+                                    <DatePicker
+                                        selected={startDate}
+                                        onChange={(date) => setStartDate(date)}
+                                        showMonthYearPicker
+                                        dateFormat="MMMM, yyyy"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="pg-header mb-8">
-                    <div className="flex justify-between">
-                        <h1 className="font-bold text-2xl">Transactions</h1>
-                        <ButtonGroup spacing='4'>
-                            <Button colorScheme="orange" onClick={() => setShowAddModal(true)}>Add Transaction</Button>
-                            {/*<Button>Add Expense</Button>*/}
-                        </ButtonGroup>
+                    <div className="pg-header mb-4">
+                        <div className="flex justify-between align-items-center">
+                            <div className="leading" style={{width: '180px'}}>
+                                <FormControl>
+                                    {/*<FormLabel>Filter by category</FormLabel>*/}
+                                    <Select
+                                        placeholder='Select Category'
+                                        options={categoriesSelectOptions}
+                                    />
+                                </FormControl>
+                            </div>
+                            <ButtonGroup spacing='4'>
+                                <Button colorScheme="purple" onClick={() => setShowAddModal(true)}><BsPlus />&nbsp;Add Transaction</Button>
+                                {/*<Button>Add Expense</Button>*/}
+                            </ButtonGroup>
+                        </div>
+
                     </div>
+                    <Divider/>
+                    <div className="mt-4">
+                        <StatGroup>
+                            <Stat>
+                                <StatLabel>Income</StatLabel>
+                                <StatNumber className={"text-green-600"}>FCFA 345,670</StatNumber>
+                                <StatHelpText>
+                                    {/*<StatArrow type='increase' />*/}
+                                    {/*23.36%*/}
+                                </StatHelpText>
+                            </Stat>
 
-                </div>
-                <Divider/>
-                <div className="mt-4">
-                    <StatGroup>
-                        <Stat>
-                            <StatLabel>Income</StatLabel>
-                            <StatNumber className={"text-blue-400"}>FCFA 345,670</StatNumber>
-                            <StatHelpText>
-                                {/*<StatArrow type='increase' />*/}
-                                {/*23.36%*/}
-                            </StatHelpText>
-                        </Stat>
+                            <Stat>
+                                <StatLabel>Expenses</StatLabel>
+                                <StatNumber className={"text-pink-600"}>FCFA 450,000</StatNumber>
+                                <StatHelpText>
+                                    {/*<StatArrow type='decrease' />*/}
+                                    {/*9.05%*/}
+                                </StatHelpText>
+                            </Stat>
 
-                        <Stat>
-                            <StatLabel>Expenses</StatLabel>
-                            <StatNumber className={"text-pink-400"}>FCFA 450,000</StatNumber>
-                            <StatHelpText>
-                                {/*<StatArrow type='decrease' />*/}
-                                {/*9.05%*/}
-                            </StatHelpText>
-                        </Stat>
+                            <Stat>
+                                <StatLabel>Net Worth</StatLabel>
+                                <StatNumber className={"text-red-600"}>- FCFA 105,670</StatNumber>
+                                <StatHelpText>
+                                    {/*<StatArrow type='increase' />*/}
+                                    {/*23.36%*/}
+                                </StatHelpText>
+                            </Stat>
+                        </StatGroup>
 
-                        <Stat>
-                            <StatLabel>Net Worth</StatLabel>
-                            <StatNumber className={"text-red-500"}>- FCFA 105,670</StatNumber>
-                            <StatHelpText>
-                                {/*<StatArrow type='increase' />*/}
-                                {/*23.36%*/}
-                            </StatHelpText>
-                        </Stat>
-                    </StatGroup>
-
-                    <div className="transaction-body mt-6">
-                        <Tabs colorScheme={'orange'} onChange={(t) => console.log(t)}>
-                            <TabList>
-                                <Tab><BsGrid />&nbsp;All</Tab>
-                                <Tab><TbDatabaseImport/>&nbsp;Income</Tab>
-                                <Tab><BiTransfer/>&nbsp;Transfer</Tab>
-                                <Tab><RiShareCircleLine/>&nbsp;Expenses</Tab>
-                            </TabList>
-                        </Tabs>
+                        <div className="transaction-body mt-4">
+                            <TransactionsTable />
+                        </div>
                     </div>
-                </div>
-            </main>
-            <BottomNav/>
-            {/*    Modals*/}
-            <AddTransaction open={showAddModal} onChange={onAddTransaction} onClose={() => setShowAddModal(false)} />
+                </main>
+                {/*<BottomNav/>*/}
+                {/*    Modals*/}
+                <AddTransaction open={showAddModal} onChange={onAddTransaction} onClose={() => setShowAddModal(false)} />
+            </div>
         </div>
     )
 }

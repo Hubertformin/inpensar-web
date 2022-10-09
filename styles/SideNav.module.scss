@@ -1,0 +1,113 @@
+$primary-color: var(--theme-base);
+
+.sideNav {
+  width: 330px;
+  height: 100vh;
+  //position: fixed;
+  //top: 15px;
+  //bottom: 15px;
+  //left: 100px;
+  padding: 16px 0;
+}
+.sideNavContainer {
+  height: 100%;
+  background: var(--theme-fg);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+}
+.brand {
+  font-size: 28px;
+  color: var(--theme-base);
+  font-weight: bold;
+  margin-left: 16px;
+}
+
+.projectIntro {
+  padding-top: 16px;
+  height: 130px;
+  margin-top: 0.75rem;
+  // display: flex;
+}
+
+.projectLabel {
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  padding-left: 0.5rem;
+}
+
+.projectTitle {
+  font-weight: bold;
+  font-size: 17px;
+}
+.projectDescription {
+  font-weight: 500;
+  font-size: 14px;
+  color: #666666;
+}
+
+
+
+.nav {
+  width: 100%;
+}
+
+
+.navTab {
+  display: flex;
+  align-items: center;
+  // justify-content: center;
+  width: 100%;
+  padding: 15px 12px;
+  cursor: pointer;
+  transition: all 0.4s linear;
+  border-radius: 12px;
+  &:hover {
+    background: transparentize(#666666, .9);
+  }
+
+}
+.navTabText {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.navTabIcon {
+
+}
+
+.activeLink {
+  background-color: var(--theme-base);
+  color: white;
+  // background-color: transparentize($primary-color, 0.5);
+}
+
+.navFooter {
+  position: absolute;
+  border: 1px solid var(--theme-input-border);
+  height: 75px;
+  border-radius: 12px;
+  left: 15px;
+  right: 15px;
+  bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.projectFooterTitle {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.pageFooterIconButton {
+  background: var(--theme-bg);
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  line-height: 50px;
+  text-align: center;
+}

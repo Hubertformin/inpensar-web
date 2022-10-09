@@ -1,30 +1,45 @@
 import React from 'react';
 import styles from '../../styles/CategorySelector.module.scss'
 import {Avatar} from "@chakra-ui/react";
-import {Data} from '../../data'
 import {CategoryModel} from "../../models/category.model";
 import {BiChevronDown} from "react-icons/bi";
+import {useSelector} from "react-redux";
+import {selectCategoriesState} from "../../store/slices/categories.slice";
 
 declare type CategoryType = 'expense' | 'income';
 
-export default function CategorySelector({type, onChange}: {type: CategoryType, onChange: (e: CategoryModel) => void}) {
+export default function CategorySelector({value, type, onChange}: {type: CategoryType, value?: CategoryModel, onChange: (e: CategoryModel) => void}) {
     const [categoryList, setCategoryList] = React.useState<CategoryModel[]>([]);
     const [selectedCategory, setSelectedCategory] = React.useState<CategoryModel>();
     const [isDropOpen, setIsDropOpen] = React.useState(false);
+    const categoriesState = useSelector(selectCategoriesState);
 
     React.useEffect(() => {
-        loadDefaultCategory();
+        if (value) {
+            setSelectedCategory(value)
+        }
+        loadDefaultCategories();
     }, []);
 
-    const loadDefaultCategory = () => {
+    const loadDefaultCategories = () => {
         switch (type) {
             case "expense":
             default:
-                setCategoryList(Data.expense_categories);
+                setCategoryList(categoriesState.expenses);
                 break;
             case "income":
-                setCategoryList(Data.income_categories);
+                setCategoryList(categoriesState.income);
                 break;
+        }
+    }
+
+    const getCategories = () => {
+        switch (type) {
+            case "expense":
+            default:
+                return categoriesState.expenses
+            case "income":
+                return categoriesState.income
         }
     }
 
@@ -34,25 +49,26 @@ export default function CategorySelector({type, onChange}: {type: CategoryType, 
     }
 
     const hideDropDown = () => {
-        console.log('focus out')
         setIsDropOpen(false);
     }
 
     const onSearch = (e) => {
         const val = e.target.value;
         if (!val) {
-            loadDefaultCategory();
+            loadDefaultCategories();
             return;
         }
 
         const regex = new RegExp(val, 'i');
-        const results = categoryList.filter(category => regex.test(category?.name));
+        const results = getCategories().filter(category => category?.name.match(regex));
         if (results.length > 0) {
         setCategoryList(results);
         } else {
-            const other = categoryList.find(category => category.name.toLowerCase() === 'other');
+            const other = getCategories().find(category => category.name.toLowerCase() === 'other');
             if (other) {
                 setCategoryList([other]);
+            } else {
+                setCategoryList([]);
             }
         }
     }
@@ -63,6 +79,8 @@ export default function CategorySelector({type, onChange}: {type: CategoryType, 
         if (onChange) {
             onChange(category);
         }
+        // reset search results
+        loadDefaultCategories();
     }
 
     return (
