@@ -73,16 +73,11 @@ const useForm = (initialValues = {}) => {
 
     }
 
-    const resetForm = () => {
-        setValues({});
-    }
-
 
     return {
         values,
         errors,
         handleChange,
-        resetForm,
         validateForm
     }
 }

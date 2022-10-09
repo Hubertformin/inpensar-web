@@ -191,8 +191,6 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
         console.log(transaction)
         // @ts-ignore
         dispatch(addTransactionThunk(transaction));
-        // reset form
-        form.resetForm();
 
     };
 
