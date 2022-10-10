@@ -24,6 +24,10 @@ const useForm = (initialValues = {}) => {
         }
     }
 
+    const resetForm = (val) => {
+        setValues(val);
+    }
+
     function validateForm(): any {
         let err;
         Object.keys(values).forEach((key, index) => {
@@ -78,7 +82,8 @@ const useForm = (initialValues = {}) => {
         values,
         errors,
         handleChange,
-        validateForm
+        validateForm,
+        resetForm,
     }
 }
 

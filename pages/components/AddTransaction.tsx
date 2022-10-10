@@ -36,7 +36,11 @@ import {TransactionsModel, TransactionType} from "../../models/transactions.mode
 import {selectTransactionLoadingState} from "../../store/slices/transaction.slice";
 import {addTransactionThunk} from "../../store/thunks/transaction.thunk";
 
-export default function AddTransaction({open, onClose, onChange}: { open: boolean, onClose: () => void, onChange: (e: any) => void }) {
+export default function AddTransaction({
+                                           open,
+                                           onClose,
+                                           onChange
+                                       }: { open: boolean, onClose: () => void, onChange: (e: any) => void }) {
     const disclosure = useDisclosure();
     const expenseForm = useForm({
         category: null,
@@ -68,7 +72,7 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
 
     React.useEffect(() => {
         if (open) {
-            disclosure.onOpen();
+            openModal();
         } else {
             disclosure.onClose();
         }
@@ -76,10 +80,34 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
         // if transaction loading state finished, close modals
         if (disclosure.isOpen && !transactionsLoadingState) {
             closeModal();
+            // reset tab index and form
+            setActiveTabIndex(0);
         }
         // set accounts
         setAccounts(() => wallets.map((w) => ({label: w.name, value: w._id})))
     }, [open, wallets, transactionsLoadingState]);
+
+    const openModal = () => {
+        expenseForm.resetForm({
+            category: null,
+            amount: null,
+            date: new Date(),
+            account: null
+        });
+        incomeForm.resetForm({
+            category: null,
+            amount: null,
+            date: new Date(),
+            account: null
+        });
+        transferForm.resetForm({
+            to: null,
+            from: null,
+            amount: null,
+            date: new Date(),
+        });
+        disclosure.onOpen();
+    };
 
     const closeModal = () => {
         disclosure.onClose();
@@ -89,7 +117,7 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
     }
 
     const createInputEvent = (name, value) => {
-        const event =  new Event('input', {
+        const event = new Event('input', {
             bubbles: true,
             cancelable: true,
         });
@@ -98,7 +126,8 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
             value: {
                 value,
                 name
-            }, enumerable: true});
+            }, enumerable: true
+        });
         return event;
     }
 
@@ -136,17 +165,17 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
                 break;
         }
 
-       let errors = form.validateForm();
+        let errors = form.validateForm();
 
-       if (errors) {
-       let key = Object.keys(errors)[0];
-           toast({
-               title: errors[key],
-               status: 'warning',
-               isClosable: true,
-           })
-           return;
-       }
+        if (errors) {
+            let key = Object.keys(errors)[0];
+            toast({
+                title: errors[key],
+                status: 'warning',
+                isClosable: true,
+            })
+            return;
+        }
         // construct object
         let transaction: TransactionsModel;
 
@@ -188,6 +217,8 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
                 break;
         }
         // ADD TO STORE VIA THUNK FUNCTION
+        console.log(activeTabIndex);
+        console.log(form)
         console.log(transaction)
         // @ts-ignore
         dispatch(addTransactionThunk(transaction));
@@ -195,7 +226,16 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
     };
 
     return (
-        <Modal onClose={closeModal} isOpen={disclosure.isOpen} size="xl">
+        <Modal
+            onClose={closeModal}
+            isOpen={disclosure.isOpen}
+            size="xl"
+            closeOnOverlayClick={false}
+            closeOnEsc={false}
+            colorScheme={'purple'}
+            isCentered={true}
+
+        >
             <ModalOverlay/>
             <ModalContent>
                 <ModalHeader>Add Transaction</ModalHeader>
@@ -219,7 +259,8 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
                                             <FormLabel>Amount</FormLabel>
                                             <InputGroup>
                                                 <InputLeftAddon children='FCFA'/>
-                                                <Input name="amount" onChange={expenseForm.handleChange} type='number' placeholder='Amount'/>
+                                                <Input name="amount" onChange={expenseForm.handleChange} type='number'
+                                                       placeholder='Amount'/>
                                             </InputGroup>
                                             <FormErrorMessage>{expenseForm.errors.amount}</FormErrorMessage>
                                         </FormControl>
@@ -281,7 +322,8 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
                                     <FormLabel>Amount</FormLabel>
                                     <InputGroup>
                                         <InputLeftAddon children='FCFA'/>
-                                        <Input name="amount" onChange={transferForm.handleChange} type='number' placeholder='Amount'/>
+                                        <Input name="amount" onChange={transferForm.handleChange} type='number'
+                                               placeholder='Amount'/>
                                     </InputGroup>
                                 </FormControl>
                                 <FormControl className="mb-4">
@@ -317,7 +359,8 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
                                             <FormLabel>Amount</FormLabel>
                                             <InputGroup>
                                                 <InputLeftAddon children='FCFA'/>
-                                                <Input name="amount" onChange={incomeForm.handleChange} type='number' placeholder='Amount'/>
+                                                <Input name="amount" onChange={incomeForm.handleChange} type='number'
+                                                       placeholder='Amount'/>
                                             </InputGroup>
                                         </FormControl>
                                     </div>
@@ -357,8 +400,9 @@ export default function AddTransaction({open, onClose, onChange}: { open: boolea
                 </ModalBody>
                 <ModalFooter>
                     <ButtonGroup spacing={4}>
-                        <Button onClick={onClose}>Close</Button>
-                        <Button loadingText={'Saving'} isLoading={transactionsLoadingState} onClick={addTransaction} colorScheme="purple">Save</Button>
+                        <Button onClick={onClose}>Cancel</Button>
+                        <Button loadingText={'Saving'} isLoading={transactionsLoadingState} onClick={addTransaction}
+                                colorScheme="purple">Save</Button>
                     </ButtonGroup>
                 </ModalFooter>
             </ModalContent>

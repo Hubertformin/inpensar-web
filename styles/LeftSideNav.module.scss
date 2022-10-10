@@ -1,14 +1,4 @@
 $primary-color: var(--theme-base);
-
-.sideNav {
-  width: 330px;
-  height: 100vh;
-  //position: fixed;
-  //top: 15px;
-  //bottom: 15px;
-  //left: 100px;
-  padding: 16px 0;
-}
 .sideNavContainer {
   height: 100%;
   background: var(--theme-fg);
@@ -63,7 +53,7 @@ $primary-color: var(--theme-base);
   cursor: pointer;
   transition: all 0.4s linear;
   border-radius: 12px;
-  &:hover {
+  &:hover:not(.activeLink) {
     background: transparentize(#666666, .9);
   }
 

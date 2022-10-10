@@ -5,10 +5,11 @@ import {
     Box,
     CloseButton,
 } from "@chakra-ui/react";
+import PageLayout from "../components/PageLayout";
 
 export default function BudgetHome() {
     return (
-        <div className="page-container">
+        <PageLayout>
             <main className="page-view px-8 py-6">
                 <div className="pg-header">
                     <h1 className="text-center mb-8 text-2xl font-bold">Inpensar</h1>
@@ -31,7 +32,6 @@ export default function BudgetHome() {
                     </Alert>
                 </div>
             </main>
-            <BottomNav />
-        </div>
+        </PageLayout>
     )
 }

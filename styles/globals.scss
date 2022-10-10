@@ -1,3 +1,7 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
 @import "colors";
 @import "grid";
 @import "auth.page";
@@ -20,20 +24,6 @@ a {
   box-sizing: border-box;
 }
 
-.__page_home {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-}
-.page-container {
-  padding: 1rem;
-  width: 750px;
-  // position: absolute;
-  height: 100vh;
-  // left: 50%;
-  // top: -10%;
-  // transform: translateX( -50%);
-}
 .page-view {
   height: 100%;
   background: var( --theme-fg);

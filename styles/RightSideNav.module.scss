@@ -1,0 +1,21 @@
+.sideNavContainer {
+  height: 100%;
+}
+
+.topContainer {
+  background: var(--theme-fg);
+  padding: 16px;
+  overflow-y: auto;
+  border-radius: 12px;
+  position: relative;
+  height: 50%;
+  margin-bottom: 8px;
+}
+.bottomContainer {
+  background: var(--theme-fg);
+  padding: 16px;
+  overflow-y: auto;
+  border-radius: 12px;
+  position: relative;
+  height: calc(50% - 8px);
+}
