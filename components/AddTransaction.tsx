@@ -38,6 +38,7 @@ import {
   TransactionType,
 } from "../models/transactions.model";
 import useApi from "../hooks/useApi";
+import { getSelectOptions } from "../utils/array";
 
 interface AddTransactionProps {
   open: boolean;
@@ -45,12 +46,11 @@ interface AddTransactionProps {
   onChange?: (e: any) => void;
 }
 
-export default function AddTransaction({
-  open,
-  onClose,
-  onChange,
-}: AddTransactionProps) {
+export default function AddTransaction({ open, onClose }: AddTransactionProps) {
   const disclosure = useDisclosure();
+  /**
+   * This form states an initialized to use validation
+   */
   const expenseForm = useForm({
     category: null,
     amount: null,
@@ -69,21 +69,14 @@ export default function AddTransaction({
     date: new Date(),
     account: null,
   });
-  const [accounts, setAccounts] = React.useState([]);
-  const [expenseDateControl, setExpenseDateControl] = React.useState(
-    new Date()
-  );
-  const [transferDateControl, setTransferDateControl] = React.useState(
-    new Date()
-  );
-  const [incomeDateControl, setIncomeDateControl] = React.useState(new Date());
+
   const [isLoading, setIsLoading] = React.useState(false);
   const wallets = useSelector(selectWalletState);
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
   const toast = useToast();
   const api = useApi();
 
-  const resetForms = React.useCallback(() => {
+  const resetForms = () => {
     setActiveTabIndex(0);
     // Reset forms
     expenseForm.resetForm({
@@ -104,27 +97,26 @@ export default function AddTransaction({
       amount: null,
       date: new Date(),
     });
-  }, [expenseForm, incomeForm, transferForm]);
+  };
 
   const openModal = React.useCallback(() => {
-    /**
-     * Reset forms & Tab index when ever the modal is open, so we do have issues of submitting the wrong form
-     * When ever the user re-opens the modal
-     * */
-    resetForms();
+    if (!disclosure.isOpen) {
+      // set initial date of date controls to today
+      // this is done because when the user opens the modal the default value should be the current date and time
+      // ! DO NOT ADD `resetForms` function the dependency array, it will cause infinite re-renders
+      resetForms();
+    }
     disclosure.onOpen();
-  }, [disclosure, resetForms]);
+  }, [disclosure]);
 
   React.useEffect(() => {
     if (open) {
+      // open modal
       openModal();
     } else {
       disclosure.onClose();
     }
-    console.log("running");
-    // set accounts
-    setAccounts(() => wallets.map((w) => ({ label: w.name, value: w._id })));
-  }, [disclosure, open, openModal, wallets]);
+  }, [disclosure, open, openModal]);
 
   const closeModal = () => {
     disclosure.onClose();
@@ -152,15 +144,12 @@ export default function AddTransaction({
 
   // == when custom form control changes
   const expenseDateChange = (value) => {
-    setExpenseDateControl(value);
     expenseForm.handleChange(createInputEvent("date", value));
   };
   const incomeDateChange = (value) => {
-    setIncomeDateControl(value);
     incomeForm.handleChange(createInputEvent("date", value));
   };
   const transferDateChange = (value) => {
-    setTransferDateControl(value);
     transferForm.handleChange(createInputEvent("date", value));
   };
 
@@ -174,17 +163,24 @@ export default function AddTransaction({
       case 0: // expense
         form = expenseForm;
         break;
-      case 1: // transfer
-        form = transferForm;
-        break;
-      case 2: // income
+      case 1: // income
         form = incomeForm;
+        break;
+      case 2: // transfer
+        form = transferForm;
         break;
       default:
         break;
     }
 
     let errors = form.validateForm();
+    /**
+     * TODO: VALIDATIONS TO CHECK
+     * Transfer to and from wallets cannot be the same
+     * The amount must be greater than 0
+     * Check if the wallet balance is enough for the amount specified in both the expenses form and in the
+     *  "from" control of the transfer wallet
+     */
 
     if (errors) {
       let key = Object.keys(errors)[0];
@@ -202,7 +198,7 @@ export default function AddTransaction({
       case 0: // expense form.values
         transaction = {
           _id: (100 * Math.random()).toString(),
-          amount: form.values.amount,
+          amount: parseInt(form.values.amount.toString().trim()),
           category: form.values.category,
           notes: form.values.notes || "",
           type: TransactionType.EXPENSE,
@@ -210,25 +206,25 @@ export default function AddTransaction({
           date: (form.values.date as Date).toISOString(),
         };
         break;
-      case 1: // transfer
+      case 1: // income
         transaction = {
           _id: (100 * Math.random()).toString(),
-          amount: form.values.amount,
-          from: getWalletById(form.values.from),
-          to: getWalletById(form.values.to),
-          notes: form.values.notes || "",
-          type: TransactionType.TRANSFER,
-          date: (form.values.date as Date).toISOString(),
-        };
-        break;
-      case 2: // income
-        transaction = {
-          _id: (100 * Math.random()).toString(),
-          amount: form.values.amount,
+          amount: parseInt(form.values.amount.toString().trim()),
           category: form.values.category,
           notes: form.values.notes || "",
           type: TransactionType.INCOME,
           wallet: getWalletById(form.values.account),
+          date: (form.values.date as Date).toISOString(),
+        };
+        break;
+      case 2: // transfer
+        transaction = {
+          _id: (100 * Math.random()).toString(),
+          amount: parseInt(form.values.amount.toString().trim()),
+          from: getWalletById(form.values.from),
+          to: getWalletById(form.values.to),
+          notes: form.values.notes || "",
+          type: TransactionType.TRANSFER,
           date: (form.values.date as Date).toISOString(),
         };
         break;
@@ -239,9 +235,14 @@ export default function AddTransaction({
      * Add data to api
      */
     setIsLoading(true);
-    api.addTransaction(transaction).finally(() => {
-      closeModal();
-    });
+    api
+      .addTransaction(transaction)
+      .then(() => {
+        resetForms();
+      })
+      .finally(() => {
+        closeModal();
+      });
   };
 
   return (
@@ -251,6 +252,7 @@ export default function AddTransaction({
       size="2xl"
       closeOnOverlayClick={false}
       closeOnEsc={false}
+      blockScrollOnMount={false}
       colorScheme={"purple"}
       isCentered={true}
     >
@@ -270,12 +272,12 @@ export default function AddTransaction({
                 &nbsp;Expense
               </Tab>
               <Tab>
-                <BiTransfer />
-                &nbsp;Transfer
-              </Tab>
-              <Tab>
                 <TbDatabaseImport />
                 &nbsp;Income
+              </Tab>
+              <Tab>
+                <BiTransfer />
+                &nbsp;Transfer
               </Tab>
             </TabList>
             <TabPanels>
@@ -299,6 +301,7 @@ export default function AddTransaction({
                         <InputLeftAddon>FCFA</InputLeftAddon>
                         <Input
                           name="amount"
+                          value={expenseForm.values.amount}
                           onChange={expenseForm.handleChange}
                           type="number"
                           placeholder="Amount"
@@ -313,13 +316,13 @@ export default function AddTransaction({
                     <FormControl className="mb-4">
                       <FormLabel>Account</FormLabel>
                       <Select
-                        onChange={({ value }) =>
+                        onChange={(e: any) =>
                           expenseForm.handleChange(
-                            createInputEvent("account", value)
+                            createInputEvent("account", e.value)
                           )
                         }
                         placeholder="Select Account"
-                        options={accounts}
+                        options={getSelectOptions(wallets, "name", "_id")}
                       />
                     </FormControl>
                   </div>
@@ -333,7 +336,7 @@ export default function AddTransaction({
                     {/*/>*/}
                     {/*<Input type='datetime' placeholder='Date'/>*/}
                     <DatePicker
-                      selected={expenseDateControl}
+                      selected={expenseForm.values.date}
                       onChange={expenseDateChange}
                       showTimeSelect
                       dateFormat="MMMM d, yyyy h:mm aa"
@@ -344,75 +347,8 @@ export default function AddTransaction({
                   <FormLabel>Notes (Optional)</FormLabel>
                   <Textarea
                     name="notes"
+                    value={expenseForm.values.notes}
                     onChange={expenseForm.handleChange}
-                    placeholder="Notes"
-                  />
-                </FormControl>
-              </TabPanel>
-              <TabPanel>
-                <div className="row">
-                  <div className="col-sm-6">
-                    <FormControl className="mb-4">
-                      <FormLabel>From</FormLabel>
-                      <Select
-                        placeholder="Select Account"
-                        options={accounts}
-                        onChange={({ value }) =>
-                          transferForm.handleChange(
-                            createInputEvent("from", value)
-                          )
-                        }
-                      />
-                    </FormControl>
-                  </div>
-                  <div className="col-sm-6">
-                    <FormControl className="mb-4">
-                      <FormLabel>To</FormLabel>
-                      <Select
-                        placeholder="Select Account"
-                        options={accounts}
-                        onChange={({ value }) =>
-                          transferForm.handleChange(
-                            createInputEvent("to", value)
-                          )
-                        }
-                      />
-                    </FormControl>
-                  </div>
-                </div>
-                <FormControl className="mb-4">
-                  <FormLabel>Amount</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon>FCFA</InputLeftAddon>
-                    <Input
-                      name="amount"
-                      onChange={transferForm.handleChange}
-                      type="number"
-                      placeholder="Amount"
-                    />
-                  </InputGroup>
-                </FormControl>
-                <FormControl className="mb-4">
-                  <FormLabel>Date</FormLabel>
-                  <InputGroup>
-                    {/*<InputLeftElement*/}
-                    {/*    pointerEvents='none'*/}
-                    {/*    children={<BiCalendar/>}*/}
-                    {/*/>*/}
-                    {/*<Input type='datetime' placeholder='Date'/>*/}
-                    <DatePicker
-                      selected={transferDateControl}
-                      onChange={transferDateChange}
-                      showTimeSelect
-                      dateFormat="MMMM d, yyyy h:mm aa"
-                    />
-                  </InputGroup>
-                </FormControl>
-                <FormControl className="mb-4">
-                  <FormLabel>Notes (Optional)</FormLabel>
-                  <Textarea
-                    name="notes"
-                    onChange={transferForm.handleChange}
                     placeholder="Notes"
                   />
                 </FormControl>
@@ -433,6 +369,7 @@ export default function AddTransaction({
                         <InputLeftAddon>FCFA</InputLeftAddon>
                         <Input
                           name="amount"
+                          value={incomeForm.values.amount}
                           onChange={incomeForm.handleChange}
                           type="number"
                           placeholder="Amount"
@@ -445,7 +382,7 @@ export default function AddTransaction({
                       <FormLabel>Account</FormLabel>
                       <Select
                         placeholder="Select Account"
-                        options={accounts}
+                        options={getSelectOptions(wallets, "name", "_id")}
                         onChange={({ value }) =>
                           incomeForm.handleChange(
                             createInputEvent("account", value)
@@ -464,7 +401,7 @@ export default function AddTransaction({
                     {/*/>*/}
                     {/*<Input type='datetime' placeholder='Date'/>*/}
                     <DatePicker
-                      selected={incomeDateControl}
+                      selected={incomeForm.values.date}
                       onChange={incomeDateChange}
                       showTimeSelect
                       dateFormat="MMMM d, yyyy h:mm aa"
@@ -475,7 +412,79 @@ export default function AddTransaction({
                   <FormLabel>Notes (Optional)</FormLabel>
                   <Textarea
                     name="notes"
+                    value={incomeForm.values.notes}
                     onChange={incomeForm.handleChange}
+                    placeholder="Notes"
+                  />
+                </FormControl>
+              </TabPanel>
+
+              <TabPanel>
+                <div className="row">
+                  <div className="col-sm-6">
+                    <FormControl className="mb-4">
+                      <FormLabel>From</FormLabel>
+                      <Select
+                        placeholder="Select Account"
+                        options={getSelectOptions(wallets, "name", "_id")}
+                        onChange={({ value }) =>
+                          transferForm.handleChange(
+                            createInputEvent("from", value)
+                          )
+                        }
+                      />
+                    </FormControl>
+                  </div>
+                  <div className="col-sm-6">
+                    <FormControl className="mb-4">
+                      <FormLabel>To</FormLabel>
+                      <Select
+                        placeholder="Select Account"
+                        options={getSelectOptions(wallets, "name", "_id")}
+                        onChange={({ value }) =>
+                          transferForm.handleChange(
+                            createInputEvent("to", value)
+                          )
+                        }
+                      />
+                    </FormControl>
+                  </div>
+                </div>
+                <FormControl className="mb-4">
+                  <FormLabel>Amount</FormLabel>
+                  <InputGroup>
+                    <InputLeftAddon>FCFA</InputLeftAddon>
+                    <Input
+                      name="amount"
+                      value={transferForm.values.amount}
+                      onChange={transferForm.handleChange}
+                      type="number"
+                      placeholder="Amount"
+                    />
+                  </InputGroup>
+                </FormControl>
+                <FormControl className="mb-4">
+                  <FormLabel>Date</FormLabel>
+                  <InputGroup>
+                    {/*<InputLeftElement*/}
+                    {/*    pointerEvents='none'*/}
+                    {/*    children={<BiCalendar/>}*/}
+                    {/*/>*/}
+                    {/*<Input type='datetime' placeholder='Date'/>*/}
+                    <DatePicker
+                      selected={transferForm.values.date}
+                      onChange={transferDateChange}
+                      showTimeSelect
+                      dateFormat="MMMM d, yyyy h:mm aa"
+                    />
+                  </InputGroup>
+                </FormControl>
+                <FormControl className="mb-4">
+                  <FormLabel>Notes (Optional)</FormLabel>
+                  <Textarea
+                    name="notes"
+                    value={transferForm.values.notes}
+                    onChange={transferForm.handleChange}
                     placeholder="Notes"
                   />
                 </FormControl>
