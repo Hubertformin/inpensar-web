@@ -1,5 +1,5 @@
 import React from "react";
-import styles from '../../styles/LeftSideNav.module.scss';
+import styles from '../styles/LeftSideNav.module.scss';
 import ActiveLink from "./ActiveLink";
 import {TbLayoutDashboard, TbLayoutList} from "react-icons/tb";
 import {IoWalletOutline} from "react-icons/io5";
@@ -7,16 +7,19 @@ import {BsPiggyBank} from "react-icons/bs";
 import {FiSettings} from "react-icons/fi";
 import {Avatar, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
 import {BiChevronUp} from "react-icons/bi";
+import Image from "next/image";
 
 export default function LeftSideNav() {
     return (
         <div className={styles.sideNavContainer}>
-            <h1 className={styles.brand}>Inpensar</h1>
+            <h1 className={styles.brand}>
+                <Image src="/images/Logo.png" width={200} height={50} layout="responsive" alt="logo"/>
+            </h1>
             <div className={styles.projectIntro}>
                 <p className={styles.projectLabel}>PROJECT</p>
                 <div className="project">
                     <div className="leading flex align-items-center">
-                        <Avatar size="lg" name="Personal Finance" bg='teal.500' color='white' />
+                        <Avatar size="lg" name="Personal Finance" bg="teal.500" color="white" />
                         <div className="text ml-2">
                             <h2 className={styles.projectTitle}>Personal Finance</h2>
                             <p className={styles.projectDescription}>Created on 15/04/2022</p>
@@ -89,7 +92,7 @@ export default function LeftSideNav() {
                     <Avatar
                         size="md"
                         name="Hubert Formin"
-                        bg='orange.500' color='white'
+                        bg="orange.500" color="white"
                         src={'https://avataaars.io/?avatarStyle=Circle&topType=WinterHat2&accessoriesType=Wayfarers&hatColor=Blue01&hairColor=Blue&facialHairType=BeardMajestic&facialHairColor=Platinum&clotheType=BlazerShirt&clotheColor=PastelRed&eyeType=Hearts&eyebrowType=SadConcernedNatural&mouthType=Sad&skinColor=Black'}
                     />
                     <div className="text ml-2">

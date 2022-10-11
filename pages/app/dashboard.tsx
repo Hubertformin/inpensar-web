@@ -1,4 +1,4 @@
-import BottomNav from "../components/BottomBar";
+import BottomNav from "../../components/BottomBar";
 import {Alert, AlertIcon, AlertTitle} from "@chakra-ui/alert";
 import {
     AlertDescription,
@@ -10,7 +10,7 @@ import {
     StatLabel,
     StatNumber
 } from "@chakra-ui/react";
-import PageLayout from "../components/PageLayout";
+import PageLayout from "../../components/PageLayout";
 
 export default function Dashboard() {
     return (
@@ -28,8 +28,8 @@ export default function Dashboard() {
                             </AlertDescription>
                         </Box>
                         <CloseButton
-                            alignSelf='flex-start'
-                            position='relative'
+                            alignSelf="flex-start"
+                            position="relative"
                             right={-1}
                             top={-1}
                             onClick={() => {}}
@@ -41,7 +41,7 @@ export default function Dashboard() {
                                 <StatLabel>Income</StatLabel>
                                 <StatNumber>FCFA 345,670</StatNumber>
                                 <StatHelpText>
-                                    <StatArrow type='increase' />
+                                    <StatArrow type="increase" />
                                     23.36%
                                 </StatHelpText>
                             </Stat>
@@ -50,7 +50,7 @@ export default function Dashboard() {
                                 <StatLabel>Expenses</StatLabel>
                                 <StatNumber>FCFA 450,000</StatNumber>
                                 <StatHelpText>
-                                    <StatArrow type='decrease' />
+                                    <StatArrow type="decrease" />
                                     9.05%
                                 </StatHelpText>
                             </Stat>

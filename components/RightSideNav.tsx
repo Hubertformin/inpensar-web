@@ -1,4 +1,4 @@
-import styles from "../../styles/RightSideNav.module.scss";
+import styles from "../styles/RightSideNav.module.scss";
 import React from "react";
 
 export default function RightSideNav() {

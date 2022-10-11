@@ -10,6 +10,7 @@
   padding: 1px 16px 16px;
   border-bottom: 1px solid var(--theme-input-border);
   display: flex;
+  cursor: pointer;
   justify-content: space-between;
   &:first-child {
     margin-top: 0;
@@ -58,6 +59,8 @@
   font-size: 16px;
   text-align: right;
   margin-bottom: 0;
+  display: flex;
+  align-items: center;
 }
 
 .actionIcon {

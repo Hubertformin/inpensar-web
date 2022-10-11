@@ -3,13 +3,26 @@ import {AppState} from "../";
 import {HYDRATE} from "next-redux-wrapper";
 import {Data} from "../../data";
 import {addTransactionThunk} from "../thunks/transaction.thunk";
-import AddTransaction from "../../pages/components/AddTransaction";
+import AddTransaction from "../../components/AddTransaction";
+import {computeTransactionBalance, sumTransactionEarnings, sumTransactionExpenses} from "../../utils/number";
+import {TransactionType} from "../../models/transactions.model";
 
 const initialState = {
     data: Data.transactions,
-    loading: false
+    loading: false,
+    insights: {
+        earnings: sumTransactionEarnings(Data.transactions) || 0,
+        expenses: sumTransactionExpenses(Data.transactions) || 0,
+        balance: computeTransactionBalance(Data.transactions) || 0
+    }
 };
 
+const computeTransactionState = (state, newState) => {
+    state.data = newState;
+    state.insights.earnings = sumTransactionEarnings(newState);
+    state.insights.expenses = sumTransactionExpenses(newState);
+    state.insights.balance = computeTransactionBalance(newState);
+}
 
 // @ts-ignore
 export const transactionsSlice = createSlice({
@@ -17,23 +30,27 @@ export const transactionsSlice = createSlice({
     initialState,
     reducers: {
         setTransactionState(state, action) {
-            state.data = action.payload;
+            // state.data = action.payload;
+            computeTransactionState(state, action.payload);
         },
         appendTransactionState(state, action) {
-            state.data = [...state.data, action.payload]
+            computeTransactionState(state,[...state.data, action.payload])
+
         },
         prependTransactionState(state, action) {
-            state.data = [action.payload, ...state.data]
+            computeTransactionState(state, [action.payload, ...state.data]);
         },
         replaceTransactionInState(state, action) {
-            state.data = state.data.map(t => {
+            const newState = state.data.map(t => {
                 if (t._id === action.payload._id) {
                     t = action.payload;
                 }
                 return t;
             });
+            computeTransactionState(state, newState);
         }, removeTransactionFromState(state, action) {
-            state.data = state.data.filter(t => t._id !== action.payload._id);
+            const newState = state.data.filter(t => t._id !== action.payload._id);
+            computeTransactionState(state, newState);
         },
     },
     extraReducers: builder => {
@@ -66,7 +83,8 @@ export const {
     removeTransactionFromState
 } = transactionsSlice.actions;
 
-export const selectTransactionState = (state: AppState) => state.transactions.data;
+export const selectTransactionData = (state: AppState) => state.transactions.data;
+export const selectTransactionInsights = (state: AppState) => state.transactions.insights;
 
 export const selectTransactionLoadingState = (state: AppState) => state.transactions.loading;
 

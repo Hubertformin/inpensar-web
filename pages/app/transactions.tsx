@@ -1,4 +1,3 @@
-import BottomNav from "../components/BottomBar";
 import {
     Button,
     ButtonGroup,
@@ -12,18 +11,20 @@ import {
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import React, {useEffect, useState} from "react";
-import AddTransaction from "../components/AddTransaction";
+import AddTransaction from "../../components/AddTransaction";
 import {Data} from "../../data";
-import TransactionsTable from "../components/TransactionsTable";
-import LeftSideNav from "../components/LeftSideNav";
+import TransactionsTable from "../../components/TransactionsTable";
 import {BsPlus} from "react-icons/bs";
 import {useSelector} from "react-redux";
 import {selectCategoriesState} from "../../store/slices/categories.slice";
 import {sortArrayOfObjects} from "../../utils/array";
-import PageLayout from "../components/PageLayout";
+import PageLayout from "../../components/PageLayout";
+import {selectTransactionInsights} from "../../store/slices/transaction.slice";
+import {formatCurrency} from "../../utils/number";
 
 export default function TransactionsHome() {
     const categoriesState = useSelector(selectCategoriesState);
+    const transactionInsights = useSelector(selectTransactionInsights);
     const [showAddModal, setShowAddModal] = useState(false);
     const [startDate, setStartDate] = React.useState(new Date());
     const [categoriesSelectOptions, setCategoriesSelectOptions] = React.useState<{value: string, label: string}[]>([]);
@@ -38,7 +39,7 @@ export default function TransactionsHome() {
         // add generic label
         _categories.unshift({value: 'all', label: 'All'});
         setCategoriesSelectOptions(_categories);
-    }, []);
+    }, [categoriesState.expenses, categoriesState.income]);
 
     const onAddTransaction = (e) => {
         console.log(e);
@@ -58,7 +59,7 @@ export default function TransactionsHome() {
                            {/*    <Select placeholder='Year' options={[{label: '2022', value: '2022'}]} />*/}
                            {/*</div>*/}
                            <div className="mr-3" style={{width: '100px'}}>
-                               <Select defaultValue={Data.month_days[0]} placeholder='Day' options={Data.month_days} />
+                               <Select defaultValue={Data.month_days[0]} placeholder="Day" options={Data.month_days} />
                            </div>
                            <div className="mr-3" style={{width: '160px'}}>
                                {/*<Select placeholder='Month' options={Data.months} />*/}
@@ -78,13 +79,13 @@ export default function TransactionsHome() {
                            <FormControl>
                                {/*<FormLabel>Filter by category</FormLabel>*/}
                                <Select
-                                   placeholder='Select Category'
+                                   placeholder="Select Category"
                                    defaultValue={{value: 'all', label: 'All'}}
                                    options={categoriesSelectOptions}
                                />
                            </FormControl>
                        </div>
-                       <ButtonGroup spacing='4'>
+                       <ButtonGroup spacing="4">
                            <Button colorScheme="purple" onClick={() => setShowAddModal(true)}><BsPlus />&nbsp;Add Transaction</Button>
                            {/*<Button>Add Expense</Button>*/}
                        </ButtonGroup>
@@ -96,7 +97,7 @@ export default function TransactionsHome() {
                    <StatGroup>
                        <Stat>
                            <StatLabel>Earnings</StatLabel>
-                           <StatNumber className={"text-green-600"}>FCFA 345,670</StatNumber>
+                           <StatNumber className={"text-blue-600"}>{formatCurrency(transactionInsights.earnings)}</StatNumber>
                            <StatHelpText>
                                {/*<StatArrow type='increase' />*/}
                                {/*23.36%*/}
@@ -105,7 +106,7 @@ export default function TransactionsHome() {
 
                        <Stat>
                            <StatLabel>Expenses</StatLabel>
-                           <StatNumber className={"text-pink-600"}>FCFA 450,000</StatNumber>
+                           <StatNumber className={"text-pink-600"}>{formatCurrency(transactionInsights.expenses)}</StatNumber>
                            <StatHelpText>
                                {/*<StatArrow type='decrease' />*/}
                                {/*9.05%*/}
@@ -114,7 +115,9 @@ export default function TransactionsHome() {
 
                        <Stat>
                            <StatLabel>Balance</StatLabel>
-                           <StatNumber className={"text-red-600"}>- FCFA 105,670</StatNumber>
+                           <StatNumber className={transactionInsights.balance < 0 ? 'text-red-600' : 'text-green-600'}>
+                               {formatCurrency(transactionInsights.balance)}
+                           </StatNumber>
                            <StatHelpText>
                                {/*<StatArrow type='increase' />*/}
                                {/*23.36%*/}

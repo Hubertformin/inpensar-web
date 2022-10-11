@@ -1,11 +1,11 @@
-import BottomNav from "../components/BottomBar";
+import BottomNav from "../../components/BottomBar";
 import {Alert, AlertIcon, AlertTitle} from "@chakra-ui/alert";
 import {
     AlertDescription,
     Box,
     CloseButton,
 } from "@chakra-ui/react";
-import PageLayout from "../components/PageLayout";
+import PageLayout from "../../components/PageLayout";
 
 export default function AccountsHome() {
     return (
@@ -23,8 +23,8 @@ export default function AccountsHome() {
                             </AlertDescription>
                         </Box>
                         <CloseButton
-                            alignSelf='flex-start'
-                            position='relative'
+                            alignSelf="flex-start"
+                            position="relative"
                             right={-1}
                             top={-1}
                             onClick={() => {}}

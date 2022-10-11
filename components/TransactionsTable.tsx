@@ -5,42 +5,21 @@ import {TbDatabaseImport} from "react-icons/tb";
 import {BiTransfer} from "react-icons/bi";
 import {RiShareCircleLine} from "react-icons/ri";
 import {useSelector} from "react-redux";
-import {selectTransactionState} from "../../store/slices/transaction.slice";
-import Styles from '../../styles/TransactionHome.module.scss';
+import {selectTransactionData} from "../store/slices/transaction.slice";
+import Styles from '../styles/TransactionHome.module.scss';
 import {IoSyncOutline, IoWalletOutline} from "react-icons/io5";
-import {TransactionsModel, TransactionType} from "../../models/transactions.model";
-import {formatDate} from "../../utils/date";
-import {formatCurrent} from "../../utils/number";
-import {HiOutlineMinusSm} from "react-icons/hi";
+import {TransactionsModel, TransactionType} from "../models/transactions.model";
+import {formatDate} from "../utils/date";
+import ViewTransactionDetails from "./ViewTransactionDetails";
+import TransactionAmount from "./TransactionAmount";
 
-function TransactionAmount({transaction}: { transaction: TransactionsModel }) {
-    switch (transaction.type) {
-        case TransactionType.INCOME:
-        default:
-            return (<p className={`${Styles.transactionItemAmount} text-green-80`}>
-                <BsPlus style={{margin: '0'}} className={Styles.actionIcon}/>
-                {formatCurrent(transaction.amount)}
-            </p>);
-        case TransactionType.EXPENSE:
-            return (<p className={`${Styles.transactionItemAmount} text-red-80`}>
-                <HiOutlineMinusSm style={{margin: '0'}} className={Styles.actionIcon}/>
-                {formatCurrent(transaction.amount)}
-            </p>);
-        case TransactionType.TRANSFER:
-            return (<p className={`${Styles.transactionItemAmount} text-teal-80`}>
-                {/*<IoSyncOutline size={18} style={{margin: '0 4px 0 0'}} className={Styles.actionIcon}/>*/}
-                {formatCurrent(transaction.amount)}
-            </p>)
-    }
 
-}
-
-function TransactionItem({transaction}: { transaction: TransactionsModel }) {
+function TransactionItem({transaction, onClick}: { transaction: TransactionsModel, onClick?: () => void }) {
     return (
-        <div className={Styles.transactionItem}>
+        <div className={Styles.transactionItem} onClick={onClick}>
             {transaction.type == TransactionType.TRANSFER ?
                 (<div className={Styles.transactionItemLeading}>
-                    <Avatar bg='teal.500' icon={<IoSyncOutline size={28} />}/>
+                    <Avatar bg="teal.500" icon={<IoSyncOutline size={28} />}/>
                     <div className={Styles.transactionItemText}>
                         <h2 className={Styles.transactionItemTransferTextTitle}>
                             <span>{transaction.from.name}</span>
@@ -70,52 +49,67 @@ function TransactionItem({transaction}: { transaction: TransactionsModel }) {
 }
 
 export default function TransactionsTable() {
-    const transactionsState = useSelector(selectTransactionState);
+    const transactionsState = useSelector(selectTransactionData);
     const [transactions, setTransactions] = React.useState<TransactionsModel[]>([]);
     const [activeTabIndex, setActiveTabIndex] = React.useState(0);
+    const [openDetailsModal, setOpenDetailsModal] = React.useState(false);
+    const [selectedTransaction, setSelectedTransaction] = React.useState<TransactionsModel | null>(null);
+
+    const loadTransactions = React.useCallback((tabIndex) => {
+            switch (tabIndex) {
+                case 0:
+                default:
+                    setTransactions(transactionsState);
+                    break;
+                case 1:
+                    setTransactions(() => transactionsState.filter(transaction => transaction.type === TransactionType.INCOME));
+                    break;
+                case 2:
+                    setTransactions(() => transactionsState.filter(transaction => transaction.type === TransactionType.TRANSFER));
+                    break;
+                case 3:
+                    setTransactions(() => transactionsState.filter(transaction => transaction.type === TransactionType.EXPENSE));
+                    break;
+            }
+        }
+    , [transactionsState]);
 
     React.useEffect(() => {
         loadTransactions(activeTabIndex);
-    }, [transactionsState]);
+    }, [loadTransactions, activeTabIndex]);
 
     const onTabChange = (index: number) => {
         setActiveTabIndex(index);
         loadTransactions(index)
     }
 
-    const loadTransactions = (tabIndex) => {
-        switch (tabIndex) {
-            case 0:
-            default:
-                setTransactions(transactionsState);
-                break;
-            case 1:
-                setTransactions(() => transactionsState.filter(transaction => transaction.type === TransactionType.INCOME));
-                break;
-            case 2:
-                setTransactions(() => transactionsState.filter(transaction => transaction.type === TransactionType.TRANSFER));
-                break;
-            case 3:
-                setTransactions(() => transactionsState.filter(transaction => transaction.type === TransactionType.EXPENSE));
-                break;
-        }
+    const showDetails = (transaction) => {
+        setSelectedTransaction(transaction);
+        setOpenDetailsModal(true);
     }
 
     return (
-        <Tabs colorScheme={'purple'} onChange={onTabChange}>
-            <TabList>
-                <Tab name="all"><BsGrid/>&nbsp;All</Tab>
-                <Tab name="income"><TbDatabaseImport/>&nbsp;Income</Tab>
-                <Tab name="transfer"><BiTransfer/>&nbsp;Transfers</Tab>
-                <Tab name="expenses"><RiShareCircleLine/>&nbsp;Expenses</Tab>
-            </TabList>
-            <div className={Styles.transactionList}>
-                {
-                    transactions.map((transaction, index) => {
-                        return <TransactionItem key={index} transaction={transaction}/>
-                    })
-                }
-            </div>
-        </Tabs>
+        <>
+            <Tabs colorScheme={'purple'} onChange={onTabChange}>
+                <TabList>
+                    <Tab name="all"><BsGrid/>&nbsp;All</Tab>
+                    <Tab name="income"><TbDatabaseImport/>&nbsp;Income</Tab>
+                    <Tab name="transfer"><BiTransfer/>&nbsp;Transfers</Tab>
+                    <Tab name="expenses"><RiShareCircleLine/>&nbsp;Expenses</Tab>
+                </TabList>
+                <div className={Styles.transactionList}>
+                    {
+                        transactions.map((transaction, index) => {
+                            return <TransactionItem onClick={() => showDetails(transaction)} key={index} transaction={transaction}/>
+                        })
+                    }
+                </div>
+            </Tabs>
+            <ViewTransactionDetails
+                open={openDetailsModal}
+                selectedTransaction={selectedTransaction}
+                onClose={() => setOpenDetailsModal(false)}
+            />
+        </>
     );
 }

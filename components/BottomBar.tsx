@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../styles/BottomBar.module.scss';
+import styles from '../styles/BottomBar.module.scss';
 import {TbLayoutDashboard, TbLayoutList} from "react-icons/tb";
 import {BsPiggyBank} from "react-icons/bs";
 import {FiSettings} from "react-icons/fi";
