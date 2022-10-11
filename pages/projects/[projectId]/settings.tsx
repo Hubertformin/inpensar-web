@@ -1,15 +1,15 @@
-import BottomNav from "../../components/BottomBar";
+import BottomNav from "../../../components/nav/BottomBar";
 import {Alert, AlertIcon, AlertTitle} from "@chakra-ui/alert";
 import {
     AlertDescription,
     Box,
     CloseButton,
 } from "@chakra-ui/react";
-import PageLayout from "../../components/PageLayout";
+import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 
-export default function BudgetHome() {
+export default function SettingsHome() {
     return (
-        <PageLayout>
+        <ProjectViewLayout>
             <main className="page-view px-8 py-6">
                 <div className="pg-header">
                     <h1 className="text-center mb-8 text-2xl font-bold">Inpensar</h1>
@@ -32,6 +32,6 @@ export default function BudgetHome() {
                     </Alert>
                 </div>
             </main>
-        </PageLayout>
+        </ProjectViewLayout>
     )
 }

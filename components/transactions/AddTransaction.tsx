@@ -29,16 +29,16 @@ import Select from "react-select";
 import { RiShareCircleLine } from "react-icons/ri";
 import { BiTransfer } from "react-icons/bi";
 import { TbDatabaseImport } from "react-icons/tb";
-import CategorySelector from "./CategorySelector";
+import CategorySelector from "../categories/CategorySelector";
 import { useSelector } from "react-redux";
-import { selectWalletState } from "../store/slices/wallet.slice";
-import useForm from "../hooks/useForm";
+import { selectWalletState } from "../../store/slices/wallet.slice";
+import useForm from "../../hooks/useForm";
 import {
   TransactionsModel,
   TransactionType,
-} from "../models/transactions.model";
-import useApi from "../hooks/useApi";
-import { getSelectOptions } from "../utils/array";
+} from "../../models/transactions.model";
+import useApi from "../../hooks/useApi";
+import { getSelectOptions } from "../../utils/array";
 
 interface AddTransactionProps {
   open: boolean;

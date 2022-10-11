@@ -1,11 +1,16 @@
 import {Schema, Document, Types, connection} from 'mongoose';
 import {UserDocument} from "./user.model";
+import {CategoryDocument} from "./category.model";
+import {getRandomItemFromList} from "../../../utils/array";
+import {CONSTANTS} from "../../../data/constants";
 
 export interface BudgetBaseDocument {
     _id?: string;
     name?: string;
-    category?: string;
+    category?: CategoryDocument[];
     amount: number;
+    amountSpent: number;
+    color: string;
     photoURL: string;
     owner: UserDocument;
 
@@ -15,10 +20,21 @@ const budgetSchema = new Schema<BudgetBaseDocument>({
     name: {
         type: String,
     },
-    category: Object,
+    category: [{
+        type: Types.ObjectId,
+        ref: 'categories'
+    }],
     amount: {
         type: Number,
         default: 0
+    },
+    amountSpent: {
+        type: Number,
+        default: 0
+    },
+    color: {
+        type: String,
+        default: () => getRandomItemFromList(CONSTANTS.COLORS)
     },
     photoURL: String,
     owner: {

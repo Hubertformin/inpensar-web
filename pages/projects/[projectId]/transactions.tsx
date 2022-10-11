@@ -12,16 +12,16 @@ import {
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import React, { useEffect, useState } from "react";
-import AddTransaction from "../../components/AddTransaction";
-import { Data } from "../../data";
-import TransactionsTable from "../../components/TransactionsTable";
+import AddTransaction from "../../../components/transactions/AddTransaction";
+import { Data } from "../../../data";
+import TransactionsTable from "../../../components/transactions/TransactionsTable";
 import { BsPlus } from "react-icons/bs";
 import { useSelector } from "react-redux";
-import { selectCategoriesState } from "../../store/slices/categories.slice";
-import { sortArrayOfObjects } from "../../utils/array";
-import PageLayout from "../../components/PageLayout";
-import { selectTransactionInsights } from "../../store/slices/transaction.slice";
-import { formatCurrency } from "../../utils/number";
+import { selectCategoriesState } from "../../../store/slices/categories.slice";
+import { sortArrayOfObjects } from "../../../utils/array";
+import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
+import { selectTransactionInsights } from "../../../store/slices/transaction.slice";
+import { formatCurrency } from "../../../utils/number";
 
 export default function TransactionsHome() {
   const categoriesState = useSelector(selectCategoriesState);
@@ -48,7 +48,7 @@ export default function TransactionsHome() {
   }, [categoriesState.expenses, categoriesState.income]);
 
   return (
-    <PageLayout>
+    <ProjectViewLayout>
       <main className="page-view px-6 py-6">
         <div className="toolbar mb-6 flex justify-between align-items-center">
           <h1 className="font-bold text-2xl">Transactions</h1>
@@ -157,6 +157,6 @@ export default function TransactionsHome() {
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
       />
-    </PageLayout>
+    </ProjectViewLayout>
   );
 }

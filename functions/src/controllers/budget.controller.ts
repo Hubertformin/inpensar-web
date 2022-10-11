@@ -4,6 +4,7 @@ import Budget from "../models/budget.model";
 
 export const createBudgetController = createController(async (req, res) => {
     // TODO: VALIDATE budget BODY
+    // TODO: Make sure categories doen't exist in another budget
     const budgetData = req.body;
     const budget = new Budget({ ...budgetData, owner: req.$currentUser$?._id });
 

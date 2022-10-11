@@ -1,5 +1,5 @@
 import styles from '../styles/Home.module.scss'
-import BottomNav from "../components/BottomBar";
+import BottomNav from "../components/nav/BottomBar";
 import Link from "next/link";
 import {Button} from "@chakra-ui/react";
 

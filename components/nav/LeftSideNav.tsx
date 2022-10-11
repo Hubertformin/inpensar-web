@@ -1,15 +1,21 @@
 import React from "react";
-import styles from "../styles/LeftSideNav.module.scss";
+import styles from "../../styles/LeftSideNav.module.scss";
 import ActiveLink from "./ActiveLink";
 import { TbLayoutDashboard, TbLayoutList } from "react-icons/tb";
 import { IoWalletOutline } from "react-icons/io5";
 import { BsPiggyBank } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
-import { Avatar, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
+import {Avatar, AvatarBadge, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
 import { BiChevronUp } from "react-icons/bi";
 import Image from "next/image";
+import {useSelector} from "react-redux";
+import {selectAuthUserState} from "../../store/slices/auth.slice";
+import {selectActiveProjectState} from "../../store/slices/projects.slice";
 
 export default function LeftSideNav() {
+  const authUser = useSelector(selectAuthUserState);
+  const activeProject = useSelector(selectActiveProjectState);
+  
   return (
     <div className={styles.sideNavContainer}>
       <h1 className={styles.brand}>
@@ -40,7 +46,7 @@ export default function LeftSideNav() {
       </div>
       <nav className={styles.nav}>
         <>
-          <ActiveLink href="/app/dashboard" activeClassName={styles.activeLink}>
+          <ActiveLink href={`/projects/${activeProject?._id}/dashboard`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
                 <TbLayoutDashboard size={24} />
@@ -51,7 +57,7 @@ export default function LeftSideNav() {
         </>
         <>
           <ActiveLink
-            href="/app/transactions"
+            href={`/projects/${activeProject?._id}/transactions`}
             activeClassName={styles.activeLink}
           >
             <div className={styles.navTab}>
@@ -63,7 +69,7 @@ export default function LeftSideNav() {
           </ActiveLink>
         </>
         <>
-          <ActiveLink href="/app/accounts" activeClassName={styles.activeLink}>
+          <ActiveLink href={`/projects/${activeProject?._id}/accounts`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
                 <IoWalletOutline size={24} />
@@ -79,17 +85,17 @@ export default function LeftSideNav() {
         {/*    <span className={styles.navTabText}>Reports</span>*/}
         {/*</div>*/}
         <>
-          <ActiveLink href="/app/budget" activeClassName={styles.activeLink}>
+          <ActiveLink href={`/projects/${activeProject?._id}/budgets`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
                 <BsPiggyBank size={24} />
               </span>
-              <span className={styles.navTabText}>Budget</span>
+              <span className={styles.navTabText}>Budgets</span>
             </div>
           </ActiveLink>
         </>
         <>
-          <ActiveLink href="/app/settings" activeClassName={styles.activeLink}>
+          <ActiveLink href={`/projects/${activeProject?._id}/settings`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
                 <FiSettings size={24} />
@@ -103,16 +109,18 @@ export default function LeftSideNav() {
         <div className="leading flex">
           <Avatar
             size="md"
-            name="Hubert Formin"
+            name={authUser.name}
             bg="orange.500"
             color="white"
             src={
               "https://avataaars.io/?avatarStyle=Circle&topType=WinterHat2&accessoriesType=Wayfarers&hatColor=Blue01&hairColor=Blue&facialHairType=BeardMajestic&facialHairColor=Platinum&clotheType=BlazerShirt&clotheColor=PastelRed&eyeType=Hearts&eyebrowType=SadConcernedNatural&mouthType=Sad&skinColor=Black"
             }
-          />
+          >
+            <AvatarBadge boxSize='1.25em' bg='green.500' />
+          </Avatar>
           <div className="text ml-2">
-            <h2 className={styles.projectFooterTitle}>Huber Formin</h2>
-            <p className={styles.projectDescription}>hformin@gmail.com</p>
+            <h2 className={styles.projectFooterTitle}>{authUser.name}</h2>
+            <p className={styles.projectDescription}>{authUser.email}</p>
           </div>
         </div>
         <div className="actions">

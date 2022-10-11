@@ -23,3 +23,8 @@ export function getSelectOptions(
 ): Array<{ value: string; label: string }> {
   return arr.map((w) => ({ label: w[labelProp], value: w[valueProp] }));
 }
+
+export function getRandomItemFromList<T>(list: T[]): T {
+  const randomIndex = Math.floor(Math.random() * list.length);
+  return list[randomIndex];
+}

@@ -3,7 +3,7 @@ import { AppState } from "../";
 import { HYDRATE } from "next-redux-wrapper";
 import { Data } from "../../data";
 import { addTransactionThunk } from "../thunks/transaction.thunk";
-import AddTransaction from "../../components/AddTransaction";
+import AddTransaction from "../../components/transactions/AddTransaction";
 import {
   computeTransactionBalance,
   sumTransactionEarnings,

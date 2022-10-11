@@ -1,10 +1,10 @@
 import React from 'react';
-import styles from '../styles/CategorySelector.module.scss'
+import styles from '../../styles/CategorySelector.module.scss'
 import {Avatar} from "@chakra-ui/react";
-import {CategoryModel} from "../models/category.model";
+import {CategoryModel} from "../../models/category.model";
 import {BiChevronDown} from "react-icons/bi";
 import {useSelector} from "react-redux";
-import {selectCategoriesState} from "../store/slices/categories.slice";
+import {selectCategoriesState} from "../../store/slices/categories.slice";
 
 declare type CategoryType = 'expense' | 'income';
 

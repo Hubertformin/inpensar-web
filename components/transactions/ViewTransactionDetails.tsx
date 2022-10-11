@@ -22,13 +22,13 @@ import {
 import {
   TransactionsModel,
   TransactionType,
-} from "../models/transactions.model";
+} from "../../models/transactions.model";
 import TransactionAmount from "./TransactionAmount";
 import { IoSyncOutline, IoWalletOutline } from "react-icons/io5";
-import { formatCurrency } from "../utils/number";
-import { formatDate } from "../utils/date";
+import { formatCurrency } from "../../utils/number";
+import { formatDate } from "../../utils/date";
 import { BsArrowRightShort } from "react-icons/bs";
-import useApi from "../hooks/useApi";
+import useApi from "../../hooks/useApi";
 import EditTransaction from "./EditTransaction";
 
 interface ViewTransactionDetailsProps {

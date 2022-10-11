@@ -5,14 +5,14 @@ import { TbDatabaseImport } from "react-icons/tb";
 import { BiTransfer } from "react-icons/bi";
 import { RiShareCircleLine } from "react-icons/ri";
 import { useSelector } from "react-redux";
-import { selectTransactionData } from "../store/slices/transaction.slice";
-import Styles from "../styles/TransactionHome.module.scss";
+import { selectTransactionData } from "../../store/slices/transaction.slice";
+import Styles from "../../styles/TransactionHome.module.scss";
 import { IoSyncOutline, IoWalletOutline } from "react-icons/io5";
 import {
   TransactionsModel,
   TransactionType,
-} from "../models/transactions.model";
-import { formatDate } from "../utils/date";
+} from "../../models/transactions.model";
+import { formatDate } from "../../utils/date";
 import ViewTransactionDetails from "./ViewTransactionDetails";
 import TransactionAmount from "./TransactionAmount";
 

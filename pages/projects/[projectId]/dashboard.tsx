@@ -1,4 +1,4 @@
-import BottomNav from "../../components/BottomBar";
+import BottomNav from "../../../components/nav/BottomBar";
 import {Alert, AlertIcon, AlertTitle} from "@chakra-ui/alert";
 import {
     AlertDescription,
@@ -10,11 +10,11 @@ import {
     StatLabel,
     StatNumber
 } from "@chakra-ui/react";
-import PageLayout from "../../components/PageLayout";
+import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 
 export default function Dashboard() {
     return (
-        <PageLayout>
+        <ProjectViewLayout>
             <main className="page-view px-8 py-6">
                 <div className="pg-header">
                     <h1 className="text-center mb-8 text-2xl font-bold">Inpensar</h1>
@@ -58,6 +58,6 @@ export default function Dashboard() {
                     </div>
                 </div>
             </main>
-        </PageLayout>
+        </ProjectViewLayout>
     )
 }
