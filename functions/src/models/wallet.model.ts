@@ -1,35 +1,47 @@
-import {Schema, connection, Document, Types} from 'mongoose';
-import {UserBaseDocument} from "./user.model";
+import { Schema, connection, Document, Types } from "mongoose";
 
-export interface WalletBaseDocument {
-    _id?: string;
-    name: string;
-    amount: string;
-    photoURL?: string;
-    userId: Types.ObjectId;
+export enum WalletType {
+  EXPENSE = "expense",
+  SAVINGS = "savings",
 }
 
-const walletSchema = new Schema({
+export interface WalletBaseDocument {
+  _id?: string;
+  name: string;
+  amount: number;
+  type?: WalletType;
+  photoURL?: string;
+  owner?: Types.ObjectId;
+}
+
+const walletSchema = new Schema<WalletBaseDocument>(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     amount: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
+    },
+    type: {
+      type: WalletType,
+      default: WalletType.EXPENSE,
     },
     photoURL: String,
     owner: {
-        type: Types.ObjectId,
-        ref: 'users'
-    }
-}, {timestamps: true});
+      type: Types.ObjectId,
+      required: true,
+      ref: "users",
+    },
+  },
+  { timestamps: true }
+);
 
 const db = connection.useDb(process.env.DATABASE_NAME as string);
 
-const Wallet = db.model('wallets', walletSchema);
+const Wallet = db.model("wallets", walletSchema);
 
-export type WalletDocument = Document<Types.ObjectId> & UserBaseDocument;
-
+export type WalletDocument = Document<Types.ObjectId> & WalletBaseDocument;
 
 export default Wallet;
