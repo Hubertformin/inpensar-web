@@ -1,10 +1,10 @@
 import { connection, Schema, Document, Types } from "mongoose";
-import { WalletDocument } from "./wallet.model";
+import { AccountDocument } from "./accounts.model";
 
 interface SavingsBaseDocument {
   _id?: string;
   date: String;
-  wallet: WalletDocument;
+  account: AccountDocument;
   amount: number;
 }
 
@@ -18,7 +18,7 @@ const savingsSchema = new Schema<SavingsBaseDocument>(
       type: Number,
       default: 0,
     },
-    wallet: {
+    account: {
       type: Types.ObjectId,
       required: true,
       ref: "wallets",

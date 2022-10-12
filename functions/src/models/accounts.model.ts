@@ -1,20 +1,23 @@
 import { Schema, connection, Document, Types } from "mongoose";
 
-export enum WalletType {
-  EXPENSE = "expense",
+export enum AccountType {
+  CHECKING = "expense",
+  LOAN = "load",
+  INVESTMENT = "investment",
+  WALLET = "wallet",
   SAVINGS = "savings",
 }
 
-export interface WalletBaseDocument {
+export interface AccountBaseDocument {
   _id?: string;
   name: string;
   amount: number;
-  type?: WalletType;
+  type?: AccountType;
   photoURL?: string;
   owner?: Types.ObjectId;
 }
 
-const walletSchema = new Schema<WalletBaseDocument>(
+const accountSchema = new Schema<AccountBaseDocument>(
   {
     name: {
       type: String,
@@ -25,8 +28,8 @@ const walletSchema = new Schema<WalletBaseDocument>(
       default: 0,
     },
     type: {
-      type: WalletType,
-      default: WalletType.EXPENSE,
+      type: AccountType,
+      default: AccountType.CHECKING,
     },
     photoURL: String,
     owner: {
@@ -40,8 +43,8 @@ const walletSchema = new Schema<WalletBaseDocument>(
 
 const db = connection.useDb(process.env.DATABASE_NAME as string);
 
-const Wallet = db.model("wallets", walletSchema);
+const Account = db.model("accounts", accountSchema);
 
-export type WalletDocument = Document<Types.ObjectId> & WalletBaseDocument;
+export type AccountDocument = Document<Types.ObjectId> & AccountBaseDocument;
 
-export default Wallet;
+export default Account;

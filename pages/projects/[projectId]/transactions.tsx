@@ -22,6 +22,7 @@ import { sortArrayOfObjects } from "../../../utils/array";
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 import { selectTransactionInsights } from "../../../store/slices/transaction.slice";
 import { formatCurrency } from "../../../utils/number";
+import styles from "../../../styles/TransactionHome.module.scss";
 
 export default function TransactionsHome() {
   const categoriesState = useSelector(selectCategoriesState);

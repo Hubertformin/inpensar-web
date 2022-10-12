@@ -6,7 +6,7 @@ import { BiTransfer } from "react-icons/bi";
 import { RiShareCircleLine } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import { selectTransactionData } from "../../store/slices/transaction.slice";
-import Styles from "../../styles/TransactionHome.module.scss";
+import Styles from "../../styles/TransactionTable.module.scss";
 import { IoSyncOutline, IoWalletOutline } from "react-icons/io5";
 import {
   TransactionsModel,
