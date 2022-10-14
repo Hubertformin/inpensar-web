@@ -23,7 +23,7 @@ import DatePicker from "react-datepicker";
 import Select from "react-select";
 import CategorySelector from "../categories/CategorySelector";
 import { useSelector } from "react-redux";
-import { selectWalletState } from "../../store/slices/wallet.slice";
+import {selectAccountsState} from "../../store/slices/accounts.slice";
 import useForm from "../../hooks/useForm";
 import {
   TransactionsModel,
@@ -53,7 +53,7 @@ export default function EditTransaction({
   const incomeForm = useForm();
 
   const [isLoading, setIsLoading] = React.useState(false);
-  const wallets = useSelector(selectWalletState);
+  const wallets = useSelector(selectAccountsState);
   const toast = useToast();
   const api = useApi();
 
@@ -278,7 +278,7 @@ export default function EditTransaction({
                   >
                     <FormLabel>Amount</FormLabel>
                     <InputGroup>
-                      <InputLeftAddon>FCFA</InputLeftAddon>
+                      <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
                       <Input
                         name="amount"
                         value={expenseForm.values.amount}
@@ -382,7 +382,7 @@ export default function EditTransaction({
               <FormControl className="mb-4">
                 <FormLabel>Amount</FormLabel>
                 <InputGroup>
-                  <InputLeftAddon>FCFA</InputLeftAddon>
+                  <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
                   <Input
                     name="amount"
                     value={transferForm.values.amount}
@@ -434,7 +434,7 @@ export default function EditTransaction({
                   <FormControl className="mb-4">
                     <FormLabel>Amount</FormLabel>
                     <InputGroup>
-                      <InputLeftAddon>FCFA</InputLeftAddon>
+                      <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
                       <Input
                         name="amount"
                         value={incomeForm.values.amount}

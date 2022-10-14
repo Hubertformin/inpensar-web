@@ -162,9 +162,9 @@ export default function TransactionsTable() {
           </div>
         </Tabs>
       ) : (
-        <div className={`${Styles.emptyState} w-max-50`}>
+        <div className={`emptyState w-max-50`}>
           <img
-            className={`${Styles.emptyStateImage} mb-6`}
+            className={`emptyStateImage mb-6`}
             src="/images/no_transactions.png"
             alt="no"
           />

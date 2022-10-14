@@ -1,22 +1,22 @@
 import { CategoryModel } from "./category.model";
-import { WalletModel } from "./wallet.model";
+import { AccountsModel } from "./accounts.model";
 
-
-interface BudgetCategories extends CategoryModel {
-    amount?: number;
-    percent?: number;
-}
+// interface BudgetCategories extends CategoryModel {
+//   amount?: number;
+//   percent?: number;
+// }
 export interface BudgetModel {
-    _id?: string;
-    name: string,
-    categories?: BudgetCategories[] | string[],
-    amount: number;
-    amountSpent: number;
-    recurrence?: string;
-    nextOccureDate?: string;
-    startDate?: string;
-    wallet?: WalletModel;
-    photoURL?: string;
-    userId?: string;
-
+  _id?: string;
+  name: string;
+  categories?: CategoryModel[] | string[];
+  amount: number;
+  amountSpent: number;
+  // recurrence?: string;
+  color?: string;
+  // nextOccureDate?: string;
+  // startDate?: string;
+  shouldResetEveryMonth?: boolean;
+  // wallet?: WalletModel;
+  // photoURL?: string;
+  owner?: string;
 }

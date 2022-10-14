@@ -31,7 +31,7 @@ import { BiTransfer } from "react-icons/bi";
 import { TbDatabaseImport } from "react-icons/tb";
 import CategorySelector from "../categories/CategorySelector";
 import { useSelector } from "react-redux";
-import { selectWalletState } from "../../store/slices/wallet.slice";
+import {selectAccountsState} from "../../store/slices/accounts.slice";
 import useForm from "../../hooks/useForm";
 import {
   TransactionsModel,
@@ -71,7 +71,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
   });
 
   const [isLoading, setIsLoading] = React.useState(false);
-  const wallets = useSelector(selectWalletState);
+  const wallets = useSelector(selectAccountsState);
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
   const toast = useToast();
   const api = useApi();
@@ -298,7 +298,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
                     >
                       <FormLabel>Amount</FormLabel>
                       <InputGroup>
-                        <InputLeftAddon>FCFA</InputLeftAddon>
+                        <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
                         <Input
                           name="amount"
                           value={expenseForm.values.amount}
@@ -366,7 +366,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
                     <FormControl className="mb-4">
                       <FormLabel>Amount</FormLabel>
                       <InputGroup>
-                        <InputLeftAddon>FCFA</InputLeftAddon>
+                        <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
                         <Input
                           name="amount"
                           value={incomeForm.values.amount}
@@ -453,7 +453,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
                 <FormControl className="mb-4">
                   <FormLabel>Amount</FormLabel>
                   <InputGroup>
-                    <InputLeftAddon>FCFA</InputLeftAddon>
+                    <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
                     <Input
                       name="amount"
                       value={transferForm.values.amount}

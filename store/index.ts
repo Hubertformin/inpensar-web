@@ -1,6 +1,6 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import { transactionsSlice } from "./slices/transaction.slice";
-import { walletSlice } from "./slices/wallet.slice";
+import { accountsSlice } from "./slices/accounts.slice";
 import { budgetsSlice } from "./slices/budget.slice";
 import { categoriesSlice } from "./slices/categories.slice";
 import { projectsSlice } from "./slices/projects.slice";
@@ -11,7 +11,7 @@ const makeStore = () =>
     configureStore({
         reducer: {
             [transactionsSlice.name]: transactionsSlice.reducer,
-            [walletSlice.name]: walletSlice.reducer,
+            [accountsSlice.name]: accountsSlice.reducer,
             [budgetsSlice.name]: budgetsSlice.reducer,
             [categoriesSlice.name]: categoriesSlice.reducer,
             [projectsSlice.name]: projectsSlice.reducer,

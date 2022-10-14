@@ -1,8 +1,8 @@
 import { Schema, connection, Document, Types } from "mongoose";
 
 export enum AccountType {
-  CHECKING = "expense",
-  LOAN = "load",
+  CHECKING = "checking",
+  LOAN = "loan",
   INVESTMENT = "investment",
   WALLET = "wallet",
   SAVINGS = "savings",

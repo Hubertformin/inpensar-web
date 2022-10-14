@@ -3,7 +3,6 @@ import styles from "../../styles/LeftSideNav.module.scss";
 import ActiveLink from "./ActiveLink";
 import { TbLayoutDashboard, TbLayoutList } from "react-icons/tb";
 import { IoWalletOutline } from "react-icons/io5";
-import { BsPiggyBank } from "react-icons/bs";
 import { FiSettings } from "react-icons/fi";
 import {Avatar, AvatarBadge, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
 import { BiChevronUp } from "react-icons/bi";
@@ -11,6 +10,7 @@ import Image from "next/image";
 import {useSelector} from "react-redux";
 import {selectAuthUserState} from "../../store/slices/auth.slice";
 import {selectActiveProjectState} from "../../store/slices/projects.slice";
+import { AiOutlinePieChart } from "react-icons/ai";
 
 export default function LeftSideNav() {
   const authUser = useSelector(selectAuthUserState);
@@ -88,7 +88,7 @@ export default function LeftSideNav() {
           <ActiveLink href={`/projects/${activeProject?._id}/budgets`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
-                <BsPiggyBank size={24} />
+                <AiOutlinePieChart size={24} />
               </span>
               <span className={styles.navTabText}>Budgets</span>
             </div>

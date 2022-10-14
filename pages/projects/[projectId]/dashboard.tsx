@@ -1,60 +1,36 @@
-import BottomNav from "../../../components/nav/BottomBar";
-import {Alert, AlertIcon, AlertTitle} from "@chakra-ui/alert";
-import {
-    AlertDescription,
-    Box,
-    CloseButton,
-    Stat, StatArrow,
-    StatGroup,
-    StatHelpText,
-    StatLabel,
-    StatNumber
-} from "@chakra-ui/react";
+
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
+import DatePicker from "react-datepicker";
+import React from "react";
 
 export default function Dashboard() {
+    const [startDate, setStartDate] = React.useState(new Date());
+    const [endDate, setEndDate] = React.useState(new Date());
+
+    function onDateRangeSelect(dates) {
+        console.log(dates)
+        const [start, end] = dates;
+        setStartDate(start);
+        setEndDate(end);
+    }
+
     return (
         <ProjectViewLayout>
-            <main className="page-view px-8 py-6">
-                <div className="pg-header">
-                    <h1 className="text-center mb-8 text-2xl font-bold">Inpensar</h1>
-                    <Alert status="info">
-                        <AlertIcon />
-                        <Box>
-                            <AlertTitle>Hello Hubert,</AlertTitle>
-                            <AlertDescription>
-                                Easily record and track your expenses from this app. This app was designed to be
-                                simple and direct.
-                            </AlertDescription>
-                        </Box>
-                        <CloseButton
-                            alignSelf="flex-start"
-                            position="relative"
-                            right={-1}
-                            top={-1}
-                            onClick={() => {}}
-                        />
-                    </Alert>
-                    <div className="mt-6">
-                        <StatGroup>
-                            <Stat>
-                                <StatLabel>Income</StatLabel>
-                                <StatNumber>FCFA 345,670</StatNumber>
-                                <StatHelpText>
-                                    <StatArrow type="increase" />
-                                    23.36%
-                                </StatHelpText>
-                            </Stat>
-
-                            <Stat>
-                                <StatLabel>Expenses</StatLabel>
-                                <StatNumber>FCFA 450,000</StatNumber>
-                                <StatHelpText>
-                                    <StatArrow type="decrease" />
-                                    9.05%
-                                </StatHelpText>
-                            </Stat>
-                        </StatGroup>
+            <main className="page-view px-6 py-6">
+                <div className="toolbar mb-6 flex justify-between align-items-center">
+                    <h1 className="font-bold text-2xl">Dashboard</h1>
+                    <div className="date">
+                        <div className="actions flex">
+                            <div className="mr-3" style={{ width: "320px" }}>
+                                <DatePicker
+                                    startDate={startDate}
+                                    onChange={onDateRangeSelect}
+                                    dateFormat="dd MMMM, yyyy"
+                                    endDate={endDate}
+                                    selectsRange
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>

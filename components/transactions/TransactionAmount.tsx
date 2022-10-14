@@ -1,5 +1,5 @@
 import {TransactionsModel, TransactionType} from "../../models/transactions.model";
-import Styles from "../../styles/TransactionHome.module.scss";
+import Styles from "../../styles/TransactionTable.module.scss";
 import {BsPlus} from "react-icons/bs";
 import {formatCurrency} from "../../utils/number";
 import {HiOutlineMinusSm} from "react-icons/hi";

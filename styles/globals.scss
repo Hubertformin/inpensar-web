@@ -44,6 +44,24 @@ a {
 .css-1s2u09g-control {
   background: var( --theme-fg) !important;
 }
+
+.emptyState {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
+  position: absolute;
+  // bottom: 0;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.emptyStateImage {
+  height: 180px;
+}
+
 .react-datepicker__input-container {
   height: 40px;
   border-radius: 8px;
@@ -58,6 +76,15 @@ a {
     font-weight: 500;
   }
 }
+/**
+=========== MODAL ========
+*/
+//.chakra-modal__header {
+// background-color: var(--theme-base-dark);
+// color: white !important;
+// border-top-left-radius: 6px;
+// border-top-right-radius: 6px;
+//}
 /**
 =========== DATE PICKER ========
 */
@@ -100,7 +127,8 @@ $picker-radius: 12px !important;
   background: var(--theme-base) !important;
 }
 .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected,
-.react-datepicker__month-text--keyboard-selected {
+.react-datepicker__month-text--keyboard-selected,
+.react-datepicker__day--in-range {
   background: var(--theme-base) !important;
 }
 

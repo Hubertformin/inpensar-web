@@ -1,5 +1,5 @@
 import {CategoryModel} from "./category.model";
-import {WalletModel} from "./wallet.model";
+import {AccountsModel} from "./accounts.model";
 
 export enum TransactionType {
     INCOME = 'income',
@@ -22,8 +22,8 @@ export interface TransactionsModel {
     nextRecurrentDate?: string,
     reccurentInterval?: string,
     recurrentEndDate?: string,
-    wallet?: WalletModel,
-    to?: WalletModel,
-    from?: WalletModel,
+    wallet?: AccountsModel,
+    to?: AccountsModel,
+    from?: AccountsModel,
     userId?: string
 }

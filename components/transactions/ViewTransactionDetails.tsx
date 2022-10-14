@@ -25,6 +25,8 @@ import {
 } from "../../models/transactions.model";
 import TransactionAmount from "./TransactionAmount";
 import { IoSyncOutline, IoWalletOutline } from "react-icons/io5";
+import { HiOutlinePencil } from "react-icons/hi";
+import { MdOutlineDeleteOutline } from "react-icons/md";
 import { formatCurrency } from "../../utils/number";
 import { formatDate } from "../../utils/date";
 import { BsArrowRightShort } from "react-icons/bs";
@@ -145,12 +147,13 @@ export default function ViewTransactionDetails({
                 />
               </div>
             </div>
-            <div className="actions mb-6 flex">
+            <div className="actions mb-6 justify-end flex">
               <ButtonGroup spacing={0}>
                 <Button
                   onClick={openEditModal}
                   colorScheme="purple"
                   variant="ghost"
+                    leftIcon={<HiOutlinePencil />}
                 >
                   Edit
                 </Button>
@@ -158,6 +161,7 @@ export default function ViewTransactionDetails({
                   colorScheme="red"
                   variant="ghost"
                   onClick={deleteDisclosure.onOpen}
+                    leftIcon={<MdOutlineDeleteOutline />}
                 >
                   Delete
                 </Button>
