@@ -6,6 +6,8 @@ let userSchema = object({
     email: string().email(),
     phoneNumber: string().nullable(),
     password: string().required(),
+    country: object().nullable(),
+    currency: object().nullable(),
 });
 
 type Account = InferType<typeof userSchema>;

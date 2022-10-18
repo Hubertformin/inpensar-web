@@ -37,10 +37,12 @@ const UserSchema = new Schema<UserBaseDocument>(
       unique: true,
     },
     email: {
+        type: String,
       unique: true,
       required: true,
     },
     phoneNumber: {
+        type: String,
       unique: true,
     },
     photoURL: String,
@@ -51,8 +53,8 @@ const UserSchema = new Schema<UserBaseDocument>(
       },
     ],
     settings: {
-      country: Object,
-      city: Object,
+      country: String,
+      city: String,
       currency: String,
       language: String,
       reportsFrequency: {

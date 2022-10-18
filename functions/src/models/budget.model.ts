@@ -3,6 +3,7 @@ import {UserDocument} from "./user.model";
 import {CategoryDocument} from "./category.model";
 import {getRandomItemFromList} from "../../../utils/array";
 import {CONSTANTS} from "../../../data/constants";
+import {ProjectDocument} from "./projects.model";
 
 export interface BudgetBaseDocument {
     _id?: string;
@@ -12,6 +13,7 @@ export interface BudgetBaseDocument {
     amountSpent: number;
     color: string;
     photoURL: string;
+    project: ProjectDocument;
     owner: UserDocument;
 
 }
@@ -37,6 +39,10 @@ const budgetSchema = new Schema<BudgetBaseDocument>({
         default: () => getRandomItemFromList(CONSTANTS.COLORS)
     },
     photoURL: String,
+    project: {
+        type: Types.ObjectId,
+        ref: 'projects'
+    },
     owner: {
         type: Types.ObjectId,
     }
