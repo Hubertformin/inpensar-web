@@ -1,4 +1,5 @@
-import { useDispatch } from "react-redux";
+import React from "react";
+import {useDispatch, useSelector} from "react-redux";
 import { CONSTANTS } from "../data/constants";
 import { BudgetModel } from "../models/budget.model";
 import { TransactionsModel } from "../models/transactions.model";
@@ -11,26 +12,51 @@ import {
 import { getRandomItemFromList } from "../utils/array";
 import {AccountsModel} from "../models/accounts.model";
 import {appendAccountsState, removeAccountsFromState, replaceAccountsInState} from "../store/slices/accounts.slice";
+import axios from "axios";
+import {fireAuth} from "../utils/firebase";
+import {signInWithCustomToken} from "@firebase/auth";
+import {selectAuthUserIdTokenState, setAuthUserDocument} from "../store/slices/auth.slice";
+
 
 export default function useApi() {
+  const httpInstance = axios.create({
+    baseURL: 'http://localhost:4000',
+    httpAgent: 'Inpensar/web'
+  });
+
   const dispatch = useDispatch();
+  const idToken = useSelector(selectAuthUserIdTokenState);
+
+  React.useEffect(() => {
+    httpInstance.defaults.headers.common['Authorization'] = `Bearer ${idToken}`;
+  }, [idToken]);
+
+  async function createUserAccount(userData: any) {
+    const {data} = await httpInstance.post('/users', userData);
+    console.log(data);
+    const authUser = await signInWithCustomToken(fireAuth, data['data'].authToken);
+
+    dispatch(setAuthUserDocument(data['data'].results))
+
+    return authUser;
+  }
   /**
    *  ===== TRANSACTIONS =====
    */
-  function addTransaction(
+  async function addTransaction(
     transaction: TransactionsModel
   ): Promise<TransactionsModel> {
     // Add transaction to database....
     dispatch(prependTransactionState(transaction));
-    return Promise.resolve(transaction);
+    return transaction;
   }
 
-  function updateTransaction(
+  async function updateTransaction(
     transaction: TransactionsModel
   ): Promise<TransactionsModel> {
     // Update transaction in database....
     dispatch(replaceTransactionInState(transaction));
-    return Promise.resolve(transaction);
+    return transaction;
   }
 
   function deleteTransaction(transaction: TransactionsModel) {
@@ -89,6 +115,7 @@ export default function useApi() {
   }
 
   return {
+    createUserAccount,
     addTransaction,
     updateTransaction,
     deleteTransaction,

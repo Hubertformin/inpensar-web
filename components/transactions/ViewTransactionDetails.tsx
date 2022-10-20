@@ -32,6 +32,8 @@ import { formatDate } from "../../utils/date";
 import { BsArrowRightShort } from "react-icons/bs";
 import useApi from "../../hooks/useApi";
 import EditTransaction from "./EditTransaction";
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface ViewTransactionDetailsProps {
   open: boolean;
@@ -85,9 +87,10 @@ export default function ViewTransactionDetails({
       <Modal
         onClose={closeModal}
         isOpen={disclosure.isOpen}
-        size="xl"
+        size="2xl"
         closeOnOverlayClick={false}
         closeOnEsc={false}
+        scrollBehavior={'inside'}
         colorScheme={"purple"}
         isCentered={true}
       >
@@ -171,32 +174,36 @@ export default function ViewTransactionDetails({
               <Divider />
             )}
             <div className="body pt-8">
-              {selectedTransaction?.notes && (
-                <div className="item mb-6">
-                  <p className="label font-bold text-sm mb-1">Notes</p>
-                  <p className="mb-0">{selectedTransaction?.notes}</p>
-                </div>
-              )}
               {selectedTransaction?.wallet && (
-                <div className="item mb-6">
-                  <p className="label font-bold text-sm mb-1">Wallet</p>
-                  <div className="flex space-x-4">
-                    <div className="shrink-0">
-                      <Avatar
-                        icon={<IoWalletOutline size={24} />}
-                        bg="blackAlpha.100"
-                        color="black"
-                      />
-                    </div>
-                    <div>
-                      <div className="font-medium text-black">
-                        {selectedTransaction?.wallet.name}
+                  <div className="item mb-6">
+                    <p className="label font-bold text-sm mb-3">Wallet</p>
+                    <div className="flex space-x-4">
+                      <div className="shrink-0">
+                        <Avatar
+                            icon={<IoWalletOutline size={24} />}
+                            bg="blackAlpha.100"
+                            color="black"
+                        />
                       </div>
-                      <p className="text-sm text-slate-500">
-                        {formatCurrency(selectedTransaction?.wallet.amount)}
-                      </p>
+                      <div>
+                        <div className="font-medium text-black">
+                          {selectedTransaction?.wallet.name}
+                        </div>
+                        <p className="text-sm text-slate-500">
+                          {formatCurrency(selectedTransaction?.wallet.amount)}
+                        </p>
+                      </div>
                     </div>
                   </div>
+              )}
+
+              {selectedTransaction?.notes && (
+                <div className="item mb-6">
+                  <p className="label font-bold text-sm border-b invisible pb-3 mb-4">Notes</p>
+                  {/*<p className="mb-0">{selectedTransaction?.notes}</p>*/}
+                  <ReactMarkdown className="markdown-body" remarkPlugins={[remarkGfm]}>
+                    {selectedTransaction?.notes}
+                  </ReactMarkdown>
                 </div>
               )}
             </div>
