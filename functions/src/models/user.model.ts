@@ -58,7 +58,7 @@ const UserSchema = new Schema<UserBaseDocument>(
       currency: String,
       language: String,
       reportsFrequency: {
-        type: UserReportsFrequency,
+        type: String,
         default: UserReportsFrequency.WEEKLY,
       },
     },

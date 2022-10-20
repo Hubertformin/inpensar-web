@@ -4,11 +4,15 @@ import { HYDRATE } from "next-redux-wrapper";
 
 const initialState = {
     data: {
-        name: 'Hubert Formin',
-        email: 'hformin@gmail.com'
+        name: '',
+        email: '',
+        _id: '',
+        uid: '',
+        settings: {
+            language: ''
+        }
     },
     idToken: '',
-    document: null
 };
 
 
@@ -17,13 +21,10 @@ export const authUserSlice = createSlice({
     initialState,
     reducers: {
         setAuthUserState(state, action) {
-            state.data = action.payload;
+            Object.assign(state.data, action.payload);
         },
         setIdTokenState(state, action) {
             state.idToken = action.payload;
-        },
-        setAuthUserDocument(state, action) {
-            state.document = action.payload;
         },
         clearAuthUser(state, action) {
             state.data = null;

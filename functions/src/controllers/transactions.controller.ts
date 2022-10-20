@@ -16,7 +16,7 @@ export const getUsersTransactionsController = createController(async (req, res) 
         .skip(startIndex)
         .limit(limit)
         .exec();
-    // res.status(200).json({data, success: true});
+    // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: transactions, count }, message: "" };
 });
 
@@ -28,7 +28,7 @@ export const createTransactionController = createController(async (req, res) => 
     const transaction = new Transaction({ ...transactionData, owner: req.$currentUser$ });
 
     await transaction.save();
-    // res.status(200).json({data, success: true});
+    // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: transaction.toObject(), }, message: "" };
 });
 

@@ -1,11 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../";
 import { HYDRATE } from "next-redux-wrapper";
-import {Data} from "../../data";
 
 const initialState = {
-    data: [Data.project],
-    activeProject: Data.project
+    data: [],
+    activeProject: null
 };
 
 
@@ -14,9 +13,9 @@ export const projectsSlice = createSlice({
     initialState,
     reducers: {
         setProjectsState(state, action) {
-            state.data = action.payload;
+            Object.assign(state.data, action.payload);
         },
-        setSelectedProjectState(state, action) {
+        setActiveProjectState(state, action) {
             state.activeProject = action.payload;
         },
         appendProjectState(state, action) {
@@ -55,7 +54,7 @@ export const {
     setProjectState,
     appendProjectState,
     prependProjectState,
-    setSelectedProjectState,
+    setActiveProjectState,
     replaceProjectInState,
     removeProjectFromState
 } = projectsSlice.actions;

@@ -794,7 +794,7 @@ define(['exports'], (function (exports) { 'use strict';
        * This is useful to cache resources loaded on the page prior to when the
        * service worker started controlling it.
        *
-       * The format of the message data sent from the window should be as follows.
+       * The format of the message .data sent from the window should be as follows.
        * Where the `urlsToCache` array may consist of URL strings or an array of
        * URL string + `requestInit` object (the same as you'd pass to `fetch()`).
        *
@@ -816,7 +816,7 @@ define(['exports'], (function (exports) { 'use strict';
       addCacheListener() {
         // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
         self.addEventListener('message', event => {
-          // event.data is type 'any'
+          // event..data is type 'any'
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           if (event.data && event.data.type === 'CACHE_URLS') {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

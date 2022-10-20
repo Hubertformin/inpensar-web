@@ -7,13 +7,13 @@ import Project from "../models/projects.model";
 export const getUsersController = createController(async (req, res) => {
     // get all User
     const users = await User.find().exec();
-    // res.status(200).json({data, success: true});
+    // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: users }, message: "Users fetched" };
 });
 
 export const getCurrentUserController = createController(async (req, res) => {
     // get all User
-    // res.status(200).json({data, success: true});
+    // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: req.$currentUser$ }, message: "User fetched" };
 });
 
@@ -23,7 +23,7 @@ export const getUserByUid = createController(async (req, res) => {
         .findOne({ uid: req.params.uid })
         .populate('wallets')
         .exec();
-    // res.status(200).json({data, success: true});
+    // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: user }, message: "User fetched" };
 });
 
@@ -33,7 +33,7 @@ export const getUserById = createController(async (req, res) => {
         .findOne({ uid: req.params.uid })
         .populate('wallets')
         .exec();
-    // res.status(200).json({data, success: true});
+    // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: user }, message: "User fetched" };
 });
 
@@ -83,6 +83,6 @@ export const createUserController = createController(async (req, res) => {
 export const updateUserController = createController(async (req, res) => {
     // get all User
     const data = await User.find();
-    // res.status(200).json({data, success: true});
+    // res.status(200).json({.data, success: true});
     return { statusCode: 200, data, message: "Users Updated" };
 });

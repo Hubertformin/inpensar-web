@@ -24,7 +24,10 @@ interface TransactionBaseDocument {
 const TransactionSchema = new Schema<TransactionBaseDocument>(
     {
         category: {
-            type: Object,
+            type: [{
+                type: Types.ObjectId,
+                ref: "categories",
+            }],
             required: true,
         },
         amount: {

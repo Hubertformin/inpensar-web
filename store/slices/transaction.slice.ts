@@ -88,7 +88,7 @@ export const transactionsSlice = createSlice({
       state.insights.balance = action.payload.insights.balance;
     },
     appendTransactionState(state, action) {
-      // computeTransactionState(state,[...state.data, action.payload])
+      // computeTransactionState(state,[...state..data, action.payload])
       state.data = [...state.data, action.payload];
       computeInsights(state, action.payload, "ADD");
     },

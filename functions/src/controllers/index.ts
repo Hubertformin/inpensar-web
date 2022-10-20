@@ -26,7 +26,7 @@ export function createController(controller: ControllerHandler) {
             if ((err as any).code === 11000) {
                 const duplicateKeys = Object.keys((err as any).keyPattern);
                 return res.status(409).json({
-                    message: "There was an error creating the user",
+                    message: `The ${duplicateKeys.join(",")} is in use by another user`,
                     errorText: `The ${duplicateKeys.join(",")} is in use by another user`,
                 });
             }

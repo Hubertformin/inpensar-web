@@ -30,7 +30,7 @@ const accountSchema = new Schema<AccountBaseDocument>(
             default: 0,
         },
         type: {
-            type: AccountType,
+            type: String,
             default: AccountType.CHECKING,
         },
         photoURL: String,

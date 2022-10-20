@@ -247,7 +247,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
         break;
     }
     /**
-     * Add data to api
+     * Add .data to api
      */
     setIsLoading(true);
     api

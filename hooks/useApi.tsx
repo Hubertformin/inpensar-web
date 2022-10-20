@@ -15,12 +15,15 @@ import {appendAccountsState, removeAccountsFromState, replaceAccountsInState} fr
 import axios from "axios";
 import {fireAuth} from "../utils/firebase";
 import {signInWithCustomToken} from "@firebase/auth";
-import {selectAuthUserIdTokenState, setAuthUserDocument} from "../store/slices/auth.slice";
+import {selectAuthUserIdTokenState, setAuthUserState} from "../store/slices/auth.slice";
+import {prependProjectState, setActiveProjectState} from "../store/slices/projects.slice";
+import {UserModel} from "../models/user.model";
+import {ProjectModel} from "../models/project.model";
 
 
 export default function useApi() {
   const httpInstance = axios.create({
-    baseURL: 'http://localhost:4000',
+    baseURL: 'http://localhost:5001/inpensar-enchird/us-central1/api',
     httpAgent: 'Inpensar/web'
   });
 
@@ -28,17 +31,53 @@ export default function useApi() {
   const idToken = useSelector(selectAuthUserIdTokenState);
 
   React.useEffect(() => {
-    httpInstance.defaults.headers.common['Authorization'] = `Bearer ${idToken}`;
+    if (idToken) {
+      httpInstance.defaults.headers.common['Authorization'] = `Bearer ${idToken}`;
+    }
   }, [idToken]);
 
-  async function createUserAccount(userData: any) {
-    const {data} = await httpInstance.post('/users', userData);
-    console.log(data);
+  async function createUserAccount(payload: any) {
+    const {data} = await httpInstance.post('/users', payload);
     const authUser = await signInWithCustomToken(fireAuth, data['data'].authToken);
+    const userData = data['data'].results as UserModel;
+    dispatch(setAuthUserState({
+      _id: userData._id,
+      name: authUser.user.displayName,
+      email: authUser.user.email,
+      settings: userData.settings,
+      uid: authUser.user.uid
+    }));
+    // set default active project
+    dispatch(prependProjectState(data['data'].project));
+    dispatch(setActiveProjectState(data['data'].project));
 
-    dispatch(setAuthUserDocument(data['data'].results))
+    return { authUser, project: data['data'].project };
+  }
 
-    return authUser;
+  async function getAndSetCurrentUsersData({idToken = null}) {
+    const {data} = await httpInstance.get('/users/me', {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    const userData = data['data'].results;
+    dispatch(setAuthUserState({
+      _id: userData._id,
+      name: userData.name,
+      email: userData.email,
+      settings: userData.settings,
+      uid: userData.uid
+    }));
+    return userData;
+  }
+  /**
+   *  ===== PROJECTS =====
+   */
+  async function getAndSetActiveProject({projectId, idToken }): Promise<ProjectModel> {
+    const {data} = await httpInstance.get(`/projects/${projectId}`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    const projectData = data['data'].results;
+    dispatch(setActiveProjectState({...projectData}));
+    return projectData;
   }
   /**
    *  ===== TRANSACTIONS =====
@@ -116,6 +155,8 @@ export default function useApi() {
 
   return {
     createUserAccount,
+    getAndSetCurrentUsersData,
+    getAndSetActiveProject,
     addTransaction,
     updateTransaction,
     deleteTransaction,

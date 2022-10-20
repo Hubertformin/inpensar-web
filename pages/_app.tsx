@@ -7,19 +7,42 @@ import Head from "next/head";
 import NextNProgress from "nextjs-progressbar";
 import {useEffect} from "react";
 import {fireAuth} from "../utils/firebase";
-import {useDispatch} from "react-redux";
-import {clearAuthUser, setAuthUserState, setIdTokenState} from "../store/slices/auth.slice";
+import {useDispatch, useSelector} from "react-redux";
+import {clearAuthUser, selectAuthUserState, setAuthUserState, setIdTokenState} from "../store/slices/auth.slice";
+import useApi from "../hooks/useApi";
+import {useRouter} from "next/router";
+import {selectActiveProjectState} from "../store/slices/projects.slice";
 
 function MyApp({ Component, pageProps }) {
     const dispatch = useDispatch();
+    const api = useApi();
+    const router = useRouter();
+    const authUser = useSelector(selectAuthUserState);
+    const activeProject = useSelector(selectActiveProjectState);
+
     useEffect(() => {
         // Listen to authstate changes
         fireAuth.onAuthStateChanged(async (user) => {
             // get id token
             if (user) {
                 const idToken = await user.getIdToken();
-                dispatch(setAuthUserState(user));
-                dispatch(setIdTokenState(idToken));
+                await dispatch(setIdTokenState(idToken));
+
+                if (!authUser._id) {
+                    // get user's data from server
+                    await api.getAndSetCurrentUsersData({idToken});
+                }
+                console.log(activeProject)
+                if (!activeProject) {
+                    await api.getAndSetActiveProject({ projectId: router.query.projectId.toString(), idToken })
+                }
+                // dispatch(setAuthUserState({
+                //     _id: null,
+                //     name: user.displayName,
+                //     email: user.email,
+                //     settings: {},
+                //     uid: user.uid
+                // }));
             } else {
                 // in case of log out
                 console.log(user);

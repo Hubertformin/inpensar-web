@@ -11,10 +11,12 @@ import {useSelector} from "react-redux";
 import {selectAuthUserState} from "../../store/slices/auth.slice";
 import {selectActiveProjectState} from "../../store/slices/projects.slice";
 import { AiOutlinePieChart } from "react-icons/ai";
+import { formatDate } from "../../utils/date";
 
 export default function LeftSideNav() {
   const authUser = useSelector(selectAuthUserState);
   const activeProject = useSelector(selectActiveProjectState);
+  console.log(activeProject)
   
   return (
     <div className={styles.sideNavContainer}>
@@ -33,20 +35,20 @@ export default function LeftSideNav() {
           <div className="leading flex align-items-center">
             <Avatar
               size="lg"
-              name="Personal Finance"
+              name={activeProject?.name}
               bg="teal.500"
               color="white"
             />
             <div className="text ml-2">
-              <h2 className={styles.projectTitle}>Personal Finance</h2>
-              <p className={styles.projectDescription}>Created on 15/04/2022</p>
+              <h2 className={styles.projectTitle}>{activeProject?.name}</h2>
+              <p className={styles.projectDescription}>Created {formatDate(activeProject?.createdAt, 'MMM D, YYYY')}</p>
             </div>
           </div>
         </div>
       </div>
       <nav className={styles.nav}>
         <>
-          <ActiveLink href={`/projects/${activeProject?._id}/dashboard`} activeClassName={styles.activeLink}>
+          <ActiveLink href={`/projects/${activeProject?.id}/dashboard`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
                 <TbLayoutDashboard size={24} />
@@ -57,7 +59,7 @@ export default function LeftSideNav() {
         </>
         <>
           <ActiveLink
-            href={`/projects/${activeProject?._id}/transactions`}
+            href={`/projects/${activeProject?.id}/transactions`}
             activeClassName={styles.activeLink}
           >
             <div className={styles.navTab}>
@@ -69,7 +71,7 @@ export default function LeftSideNav() {
           </ActiveLink>
         </>
         <>
-          <ActiveLink href={`/projects/${activeProject?._id}/accounts`} activeClassName={styles.activeLink}>
+          <ActiveLink href={`/projects/${activeProject?.id}/accounts`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
                 <IoWalletOutline size={24} />
@@ -85,7 +87,7 @@ export default function LeftSideNav() {
         {/*    <span className={styles.navTabText}>Reports</span>*/}
         {/*</div>*/}
         <>
-          <ActiveLink href={`/projects/${activeProject?._id}/budgets`} activeClassName={styles.activeLink}>
+          <ActiveLink href={`/projects/${activeProject?.id}/budgets`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
                 <AiOutlinePieChart size={24} />
@@ -95,7 +97,7 @@ export default function LeftSideNav() {
           </ActiveLink>
         </>
         <>
-          <ActiveLink href={`/projects/${activeProject?._id}/settings`} activeClassName={styles.activeLink}>
+          <ActiveLink href={`/projects/${activeProject?.id}/settings`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
               <span className={styles.navTabIcon}>
                 <FiSettings size={24} />

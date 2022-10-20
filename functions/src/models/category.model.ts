@@ -22,6 +22,7 @@ const categorySchema = new Schema<CategoryBaseDocument>({
         type: String,
     },
     type: {
+        type: String,
         required: true,
     },
     color: String,

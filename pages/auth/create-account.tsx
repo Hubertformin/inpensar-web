@@ -1,6 +1,6 @@
 import React from "react";
 import {Field, Form, Formik, FormikHelpers} from "formik";
-import {Button, FormControl, FormErrorMessage, FormLabel, Input} from "@chakra-ui/react";
+import {Button, FormControl, FormErrorMessage, FormLabel, Input, useToast} from "@chakra-ui/react";
 import {FcGoogle} from "react-icons/fc";
 import styles from '../../styles/Auth.module.scss';
 import Link from "next/link";
@@ -8,12 +8,15 @@ import axios from "axios";
 import Select from "react-select";
 import {getSelectOptions} from "../../utils/array";
 import useApi from "../../hooks/useApi";
+import {useRouter} from "next/router";
 
 export default function CreateAccountView() {
     const [countries, setCountries] = React.useState<any[]>([]);
     const [currencies, setCurrencies] = React.useState<any[]>([]);
     const [selectedCurrencyControl, setSelectedCurrencyControl] = React.useState<{ label: string, value: string }>();
     const api = useApi();
+    const router = useRouter();
+    const toast = useToast();
 
     React.useEffect(() => {
         getCountriesAndCurrencies();
@@ -70,15 +73,21 @@ export default function CreateAccountView() {
     const onLogin = (values, actions: FormikHelpers<any>) => {
         values['country'] = countries.find(country => country.alpha2Code == values.country.alpha2Code);
         values['currency'] = currencies.find(currency => currency.code == values.currency.value);
-        console.log(values)
-        // api.createUserAccount(values)
-        //     .then((data) => {
-        //         console.log(data);
-        //     }).catch(() => {
-        //
-        // }).finally(() => {
-        //     actions.setSubmitting(false);
-        // })
+
+        api.createUserAccount(values)
+            .then((data) => {
+                console.log(data);
+                // route to transactions list
+                router.push(`/projects/${data.project.id}/transactions`)
+            }).catch((e) => {
+                console.error(e);
+                toast({
+                    title: 'We are unable to create your account',
+                    description: e.response?.data?.message || 'There was an error creating your account. Please try again later',
+                    status: 'error'
+                });
+            actions.setSubmitting(false);
+        });
     }
 
     return (

@@ -104,7 +104,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
     }
 
     actions.setSubmitting(false);
-    // construct budget data
+    // construct budget .data
     let budgetData: BudgetModel;
 
     // add to database

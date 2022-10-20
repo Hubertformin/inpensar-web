@@ -3,7 +3,8 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "set:env": "export GOOGLE_APPLICATION_CREDENTIALS=\"/Users/hubertformin/Documents/Keys/inpensar-enchird-firebase-adminsdk.json\"",
+    "serve": "npm run set:env && npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",

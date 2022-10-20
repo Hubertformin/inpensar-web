@@ -244,7 +244,7 @@ export default function EditTransaction({
     // pass the id to the functions
     transactionData["_id"] = transaction._id;
     /**
-     * Add data to api
+     * Add .data to api
      */
     console.log(transactionData);
     setIsLoading(true);
