@@ -2,6 +2,7 @@
 const path = require('path');
 const runtimeCaching = require('next-pwa/cache');
 const isDev = process.env.NODE_ENV === 'development';
+const removeImports = require('next-remove-imports')();
 
 const withPWA = require('next-pwa')({
   dest: 'public',
@@ -11,8 +12,8 @@ const withPWA = require('next-pwa')({
   runtimeCaching
 });
 
-module.exports = withPWA({
+module.exports = withPWA(removeImports({
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
-});
+}));
