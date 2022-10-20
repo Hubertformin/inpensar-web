@@ -39,6 +39,14 @@ import {
 } from "../../models/transactions.model";
 import useApi from "../../hooks/useApi";
 import { getSelectOptions } from "../../utils/array";
+import "@uiw/react-md-editor/dist/mdeditor.min.css";
+import "@uiw/react-markdown-preview/dist/markdown.min.css";
+import dynamic from "next/dynamic";
+
+const MDEditor = dynamic(
+    () => import("@uiw/react-md-editor"),
+    { ssr: false }
+);
 
 interface AddTransactionProps {
   open: boolean;
@@ -73,6 +81,9 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const wallets = useSelector(selectAccountsState);
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
+  const [expenseNotes, setExpenseNotes] = React.useState("");
+  const [transferNotes, setTransferNotes] = React.useState("");
+  const [incomeNotes, setIncomeNotes] = React.useState("");
   const toast = useToast();
   const api = useApi();
 
@@ -97,6 +108,10 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
       amount: null,
       date: new Date(),
     });
+    // reset notes form controls
+    setExpenseNotes('');
+    setIncomeNotes('');
+    setTransferNotes('');
   };
 
   const openModal = React.useCallback(() => {
@@ -200,7 +215,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
           _id: (100 * Math.random()).toString(),
           amount: parseInt(form.values.amount.toString().trim()),
           category: form.values.category,
-          notes: form.values.notes || "",
+          notes: expenseNotes || "",
           type: TransactionType.EXPENSE,
           wallet: getWalletById(form.values.account),
           date: (form.values.date as Date).toISOString(),
@@ -211,7 +226,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
           _id: (100 * Math.random()).toString(),
           amount: parseInt(form.values.amount.toString().trim()),
           category: form.values.category,
-          notes: form.values.notes || "",
+          notes: incomeNotes || "",
           type: TransactionType.INCOME,
           wallet: getWalletById(form.values.account),
           date: (form.values.date as Date).toISOString(),
@@ -223,7 +238,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
           amount: parseInt(form.values.amount.toString().trim()),
           from: getWalletById(form.values.from),
           to: getWalletById(form.values.to),
-          notes: form.values.notes || "",
+          notes: transferNotes || "",
           type: TransactionType.TRANSFER,
           date: (form.values.date as Date).toISOString(),
         };
@@ -249,7 +264,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
     <Modal
       onClose={closeModal}
       isOpen={disclosure.isOpen}
-      size="2xl"
+      size="3xl"
       closeOnOverlayClick={false}
       closeOnEsc={false}
       blockScrollOnMount={false}
@@ -345,12 +360,17 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
                 </FormControl>
                 <FormControl className="mb-4">
                   <FormLabel>Notes (Optional)</FormLabel>
-                  <Textarea
-                    name="notes"
-                    value={expenseForm.values.notes}
-                    onChange={expenseForm.handleChange}
-                    placeholder="Notes"
-                  />
+                  {/*<Textarea*/}
+                  {/*  name="notes"*/}
+                  {/*  value={expenseForm.values.notes}*/}
+                  {/*  onChange={expenseForm.handleChange}*/}
+                  {/*  placeholder="Notes"*/}
+                  {/*/>*/}
+                  <div data-color-mode="light">
+                    <div className="wmde-markdown-var"> </div>
+                    <MDEditor value={expenseNotes} preview="edit" onChange={setExpenseNotes} />
+                  </div>
+
                 </FormControl>
               </TabPanel>
 
@@ -410,12 +430,16 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
                 </FormControl>
                 <FormControl className="mb-4">
                   <FormLabel>Notes (Optional)</FormLabel>
-                  <Textarea
-                    name="notes"
-                    value={incomeForm.values.notes}
-                    onChange={incomeForm.handleChange}
-                    placeholder="Notes"
-                  />
+                  {/*<Textarea*/}
+                  {/*  name="notes"*/}
+                  {/*  value={incomeForm.values.notes}*/}
+                  {/*  onChange={incomeForm.handleChange}*/}
+                  {/*  placeholder="Notes"*/}
+                  {/*/>*/}
+                  <div data-color-mode="light">
+                    <div className="wmde-markdown-var"> </div>
+                    <MDEditor value={incomeNotes} preview="edit" onChange={setIncomeNotes} />
+                  </div>
                 </FormControl>
               </TabPanel>
 
@@ -481,12 +505,16 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
                 </FormControl>
                 <FormControl className="mb-4">
                   <FormLabel>Notes (Optional)</FormLabel>
-                  <Textarea
-                    name="notes"
-                    value={transferForm.values.notes}
-                    onChange={transferForm.handleChange}
-                    placeholder="Notes"
-                  />
+                  {/*<Textarea*/}
+                  {/*  name="notes"*/}
+                  {/*  value={transferForm.values.notes}*/}
+                  {/*  onChange={transferForm.handleChange}*/}
+                  {/*  placeholder="Notes"*/}
+                  {/*/>*/}
+                  <div data-color-mode="light">
+                    <div className="wmde-markdown-var"> </div>
+                    <MDEditor value={transferNotes} preview="edit" onChange={setTransferNotes} />
+                  </div>
                 </FormControl>
               </TabPanel>
             </TabPanels>
