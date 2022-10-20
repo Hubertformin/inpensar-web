@@ -109,7 +109,7 @@ export default function LeftSideNav() {
         <div className="leading flex">
           <Avatar
             size="md"
-            name={authUser.name}
+            name={authUser?.name}
             bg="orange.500"
             color="white"
             src={
@@ -119,8 +119,8 @@ export default function LeftSideNav() {
             <AvatarBadge boxSize='1.25em' bg='green.500' />
           </Avatar>
           <div className="text ml-2">
-            <h2 className={styles.projectFooterTitle}>{authUser.name}</h2>
-            <p className={styles.projectDescription}>{authUser.email}</p>
+            <h2 className={styles.projectFooterTitle}>{authUser?.name}</h2>
+            <p className={styles.projectDescription}>{authUser?.email}</p>
           </div>
         </div>
         <div className="actions">

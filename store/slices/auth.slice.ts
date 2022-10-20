@@ -7,7 +7,8 @@ const initialState = {
         name: 'Hubert Formin',
         email: 'hformin@gmail.com'
     },
-    idToken: 'ey34dsdfsd'
+    idToken: '',
+    document: null
 };
 
 
@@ -20,6 +21,9 @@ export const authUserSlice = createSlice({
         },
         setIdTokenState(state, action) {
             state.idToken = action.payload;
+        },
+        setAuthUserDocument(state, action) {
+            state.document = action.payload;
         },
         clearAuthUser(state, action) {
             state.data = null;
@@ -43,6 +47,7 @@ export const authUserSlice = createSlice({
 export const {
     setAuthUserState,
     setIdTokenState,
+    setAuthUserDocument,
     clearAuthUser
 } = authUserSlice.actions;
 

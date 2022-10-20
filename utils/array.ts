@@ -21,7 +21,7 @@ export function getSelectOptions(
   labelProp: string,
   valueProp: string
 ): Array<{ value: string; label: string }> {
-  return arr.map((w) => ({ label: w[labelProp], value: w[valueProp] }));
+  return arr.map((w: any) => ({ label: w[labelProp], value: w[valueProp] }));
 }
 
 export function getRandomItemFromList<T>(list: T[]): T {

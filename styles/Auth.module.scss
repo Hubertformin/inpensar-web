@@ -1,138 +1,52 @@
-.auth-container {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25),
-  0 10px 10px rgba(0,0,0,0.22);
+.pageView {
+  height: 100vh;
+  width: 100vw;
   position: relative;
-  overflow: hidden;
-  width: 868px;
-  max-width: 100%;
-  min-height: 480px;
-  height: 560px;
-}
-
-.form-container {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  transition: all 0.6s ease-in-out;
-}
-
-.sign-in-container {
-  left: 0;
-  width: 50%;
-  z-index: 2;
-}
-
-.auth-container.right-panel-active .sign-in-container {
-  transform: translateX(100%);
-}
-
-.sign-up-container {
-  left: 0;
-  width: 50%;
-  opacity: 0;
-  z-index: 1;
-  background: var(--theme-fg);
-}
-
-.auth-container.right-panel-active .sign-up-container {
-  transform: translateX(100%);
-  opacity: 1;
-  z-index: 5;
-  animation: show 0.6s;
-}
-
-@keyframes show {
-  0%, 49.99% {
-    opacity: 0;
-    z-index: 1;
-  }
-
-  50%, 100% {
-    opacity: 1;
-    z-index: 5;
-  }
-}
-
-.overlay-container {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-  transition: transform 0.6s ease-in-out;
-  z-index: 100;
-}
-
-.auth-container.right-panel-active .overlay-container{
-  transform: translateX(-100%);
-}
-
-.overlay {
-  background: var(--theme-base);
-  background: -webkit-linear-gradient(to right, var(--theme-base), var(--theme-base-dark));
-  background: linear-gradient(to right, var(--theme-base), var(--theme-base-dark));
+  background-image: url('https://firebasestorage.googleapis.com/v0/b/snag-spreed-us.appspot.com/o/placeholders%2Fcover2.jpg?alt=media&token=11c9cf9e-feb1-4bfc-a6b3-841d125df307');
   background-repeat: no-repeat;
+  background-position: center;
   background-size: cover;
-  background-position: 0 0;
-  color: #FFFFFF;
-  position: relative;
-  left: -100%;
-  height: 100%;
-  width: 200%;
-  transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
 }
 
-.auth-container.right-panel-active .overlay {
-  transform: translateX(50%);
-}
-
-.overlay-panel {
+.pageOverlay {
   position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 0 40px;
-  text-align: center;
   top: 0;
-  height: 100%;
-  width: 50%;
-  transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
-}
-
-.overlay-left {
-  transform: translateX(-20%);
-}
-
-.auth-container.right-panel-active .overlay-left {
-  transform: translateX(0);
-}
-
-.overlay-right {
+  left: 0;
   right: 0;
-  transform: translateX(0);
-}
-
-.auth-container.right-panel-active .overlay-right {
-  transform: translateX(20%);
-}
-
-.social-container {
-  margin: 20px 0;
-}
-
-.social-container a {
-  border: 1px solid #DDDDDD;
-  border-radius: 50%;
-  display: inline-flex;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.78);
+  display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 5px;
+}
+
+.formContainer {
+  height: 500px;
+  width: 760px;
+  background-color: var(--theme-fg);
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.createAccountForm {
+  // height: 600px;
+  width: 800px;
+  background-color: var(--theme-fg);
+  border-radius: 12px;
+}
+
+.form {
+
+}
+.formImage {
+  background-image: url('https://source.unsplash.com/random/1200×800/?budget');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-radius: 16px;
+}
+.logoImage {
   height: 40px;
-  width: 40px;
+  width: auto;
 }

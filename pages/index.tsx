@@ -10,7 +10,7 @@ export default function Home() {
       <main className="page-view px-8 py-16">
           <h1 className="text-4xl font-bold mb-6 text-center">Welcome to inpensar</h1>
           <div className="flex justify-center">
-              <Link href={'/app/dashboard'}>
+              <Link href={'/projects'}>
                   <Button>Continue to app</Button>
               </Link>
           </div>
