@@ -1,6 +1,17 @@
-## Inpensar web
-This is the web app for inpensar
+# Inpensar App
+This is the web application (Front-end + Back-end) for inpensar. Inpensar is a financial tracker, that tracks expenses, manages budgets & accounts.
+The backend code lies int the `functions` directory. It is an express app running on firebase cloud functions.
 
+### Features
+- Track expenses
+- Manage budgets
+- Manager wallets & accounts
+- Analytics on financial habits
+
+
+## Screenshots
+
+## How to Install
 First, run the development server:
 
 ```bash
