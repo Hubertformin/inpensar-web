@@ -1,5 +1,5 @@
 # Inpensar App
-This is the web application (Front-end + Back-end) for inpensar. Inpensar is a financial tracker, that tracks expenses, manages budgets & accounts.
+Inpensar is a financial tracker, that tracks expenses, manages budgets & accounts. This is a progressive web application (PWA) with both the Front-end and Back-end code
 The backend code lies int the `functions` directory. It is an express app running on firebase cloud functions.
 
 ### Features
@@ -8,6 +8,15 @@ The backend code lies int the `functions` directory. It is an express app runnin
 - Manager wallets & accounts
 - Analytics on financial habits
 
+## Languages & Framworks
+- Javascript / Typescript
+- SCSS
+- Nex.js
+- Firebase
+- Express
+- PWA
+- Chakra-UI
+- Redux
 
 ## Screenshots
 [![Screenshots](https://github.com/Hubertformin/inpensar-web/blob/main/screenshots/transactions.png?raw=true)]()

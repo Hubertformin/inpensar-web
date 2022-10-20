@@ -22,7 +22,8 @@ function MyApp({ Component, pageProps }) {
                 dispatch(setIdTokenState(idToken));
             } else {
                 // in case of log out
-                dispatch(clearAuthUser(null));
+                console.log(user);
+               //  dispatch(clearAuthUser(null));
             }
         }, (err) => {
             console.error(err);
