@@ -23,7 +23,7 @@ export function BudgetTile({ budget, isSummary = false, onClick }: BudgetTilePro
   React.useEffect(() => {
     setExpenditurePercent(calculateBudgetExpenditurePercentage(budget));
     setIsExceeded(budget.amountSpent > budget.amount);
-  }, [])
+  }, [budget])
   return (
     <div
       onClick={onClick}
@@ -45,7 +45,7 @@ export function BudgetTile({ budget, isSummary = false, onClick }: BudgetTilePro
           </h3>
         </div>
       </div>
-      {!isSummary && <div className="categories text-slate-500 w-96 truncate pr-6">
+      {!isSummary && <div title={getListTextOfCategories(budget.categories)} className="categories text-slate-500 w-96 truncate pr-6">
         {getListTextOfCategories(budget.categories)}
       </div>}
       <div className={`${styles.containerStyles} mt-3 mb-4`} style={{...(isSummary && {height: 4})}}>

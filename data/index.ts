@@ -349,7 +349,7 @@ const transactions: TransactionsModel[] = [
     },
     notes: "Bought Malaria drugs",
     type: TransactionType.EXPENSE,
-    wallet: {
+    account: {
       _id: "1",
       name: "Mobile Money",
       amount: 35000,
@@ -368,7 +368,7 @@ const transactions: TransactionsModel[] = [
     },
     notes: "Received payments from Che",
     type: TransactionType.INCOME,
-    wallet: {
+    account: {
       _id: "2",
       name: "UBA",
       amount: 45000,
@@ -387,7 +387,7 @@ const transactions: TransactionsModel[] = [
     },
     notes: "Enchird Inc Salary",
     type: TransactionType.INCOME,
-    wallet: {
+    account: {
       _id: "1",
       name: "Mobile Money",
       amount: 35000,
@@ -406,7 +406,7 @@ const transactions: TransactionsModel[] = [
     },
     notes: "Camtel Internet",
     type: TransactionType.EXPENSE,
-    wallet: {
+    account: {
       _id: "1",
       name: "Mobile Money",
       amount: 35000,
@@ -425,7 +425,7 @@ const transactions: TransactionsModel[] = [
     },
     notes: "Bought udemy courses",
     type: TransactionType.EXPENSE,
-    wallet: {
+    account: {
       _id: "2",
       name: "UBA",
       amount: 45000,
@@ -462,7 +462,7 @@ const budgets: BudgetModel[] = [
     categories: [expense_categories[2], expense_categories[3]],
     amountSpent: 6500,
     color: CONSTANTS.COLORS[2],
-    shouldResetEveryMonth: true,
+    resetsMonthly: true,
     owner: "YOU",
   },
   {
@@ -476,7 +476,7 @@ const budgets: BudgetModel[] = [
     ],
     amountSpent: 22500,
     color: CONSTANTS.COLORS[5],
-    shouldResetEveryMonth: true,
+    resetsMonthly: true,
     owner: "YOU",
   },
   {
@@ -486,7 +486,7 @@ const budgets: BudgetModel[] = [
     categories: [expense_categories[3]],
     amountSpent: 4000,
     color: CONSTANTS.COLORS[1],
-    shouldResetEveryMonth: true,
+    resetsMonthly: true,
     owner: "YOU",
   },
 ];

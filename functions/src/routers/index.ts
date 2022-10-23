@@ -3,9 +3,7 @@ import userRouter from "./user.router";
 import projectRouter from "./project.router";
 import CategoryRouter from "./category.router";
 import {withAuth, withCurrentUser} from "../middlewares/auth.middleware";
-import WallerRouter from "./wallet.router";
-import TransactionRouter from "./transaction.router";
-import budgetRouter from "./budget.router";
+import accountRouter from "./account.router";
 
 export function useControllers(app: Express) {
     // Routes
@@ -15,7 +13,5 @@ export function useControllers(app: Express) {
     app.use("/users", userRouter);
     app.use("/categories", CategoryRouter);
     app.use("/projects", projectRouter);
-    app.use("/projects/:projectId/transactions", TransactionRouter);
-    app.use("/projects/:projectId/budgets", budgetRouter);
-    app.use("/accounts", WallerRouter);
+    app.use("/accounts", accountRouter);
 }

@@ -1,5 +1,5 @@
-import React from "react";
-import { Avatar, Tab, TabList, Tabs } from "@chakra-ui/react";
+import React, {useState} from "react";
+import {Avatar, Grid, GridItem, Skeleton, SkeletonCircle, Tab, TabList, Tabs} from "@chakra-ui/react";
 import { BsArrowRightShort, BsGrid, BsPlus } from "react-icons/bs";
 import { TbDatabaseImport } from "react-icons/tb";
 import { BiTransfer } from "react-icons/bi";
@@ -15,6 +15,7 @@ import {
 import { formatDate } from "../../utils/date";
 import ViewTransactionDetails from "./ViewTransactionDetails";
 import TransactionAmount from "./TransactionAmount";
+import useApi from "../../hooks/useApi";
 
 function TransactionItem({
   transaction,
@@ -59,10 +60,10 @@ function TransactionItem({
       )}
       <div className={Styles.transactionItemTrailing}>
         <TransactionAmount transaction={transaction} />
-        {transaction.wallet && (
+        {transaction.account && (
           <p className="wallet text-right">
             <IoWalletOutline className={Styles.actionIcon} />
-            <small>{transaction.wallet.name}</small>
+            <small>{transaction.account.name}</small>
           </p>
         )}
       </div>
@@ -75,47 +76,61 @@ export default function TransactionsTable() {
   const [transactions, setTransactions] = React.useState<TransactionsModel[]>(
     []
   );
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
   const [openDetailsModal, setOpenDetailsModal] = React.useState(false);
+  const api = useApi();
   const [selectedTransaction, setSelectedTransaction] =
     React.useState<TransactionsModel | null>(null);
 
-  const loadTransactions = React.useCallback(
-    (tabIndex) => {
-      switch (tabIndex) {
-        case 0:
-        default:
-          setTransactions(transactionsState);
-          break;
-        case 1:
-          setTransactions(() =>
-            transactionsState.filter(
-              (transaction) => transaction.type === TransactionType.INCOME
-            )
-          );
-          break;
-        case 2:
-          setTransactions(() =>
-            transactionsState.filter(
-              (transaction) => transaction.type === TransactionType.EXPENSE
-            )
-          );
-          break;
-        case 3:
-          setTransactions(() =>
-            transactionsState.filter(
-              (transaction) => transaction.type === TransactionType.TRANSFER
-            )
-          );
-          break;
-      }
+  const loadTransactions = React.useCallback((tabIndex) => {
+      // Fetch data from api
+          switch (tabIndex) {
+              case 0:
+              default:
+                  setTransactions(transactionsState);
+                  break;
+              case 1:
+                  setTransactions(() =>
+                      transactionsState.filter(
+                          (transaction) => transaction.type === TransactionType.INCOME
+                      )
+                  );
+                  break;
+              case 2:
+                  setTransactions(() =>
+                      transactionsState.filter(
+                          (transaction) => transaction.type === TransactionType.EXPENSE
+                      )
+                  );
+                  break;
+              case 3:
+                  setTransactions(() =>
+                      transactionsState.filter(
+                          (transaction) => transaction.type === TransactionType.TRANSFER
+                      )
+                  );
+                  break;
+          }
     },
     [transactionsState]
   );
 
   React.useEffect(() => {
-    loadTransactions(activeTabIndex);
-  }, [loadTransactions, activeTabIndex]);
+      if (transactionsState.length == 0) {
+      api.getTransactions().then(() => setIsPageLoading(false));
+      }
+  }, []);
+
+  React.useEffect(() => {
+    if (transactionsState.length > 0) {
+      loadTransactions(activeTabIndex);
+    }
+    // else if (transactionsState.length > 0) {
+    //   setIsPageLoading(false);
+    // }
+      console.log(transactionsState)
+  }, [loadTransactions, transactionsState, activeTabIndex]);
 
   const onTabChange = (index: number) => {
     setActiveTabIndex(index);
@@ -129,7 +144,8 @@ export default function TransactionsTable() {
 
   return (
     <>
-      {transactions && transactions.length > 0 ? (
+      {isPageLoading && <PageLoadingSchema />}
+      {(!isPageLoading && transactions.length > 0) && (
         <Tabs colorScheme={"purple"} onChange={onTabChange}>
           <TabList>
             <Tab name="all">
@@ -161,7 +177,8 @@ export default function TransactionsTable() {
             })}
           </div>
         </Tabs>
-      ) : (
+      ) }
+      {(!isPageLoading && transactions.length == 0) &&(
         <div className={`emptyState w-max-50`}>
           <img
             className={`emptyStateImage mb-6`}
@@ -184,4 +201,57 @@ export default function TransactionsTable() {
       />
     </>
   );
+}
+
+function PageLoadingSchema() {
+  return (
+      <div className={'pt-10'}>
+        <Grid templateColumns='repeat(9, 1fr)' gap={6}>
+          <GridItem w='100%'>
+            <SkeletonCircle size='55' />
+          </GridItem>
+          <GridItem colSpan={8} w='100%'>
+            <Skeleton height={'20px'} />
+            <Skeleton mt='2' height={'25px'} />
+          </GridItem>
+        </Grid>
+        <Grid mt='8' templateColumns='repeat(9, 1fr)' gap={6}>
+          <GridItem w='100%'>
+            <SkeletonCircle size='55' />
+          </GridItem>
+          <GridItem colSpan={8} w='100%'>
+            <Skeleton height={'20px'} />
+            <Skeleton mt='2' height={'25px'} />
+          </GridItem>
+        </Grid>
+        <Grid mt='8' templateColumns='repeat(9, 1fr)' gap={6}>
+          <GridItem w='100%'>
+            <SkeletonCircle size='55' />
+          </GridItem>
+          <GridItem colSpan={8} w='100%'>
+            <Skeleton height={'20px'} />
+            <Skeleton mt='2' height={'25px'} />
+          </GridItem>
+        </Grid>
+        <Grid mt='8' templateColumns='repeat(9, 1fr)' gap={6}>
+          <GridItem w='100%'>
+            <SkeletonCircle size='55' />
+          </GridItem>
+          <GridItem colSpan={8} w='100%'>
+            <Skeleton height={'20px'} />
+            <Skeleton mt='2' height={'25px'} />
+          </GridItem>
+        </Grid>
+        <Grid mt='8' templateColumns='repeat(9, 1fr)' gap={6}>
+          <GridItem w='100%'>
+            <SkeletonCircle size='55' />
+          </GridItem>
+          <GridItem colSpan={8} w='100%'>
+            <Skeleton height={'20px'} />
+            <Skeleton mt='2' height={'25px'} />
+          </GridItem>
+        </Grid>
+
+      </div>
+  )
 }

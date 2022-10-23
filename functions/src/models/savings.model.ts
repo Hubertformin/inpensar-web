@@ -1,4 +1,4 @@
-import { connection, Schema, Document, Types } from "mongoose";
+import { model, Schema, Document, Types } from "mongoose";
 import { AccountDocument } from "./accounts.model";
 
 interface SavingsBaseDocument {
@@ -27,9 +27,9 @@ const savingsSchema = new Schema<SavingsBaseDocument>(
   { timestamps: true }
 );
 
-const db = connection.useDb(process.env.DATABASE_NAME as string);
 
-const Savings = db.model("savings", savingsSchema);
+
+const Savings = model("savings", savingsSchema);
 
 export type SavingsDocument = Document<Types.ObjectId> & SavingsBaseDocument;
 

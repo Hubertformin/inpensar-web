@@ -1,11 +1,12 @@
 
 
-import {InferType, array, number, object, string} from "yup";
+import {InferType, array, boolean, number, object, string} from "yup";
 import {CustomError} from "../models/error.model";
 
 let budget = object({
     name: string().required(),
     amount: number().required(),
+    resetsMonthly: boolean().default(false),
     categories: array().of(string()).required(),
 });
 

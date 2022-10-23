@@ -22,7 +22,7 @@ export interface TransactionsModel {
     nextRecurrentDate?: string,
     reccurentInterval?: string,
     recurrentEndDate?: string,
-    wallet?: AccountsModel,
+    account?: AccountsModel,
     to?: AccountsModel,
     from?: AccountsModel,
     userId?: string

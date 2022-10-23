@@ -4,6 +4,7 @@ import {CustomError} from "../models/error.model";
 import {validateCreateTransaction} from "../validators/transactions.validators";
 import Budget, {BudgetDocument} from "../models/budget.model";
 import Account, {AccountDocument} from "../models/accounts.model";
+import {Types} from "mongoose";
 
 export const getUsersTransactionsController = createController(async (req, res) => {
     // get all transactions
@@ -18,8 +19,8 @@ export const getUsersTransactionsController = createController(async (req, res) 
     const transactions = await Transaction.find({ owner: req.$currentUser$ })
         .skip(startIndex)
         .limit(limit)
-        .populate('categories')
-        .populate('accounts')
+        .populate('category')
+        .populate('account')
         .exec();
     // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: transactions, count }, message: "" };
@@ -35,7 +36,7 @@ export const createTransactionController = createController(async (req, res) => 
         ...transactionData,
         owner: req.$currentUser$,
         date: (new Date()).toISOString(),
-        project: req.params.projectId
+        project: new Types.ObjectId(req.params.projectId)
     });
     /**
      * When a transaction is created, the cases apply ->
@@ -50,21 +51,26 @@ export const createTransactionController = createController(async (req, res) => 
 
     switch(transactionData.type as TransactionType) {
         case TransactionType.EXPENSE:
-            budget = await Budget.findOne({ categories: transactionData.category , project: req.params.projectId }).exec() as BudgetDocument;
+            budget = await Budget.findOne({ categories: new Types.ObjectId(transactionData.category) , project: new Types.ObjectId(req.params.projectId) }).exec() as BudgetDocument;
+
             if (budget) {
                 budget.amountSpent += transactionData.amount;
                 await budget.save();
             }
 
-            let expense_account = await Account.findOne({ _id: transactionData.wallet }).exec() as AccountDocument;
+            let expense_account = await Account.findOne({ _id: transactionData.account }).exec() as AccountDocument;
             if (expense_account) {
+                /**
+                 * The user cannot spend more than is available in a wallet,
+                 * Make sure the amount does not exceed the wallet amount
+                 */
                 expense_account.amount -= transactionData.amount;
                 await expense_account.save();
                 accounts.push(expense_account.toObject());
             }
             break;
         case TransactionType.INCOME:
-            let account = await Account.findOne({ _id: transactionData.wallet }).exec() as AccountDocument;
+            let account = await Account.findOne({ _id: transactionData.account }).exec() as AccountDocument;
             if (account) {
                 account.amount += transactionData.amount;
                 await account.save();
@@ -92,7 +98,7 @@ export const createTransactionController = createController(async (req, res) => 
         statusCode: 200,
         data: {
             results: transaction.toObject(),
-            ...(typeof budget !== 'undefined' && {budget: budget.toObject()}),
+            ...(!!budget && {budget: budget?.toObject()}),
             ...(accounts.length > 0 && {accounts})
         },
         message: ""

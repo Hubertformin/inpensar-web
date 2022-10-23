@@ -170,11 +170,11 @@ export default function ViewTransactionDetails({
                 </Button>
               </ButtonGroup>
             </div>
-            {(selectedTransaction?.notes || selectedTransaction?.wallet) && (
+            {(selectedTransaction?.notes || selectedTransaction?.account) && (
               <Divider />
             )}
             <div className="body pt-8">
-              {selectedTransaction?.wallet && (
+              {selectedTransaction?.account && (
                   <div className="item mb-6">
                     <p className="label font-bold text-sm mb-3">Wallet</p>
                     <div className="flex space-x-4">
@@ -187,10 +187,10 @@ export default function ViewTransactionDetails({
                       </div>
                       <div>
                         <div className="font-medium text-black">
-                          {selectedTransaction?.wallet.name}
+                          {selectedTransaction?.account.name}
                         </div>
                         <p className="text-sm text-slate-500">
-                          {formatCurrency(selectedTransaction?.wallet.amount)}
+                          {formatCurrency(selectedTransaction?.account.amount)}
                         </p>
                       </div>
                     </div>

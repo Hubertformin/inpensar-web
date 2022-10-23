@@ -1,4 +1,4 @@
-import {Schema, Types, Document, connection} from "mongoose";
+import {Schema, Types, Document, model} from "mongoose";
 import {CategoryDocument} from "./category.model";
 import {AccountDocument} from "./accounts.model";
 import {UserDocument} from "./user.model";
@@ -30,10 +30,8 @@ interface TransactionBaseDocument {
 const TransactionSchema = new Schema<TransactionBaseDocument>(
     {
         category: {
-            type: [{
-                type: Types.ObjectId,
-                ref: "categories",
-            }],
+            type: Types.ObjectId,
+            ref: "categories",
             required: true,
         },
         amount: {
@@ -67,9 +65,9 @@ const TransactionSchema = new Schema<TransactionBaseDocument>(
     {timestamps: true}
 );
 
-const db = connection.useDb(process.env.DATABASE_NAME as string);
 
-const Transaction = db.model("transactions", TransactionSchema);
+
+const Transaction = model("transactions", TransactionSchema);
 
 export type TransactionDocument = Document<Types.ObjectId> &
     TransactionBaseDocument;

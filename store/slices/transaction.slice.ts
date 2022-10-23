@@ -1,18 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { AppState } from "../";
-import { HYDRATE } from "next-redux-wrapper";
-import { Data } from "../../data";
-import { addTransactionThunk } from "../thunks/transaction.thunk";
-import AddTransaction from "../../components/transactions/AddTransaction";
-import {
-  computeTransactionBalance,
-  sumTransactionEarnings,
-  sumTransactionExpenses,
-} from "../../utils/number";
-import {
-  TransactionsModel,
-  TransactionType,
-} from "../../models/transactions.model";
+import {createSlice} from "@reduxjs/toolkit";
+import {AppState} from "../";
+import {HYDRATE} from "next-redux-wrapper";
+import {addTransactionThunk} from "../thunks/transaction.thunk";
+import {TransactionsModel, TransactionType,} from "../../models/transactions.model";
 
 const initialState = {
   data: [],
@@ -76,16 +66,24 @@ const computeInsights = (
   }
 };
 
+function calculateTransactionsInsights(transactions: TransactionsModel[]): { earnings: number, expenses: number, balance: number } {
+  const earnings = transactions.filter(t => t.type === TransactionType.INCOME).reduce((acc, t) =>  acc + t.amount, 0),
+      expenses = transactions.filter(t => t.type === TransactionType.EXPENSE).reduce((acc, t) =>  acc + t.amount, 0);
+  return {
+    earnings,
+    expenses,
+    balance: earnings - expenses,
+  }
+}
+
 // @ts-ignore
 export const transactionsSlice = createSlice({
   name: "transactions",
   initialState,
   reducers: {
     setTransactionState(state, action) {
-      state.data = action.payload.data;
-      state.insights.earnings = action.payload.insights.earnings;
-      state.insights.expenses = action.payload.insights.expenses;
-      state.insights.balance = action.payload.insights.balance;
+      state.data = action.payload;
+      state.insights = calculateTransactionsInsights(action.payload)
     },
     appendTransactionState(state, action) {
       // computeTransactionState(state,[...state..data, action.payload])

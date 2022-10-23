@@ -2,11 +2,16 @@ import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import { BudgetModel } from "../models/budget.model";
 import {TransactionsModel, TransactionType} from "../models/transactions.model";
-import {appendBudgetState, removeBudgetFromState, replaceBudgetInState} from "../store/slices/budget.slice";
+import {
+  appendBudgetState,
+  removeBudgetFromState,
+  replaceBudgetInState,
+  setBudgetState
+} from "../store/slices/budget.slice";
 import {
   prependTransactionState,
   removeTransactionFromState,
-  replaceTransactionInState,
+  replaceTransactionInState, setTransactionState,
 } from "../store/slices/transaction.slice";
 import {AccountsModel} from "../models/accounts.model";
 import {
@@ -95,15 +100,24 @@ export default function useApi() {
   /**
    *  ===== TRANSACTIONS =====
    */
+
+  async function getTransactions(): Promise<TransactionsModel[]> {
+    const {data} = await httpInstance.get(`/projects/${activeProject._id}/transactions/me`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    dispatch(setTransactionState(data['data'].results));
+
+    return data['data'].results;
+  }
   async function addTransaction(
     transaction: TransactionsModel
   ): Promise<TransactionsModel> {
     // Add transaction to database....
-    const payload = {...transaction, category: transaction.category._id};
+    const payload = {...transaction, category: transaction.category._id, account: transaction.account._id};
     const {data} = await httpInstance.post(`/projects/${activeProject._id}/transactions`, payload, {
       ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
     });
-    dispatch(prependTransactionState(data['data'].results));
+    dispatch(prependTransactionState({...data['data'].results, category: transaction.category, account: transaction.account }));
     // update the state with the wallet(s) or budget that was updated
     if (data['data'].accounts) {
       dispatch(replaceAccountsInState(data['data'].accounts));
@@ -120,11 +134,19 @@ export default function useApi() {
     transaction: TransactionsModel
   ): Promise<TransactionsModel> {
     // Update transaction in database....
-    const payload = {...transaction, category: transaction.category._id};
+    const payload = {...transaction, category: transaction.category._id, account: transaction.account._id};
     const {data} = await httpInstance.put(`/projects/${activeProject._id}/transactions/${transaction._id}`, payload, {
       ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
     });
-    dispatch(replaceTransactionInState(data['data'].results));
+    dispatch(replaceTransactionInState({...data['data'].results, category: transaction.category, account: transaction.account }));
+    // update the state with the wallet(s) or budget that was updated
+    if (data['data'].accounts) {
+      dispatch(replaceAccountsInState(data['data'].accounts));
+    }
+
+    if (data['data'].budget) {
+      dispatch(replaceBudgetInState(data['data'].budget));
+    }
     return data['data'].results;
   }
 
@@ -139,23 +161,35 @@ export default function useApi() {
   /**
    *  ===== Budgets =====
    */
+  async function getBudgets() {
+    const {data} = await httpInstance.get(`/projects/${activeProject._id}/budgets/me`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+
+    dispatch(setBudgetState(data['data'].results));
+  }
   async function addBudget(budget: BudgetModel): Promise<BudgetModel> {
     // TODO: API CALL
-    const payload = budget.categories.map(c => c._id);
+    const payload = {
+      ...budget,
+      categories: budget.categories.map(c => c._id)
+    };
     const {data} = await httpInstance.post(`/projects/${activeProject._id}/budgets`, payload, {
       ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
     });
-    dispatch(appendBudgetState(data['data'].results));
+    dispatch(appendBudgetState({...data['data'].results, categories: budget.categories }));
     return data['data'].results;
   }
 
   async function updateBudget(budget: BudgetModel): Promise<BudgetModel> {
-    // TODO: API CALL
-    const payload = budget.categories.map(c => c._id);
+    const payload = {
+      ...budget,
+      categories: budget.categories.map(c => c._id)
+    };
     const {data} = await httpInstance.put(`/projects/${activeProject._id}/budgets/${budget._id}`, payload, {
       ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
     });
-    dispatch(replaceBudgetInState(data['data'].results));
+    dispatch(replaceBudgetInState({...data['data'].results, categories: budget.categories }));
     return data['data'].results;
   }
 
@@ -211,9 +245,11 @@ export default function useApi() {
     getAndSetCurrentUsersData,
     getAndSetActiveProject,
     getAndSetCategories,
+    getTransactions,
     addTransaction,
     updateTransaction,
     deleteTransaction,
+    getBudgets,
     addBudget,
     updateBudget,
     deleteBudget,

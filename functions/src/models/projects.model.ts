@@ -1,4 +1,4 @@
-import {Schema, Document, Types, connection} from 'mongoose';
+import {Schema, Document, Types, model} from 'mongoose';
 import {UserDocument} from "./user.model";
 import {generateUID} from "../utils/uuid";
 
@@ -32,9 +32,9 @@ const projectSchema = new Schema<ProjectBaseDocument>({
     }
 }, {timestamps: true});
 
-const db = connection.useDb(process.env.DATABASE_NAME as string);
 
-const Project =  db.model('projects', projectSchema);
+
+const Project =  model('projects', projectSchema);
 
 export type ProjectDocument = Document<Types.ObjectId> & ProjectBaseDocument;
 

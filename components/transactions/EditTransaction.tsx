@@ -98,7 +98,7 @@ export default function EditTransaction({
           category: transaction.category,
           amount: transaction.amount,
           date: new Date(transaction.date),
-          account: transaction.wallet._id,
+          account: transaction.account._id,
         });
         setIncomeNotes(transaction.notes || '')
       } else if (transaction.type === TransactionType.EXPENSE) {
@@ -106,7 +106,7 @@ export default function EditTransaction({
           category: transaction.category,
           amount: transaction.amount,
           date: new Date(transaction.date),
-          account: transaction.wallet._id,
+          account: transaction.account._id,
         });
         setExpenseNotes(transaction.notes || '')
       } else if (transaction.type === TransactionType.TRANSFER) {
@@ -214,7 +214,7 @@ export default function EditTransaction({
           category: form.values.category,
           notes: expenseNotes || "",
           type: TransactionType.EXPENSE,
-          wallet: getWalletById(form.values.account),
+          account: getWalletById(form.values.account),
           date: (form.values.date as Date).toISOString(),
         };
         break;
@@ -234,7 +234,7 @@ export default function EditTransaction({
           category: form.values.category,
           notes: incomeNotes || "",
           type: TransactionType.INCOME,
-          wallet: getWalletById(form.values.account),
+          account: getWalletById(form.values.account),
           date: (form.values.date as Date).toISOString(),
         };
         break;

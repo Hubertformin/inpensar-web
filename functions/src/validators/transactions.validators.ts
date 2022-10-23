@@ -9,7 +9,7 @@ let transactions = object({
     // category: array().of(string()).required(),
     category: string().required(),
     type: mixed().oneOf(Object.values(TransactionType)).required(),
-    wallet: string().nullable(),
+    account: string().nullable(),
     to: string().nullable(),
     from: string().nullable()
 });

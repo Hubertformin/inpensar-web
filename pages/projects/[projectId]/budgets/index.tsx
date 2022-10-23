@@ -1,5 +1,5 @@
 import DatePicker from "react-datepicker";
-import {Button, ButtonGroup, Divider} from "@chakra-ui/react";
+import {Button, ButtonGroup, Divider, Skeleton, SkeletonCircle} from "@chakra-ui/react";
 import ProjectViewLayout from "../../../../components/nav/ProjectViewLayout";
 import React, {useState} from "react";
 import {BsPlus} from "react-icons/bs";
@@ -13,10 +13,17 @@ import {selectActiveProjectState} from "../../../../store/slices/projects.slice"
 
 export default function BudgetHome() {
     const [startDate, setStartDate] = React.useState(new Date());
+    const [isPageLoading, setIsPageLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
     const budgets: BudgetModel[] = useSelector(selectBudgetState);
     const activeProject = useSelector(selectActiveProjectState);
     const router = useRouter();
+
+    React.useEffect(() => {
+        if (budgets.length > 0) {
+            setIsPageLoading(false);
+        }
+    }, []);
 
     return (
         <ProjectViewLayout>
@@ -53,13 +60,15 @@ export default function BudgetHome() {
                     </div>
                 </div>
                 <Divider/>
-                {budgets?.length > 0 ? (<div className="budget-body mt-4">
+                {isPageLoading && <PageLoadingSchema />}
+                {(budgets?.length > 0 && !isPageLoading) && (<div className="budget-body mt-4">
                     {budgets.map((budget, index) => {
                         return <BudgetTile key={index}
                                            onClick={() => router.push(`/projects/${activeProject?._id}/budgets/${budget._id}`)}
                                            budget={budget}/>;
                     })}
-                </div>) : (
+                </div>)}
+                {(budgets?.length == 0 && !isPageLoading) &&(
                     <div className="budget-body mt-4">
                         <div className={`emptyState w-max-50`}>
                             <img
@@ -85,4 +94,31 @@ export default function BudgetHome() {
             </main>
         </ProjectViewLayout>
     );
+}
+
+function PageLoadingSchema() {
+    return (
+        <div className={'pt-10'}>
+            <div className="mb-8">
+                <Skeleton height={'20px'} />
+                <Skeleton mt='2' height={'50px'} />
+            </div>
+            <div className="mb-8">
+                <Skeleton height={'20px'} />
+                <Skeleton mt='2' height={'50px'} />
+            </div>
+            <div className="mb-8">
+                <Skeleton height={'20px'} />
+                <Skeleton mt='2' height={'50px'} />
+            </div>
+            <div className="mb-8">
+                <Skeleton height={'20px'} />
+                <Skeleton mt='2' height={'50px'} />
+            </div>
+            <div className="mb-8">
+                <Skeleton height={'20px'} />
+                <Skeleton mt='2' height={'50px'} />
+            </div>
+        </div>
+    )
 }

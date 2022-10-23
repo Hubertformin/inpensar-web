@@ -14,7 +14,7 @@ export interface BudgetModel {
   color?: string;
   // nextOccureDate?: string;
   // startDate?: string;
-  shouldResetEveryMonth?: boolean;
+  resetsMonthly?: boolean;
   // wallet?: WalletModel;
   // photoURL?: string;
   owner?: string;

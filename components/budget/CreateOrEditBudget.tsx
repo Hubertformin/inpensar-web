@@ -20,14 +20,15 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Data } from "../../data";
 import CategoriesMultiSelectModal from "../categories/CategoriesMultiSelectModal";
 import CategoryChipMultiSelect from "../categories/CategoryChipMultiSelect";
-import { removeCategory } from "../../utils/category";
+import { removeCategoryFromList } from "../../utils/category";
 import styles from "../../styles/CreateBudget.module.scss";
 import { Field, Form, Formik } from "formik";
 import { BudgetModel } from "../../models/budget.model";
 import useApi from "../../hooks/useApi";
+import {useSelector} from "react-redux";
+import {selectCategoriesState} from "../../store/slices/categories.slice";
 
 interface CreateBudgetProps {
   open: boolean;
@@ -37,6 +38,8 @@ interface CreateBudgetProps {
 
 export default function CreateOrEditBudgetForm({ open, budget = null, onClose }: CreateBudgetProps) {
   const disclosure = useDisclosure();
+  const categoriesState = useSelector(selectCategoriesState);
+
   const [categories, setCategories] = React.useState([]);
   const [operation, setOperation] = React.useState<'ADD' | 'EDIT'>('ADD');
   const [isCategorySelectModalOpen, setIsCategorySelectModalOpen] =
@@ -84,6 +87,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
   };
 
   const onCategoriesSelect = (categories) => {
+    console.log(categories)
     setCategories(categories);
   };
 
@@ -102,8 +106,6 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
       actions.setSubmitting(false);
       return;
     }
-
-    actions.setSubmitting(false);
     // construct budget .data
     let budgetData: BudgetModel;
 
@@ -114,7 +116,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
         name: values.name,
         amount: Number(values.amount),
         amountSpent: budget ? budget.amountSpent : 0,
-        shouldResetEveryMonth: values.shouldResetEveryMonth,
+        resetsMonthly: values.resetsMonthly,
         categories,
       };
       process = api.addBudget(budgetData);
@@ -123,11 +125,13 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
         ...budget,
         name: values.name,
         amount: Number(values.amount),
-        shouldResetEveryMonth: values.shouldResetEveryMonth,
+        resetsMonthly: values.resetsMonthly,
         categories,
       };
       process = api.updateBudget(budgetData);
     }
+
+    console.log(budgetData)
 
     process.then(() => {
         closeModal();
@@ -136,6 +140,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
         console.log(err);
         toast({
           title: "We are unable to save your budget",
+          description: err.response?.data?.message || 'We are unable to add your budget at this time, Please try again later',
           status: "error",
           isClosable: true,
         });
@@ -163,7 +168,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
             initialValues={{
               name: budget ? budget.name : "",
               amount: budget ?  budget.amount : "",
-              shouldResetEveryMonth: budget ? budget.shouldResetEveryMonth : true,
+              resetsMonthly: budget ? budget.resetsMonthly : true,
             }}
             onSubmit={addOrEditBudget}
           >
@@ -177,8 +182,8 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
                       <FormControl className="mb-6">
                         <FormLabel>Select Categories</FormLabel>
                         <CategoryChipMultiSelect
-                          options={removeCategory(
-                            Data.expense_categories,
+                          options={removeCategoryFromList(
+                            categoriesState.expenses,
                             "Other"
                           )}
                           selectedOptions={budget ? budget.categories : []}
@@ -238,10 +243,14 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
                           </FormControl>
                         )}
                       </Field>
-                      <Field name="shouldResetEveryMonth">
+                      <Field name="resetsMonthly">
                         {({ field, form }) => (
                           <FormControl className="mt-2">
-                            <Checkbox size={'lg'} {...field}>
+                            <Checkbox
+                                {...field}
+                                defaultChecked={budget ? budget.resetsMonthly : true}
+                                colorScheme={'purple'} size={'lg'}
+                            >
                               This budget resets every month
                             </Checkbox>
                           </FormControl>

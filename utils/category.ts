@@ -1,6 +1,6 @@
 import { CategoryModel } from "../models/category.model";
 
-export function removeCategory(
+export function removeCategoryFromList(
   categories: CategoryModel[],
   name: string
 ): CategoryModel[] {

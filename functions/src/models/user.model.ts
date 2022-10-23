@@ -1,4 +1,4 @@
-import { Schema, Document, Types, connection } from "mongoose";
+import { Schema, Document, Types, model } from "mongoose";
 import { AccountDocument } from "./accounts.model";
 
 export enum UserReportsFrequency {
@@ -66,9 +66,9 @@ const UserSchema = new Schema<UserBaseDocument>(
   { timestamps: true }
 );
 
-const db = connection.useDb(process.env.DATABASE_NAME as string);
+
 // 3. Create a Model.
-const User = db.model("users", UserSchema);
+const User = model("users", UserSchema);
 
 export type UserDocument = Document<Types.ObjectId> & UserBaseDocument;
 

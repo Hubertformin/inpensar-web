@@ -2,7 +2,7 @@ import {
   Button,
   ButtonGroup,
   Divider,
-  FormControl,
+  FormControl, Grid, GridItem, Skeleton, SkeletonCircle,
   Stat,
   StatGroup,
   StatHelpText,
@@ -26,6 +26,7 @@ import { formatCurrency } from "../../../utils/number";
 export default function TransactionsHome() {
   const categoriesState = useSelector(selectCategoriesState);
   const transactionInsights = useSelector(selectTransactionInsights);
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [startDate, setStartDate] = React.useState(new Date());
   const [categoriesSelectOptions, setCategoriesSelectOptions] = React.useState<
@@ -104,7 +105,7 @@ export default function TransactionsHome() {
           </div>
         </div>
         <Divider />
-        <div className="mt-4">
+        {<div className="mt-4">
           <StatGroup>
             <Stat>
               <StatLabel>Earnings</StatLabel>
@@ -149,7 +150,7 @@ export default function TransactionsHome() {
           <div className="transaction-body mt-4">
             <TransactionsTable />
           </div>
-        </div>
+        </div>}
       </main>
       {/*<BottomNav/>*/}
       {/*    Modals*/}
@@ -159,4 +160,31 @@ export default function TransactionsHome() {
       />
     </ProjectViewLayout>
   );
+}
+
+function PageLoadingSchema() {
+  return (
+      <div className={''}>
+        <div className="row mb-10">
+          <div className="col-sm-4">
+            <Skeleton height={'105px'} />
+          </div>
+          <div className="col-sm-4">
+            <Skeleton height={'105px'} />
+          </div>
+          <div className="col-sm-4">
+            <Skeleton height={'105px'} />
+          </div>
+        </div>
+        <Grid templateColumns='repeat(5, 1fr)' gap={6}>
+          <GridItem w='100%'>
+            <SkeletonCircle size='55' />
+          </GridItem>
+          <GridItem colSpan={4} w='100%'>
+            <Skeleton height={'25px'} />
+            <Skeleton mt='2' height={'30px'} />
+          </GridItem>
+        </Grid>
+      </div>
+  )
 }

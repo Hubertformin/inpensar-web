@@ -1,4 +1,4 @@
-import {connection, Schema, Document, Types} from "mongoose";
+import {model, Schema, Document, Types} from "mongoose";
 
 export interface CategoryBaseDocument {
     name?: string;
@@ -29,9 +29,9 @@ const categorySchema = new Schema<CategoryBaseDocument>({
     scope: String
 }, {timestamps: true});
 
-const db = connection.useDb(process.env.DATABASE_NAME as string);
 
-const Category = db.model('categories', categorySchema);
+
+const Category = model('categories', categorySchema);
 
 export type CategoryDocument = Document<Types.ObjectId> & CategoryBaseDocument;
 
