@@ -17,6 +17,10 @@ import {
 import useApi from "../hooks/useApi";
 import {selectActiveProjectState} from "../store/slices/projects.slice";
 import {selectCategoriesState} from "../store/slices/categories.slice";
+import {AccountsModel} from "../models/accounts.model";
+import {selectAccountsState} from "../store/slices/accounts.slice";
+import {BudgetModel} from "../models/budget.model";
+import {selectBudgetState} from "../store/slices/budget.slice";
 
 function MyApp({Component, pageProps}) {
     const dispatch = useDispatch();
@@ -24,6 +28,8 @@ function MyApp({Component, pageProps}) {
     const authUser = useSelector(selectAuthUserState);
     const activeProject = useSelector(selectActiveProjectState);
     const categories = useSelector(selectCategoriesState);
+    const accounts: AccountsModel[] = useSelector(selectAccountsState);
+    const budgets: BudgetModel[] = useSelector(selectBudgetState);
 
     useEffect(() => {
         if (typeof window == 'undefined') {
@@ -46,9 +52,9 @@ function MyApp({Component, pageProps}) {
                     await api.getAndSetCurrentUsersData({idToken});
                 }
 
-                dispatch(setAuthState(AuthState.AUTHENTICATED));
-
-
+                /**
+                 * LOAD USER'S DATA TO BE USED IN THE APP
+                 */
                 if (!activeProject && activeProjectId) {
                     await api.getAndSetActiveProject({projectId: activeProjectId, idToken})
                 }
@@ -58,13 +64,16 @@ function MyApp({Component, pageProps}) {
                 if (categories.income.length === 0 || categories.expenses.length == 0) {
                     await api.getAndSetCategories({idToken});
                 }
-                // dispatch(setAuthUserState({
-                //     _id: null,
-                //     name: user.displayName,
-                //     email: user.email,
-                //     settings: {},
-                //     uid: user.uid
-                // }));
+
+                // if (activeProject && budgets.length == 0) {
+                //     await api.getBudgets().catch(err => console.log(err));
+                // }
+                //
+                // if (accounts.length == 0) {
+                //     await api.getAccounts().catch(err => console.log(err));
+                // }
+
+                dispatch(setAuthState(AuthState.AUTHENTICATED));
             } else {
                 // in case of log out
                 dispatch(setAuthState(AuthState.UNAUTHENTICATED));
