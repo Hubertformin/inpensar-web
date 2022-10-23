@@ -5,8 +5,8 @@ import {Data} from "../../data";
 import {computeAccountBalance} from "../../utils/account";
 
 const initialState = {
-    data: Data.wallets,
-    balance: computeAccountBalance(Data.wallets)
+    data: [],
+    balance: 0
 };
 
 
@@ -28,15 +28,20 @@ export const accountsSlice = createSlice({
             state.balance += action.payload.amount;
         },
         replaceAccountsInState(state, action) {
-            const oldAccount = state.data.find(a => a._id === action.payload._id);
-            state.data = state.data.map(t => {
-                if (t._id === action.payload._id) {
-                    t = action.payload;
-                }
-                return t;
-            });
-            state.balance += (action.payload.amount - oldAccount.amount);
-        },
+            const wallets = Array.isArray(action.payload) ? action.payload : [action.payload];
+
+            for (const wallet of wallets) {
+                const oldAccount = state.data.find(a => a._id === wallet._id);
+                state.data = state.data.map(t => {
+                    if (t._id === wallet._id) {
+                        t = wallet;
+                    }
+                    return t;
+                });
+                state.balance += (wallet.amount - oldAccount.amount);}
+        }
+
+        ,
         removeAccountsFromState(state, action) {
             state.data = state.data.filter(t => t._id !== action.payload._id);
             state.balance -= action.payload.amount;
