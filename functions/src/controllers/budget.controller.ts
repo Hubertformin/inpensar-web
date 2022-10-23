@@ -1,12 +1,30 @@
 import {createController} from "./index";
 import {CustomError} from "../models/error.model";
-import Budget from "../models/budget.model";
+import Budget, {BudgetDocument} from "../models/budget.model";
+import {validateCreateBudgetData} from "../validators/budget.validators";
+import {getRandomItemFromList} from "../../../utils/array";
+import {CONSTANTS} from "../../../data/constants";
 
 export const createBudgetController = createController(async (req, res) => {
-    // TODO: VALIDATE budget BODY
-    // TODO: Make sure categories doen't exist in another budget
-    const budgetData = req.body;
-    const budget = new Budget({ ...budgetData, owner: req.$currentUser$?._id });
+    const budgetData = await validateCreateBudgetData(req.body);
+
+    // Making sure categories doesn't exist in another budget
+    const conflict_budget: BudgetDocument = await Budget.findOne({ categories: { $in: budgetData.categories }}).populate('categories').exec() as BudgetDocument;
+
+    if (conflict_budget) {
+        const existing_categories =
+            conflict_budget.categories
+            .filter(c => budgetData.categories.findIndex((id) => id == c._id) > -1)
+            .map(c => c.name);
+        throw CustomError(`${existing_categories.join(',')} has been added to another budget`).status(409);
+    }
+
+    const budget = new Budget({
+        ...budgetData,
+        owner: req.$currentUser$?._id,
+        color: getRandomItemFromList(CONSTANTS.COLORS),
+        project: req.params.projectId
+    });
 
     await budget.save();
     return { statusCode: 200, data: { results: budget.toObject() }, message: "" };
@@ -24,6 +42,7 @@ export const getCurrentUserBudgetsController = createController(async (req, res)
         .find({  owner: req.$currentUser$?._id })
         .skip(startIndex)
         .limit(limit)
+        .populate('categories')
         .exec();
 
     return { statusCode: 200, data: { results: budgets, count }, message: "" };

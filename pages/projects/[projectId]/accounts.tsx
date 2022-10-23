@@ -1,5 +1,5 @@
 import {
-    Button, ButtonGroup, Divider,
+    Button, ButtonGroup, Divider, Skeleton, SkeletonCircle, SkeletonText,
 } from "@chakra-ui/react";
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 import {BsPlus} from "react-icons/bs";
@@ -11,12 +11,19 @@ import {AccountsModel} from "../../../models/accounts.model";
 import {useSelector} from "react-redux";
 import {selectAccountBalanceState, selectAccountsState} from "../../../store/slices/accounts.slice";
 import AccountTile from "../../../components/accounts/AccountTile";
+import useApi from "../../../hooks/useApi";
 
 export default function AccountsHome() {
     const [showAddModal, setShowAddModal] = useState(false);
+    const [isPageLoading, setIsPageLoading] = useState(true);
     const accounts: AccountsModel[] = useSelector(selectAccountsState);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const balance: number = useSelector(selectAccountBalanceState);
+    const api = useApi();
+
+    React.useEffect(() => {
+        api.getAccounts().catch(err => console.log(err)).then(() => setIsPageLoading(false));
+    }, []);
 
     const selectAccount = (account) => {
         setSelectedAccount(account);
@@ -54,16 +61,18 @@ export default function AccountsHome() {
                 </div>
                 <Divider/>
                 <div className="account-body pt-10 pb-8 px-8">
+                    {isPageLoading && <AccountsPageLoadingSchema />}
                     {
-                        accounts.length > 0 ? accounts.map((account, index) => {
+                        (accounts.length > 0 && !isPageLoading) && accounts.map((account, index) => {
                             return (
                                 <AccountTile
                                     key={'account_tile_' + index}
                                     account={account}
                                     onClick={() => selectAccount(account)}
                                 />)
-                        }) : (
-                            <div className="budget-body">
+                        })
+                    }
+                    {  (accounts.length == 0 && !isPageLoading) &&  (<div className="budget-body">
                                 <div className={`emptyState pt-16 w-max-50`}>
                                     <img
                                         className={`emptyStateImage mb-6`}
@@ -85,5 +94,40 @@ export default function AccountsHome() {
             {/*    */}
             <CreateOrEditAccount open={showAddModal} account={selectedAccount} onClose={onCloseFormModal}/>
         </ProjectViewLayout>
+    )
+}
+
+function AccountsPageLoadingSchema() {
+    return (
+       <>
+           <div className="flex gap-4 items-center border-b pb-4 mb-2">
+               <SkeletonCircle size='55' />
+               <div className={'w-3/4'}>
+                   <Skeleton height={'20px'} />
+                   <Skeleton mt='2' height={'10px'} />
+               </div>
+           </div>
+           <div className="flex gap-4 items-center border-b pb-4 mb-2">
+               <SkeletonCircle size='55' />
+               <div className={'w-3/4'}>
+                   <Skeleton height={'20px'} />
+                   <Skeleton mt='2' height={'10px'} />
+               </div>
+           </div>
+           <div className="flex gap-4 items-center border-b pb-4 mb-2">
+               <SkeletonCircle size='55' />
+               <div className={'w-3/4'}>
+                   <Skeleton height={'20px'} />
+                   <Skeleton mt='2' height={'10px'} />
+               </div>
+           </div>
+           <div className="flex gap-4 items-center border-b pb-4 mb-2">
+               <SkeletonCircle size='55' />
+               <div className={'w-3/4'}>
+                   <Skeleton height={'20px'} />
+                   <Skeleton mt='2' height={'10px'} />
+               </div>
+           </div>
+       </>
     )
 }

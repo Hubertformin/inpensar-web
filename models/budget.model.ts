@@ -1,5 +1,4 @@
 import { CategoryModel } from "./category.model";
-import { AccountsModel } from "./accounts.model";
 
 // interface BudgetCategories extends CategoryModel {
 //   amount?: number;

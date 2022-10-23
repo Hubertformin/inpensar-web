@@ -11,7 +11,6 @@ export const withAuth = async (req: HttpRequest, res: Response, next: NextFuncti
             return;
         }
 
-        console.log(req.headers.authorization)
         if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
             return res.status(401).json({
                 errorText: 'You are not authorized to access this API',

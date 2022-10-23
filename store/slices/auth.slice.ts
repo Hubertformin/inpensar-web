@@ -2,17 +2,24 @@ import { createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../";
 import { HYDRATE } from "next-redux-wrapper";
 
+export enum AuthState {
+    LOADING = 'LOADING',
+    AUTHENTICATED = 'AUTHENTICATED',
+    UNAUTHENTICATED = 'UNAUTHENTICATED',
+}
+
 const initialState = {
     data: {
         name: '',
         email: '',
-        _id: '',
+        _id: undefined,
         uid: '',
         settings: {
             language: ''
         }
     },
     idToken: '',
+    authState: AuthState.LOADING
 };
 
 
@@ -25,6 +32,9 @@ export const authUserSlice = createSlice({
         },
         setIdTokenState(state, action) {
             state.idToken = action.payload;
+        },
+        setAuthState(state, action) {
+            state.authState = action.payload;
         },
         clearAuthUser(state, action) {
             state.data = null;
@@ -49,10 +59,13 @@ export const {
     setAuthUserState,
     setIdTokenState,
     setAuthUserDocument,
+    setAuthState,
     clearAuthUser
 } = authUserSlice.actions;
 
 export const selectAuthUserState = (state: AppState) => state.authUser.data;
+
+export const selectAuthState = (state: AppState) => state.authUser.authState;
 
 export const selectAuthUserIdTokenState = (state: AppState) => state.authUser.idToken;
 

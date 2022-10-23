@@ -61,19 +61,19 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
    */
   const expenseForm = useForm({
     category: null,
-    amount: null,
+    amount: '',
     date: new Date(),
     account: null,
   });
   const transferForm = useForm({
     to: null,
     from: null,
-    amount: null,
+    amount: '',
     date: new Date(),
   });
   const incomeForm = useForm({
     category: null,
-    amount: null,
+    amount: '',
     date: new Date(),
     account: null,
   });
@@ -92,20 +92,20 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
     // Reset forms
     expenseForm.resetForm({
       category: null,
-      amount: null,
+      amount: '',
       date: new Date(),
       account: null,
     });
     incomeForm.resetForm({
       category: null,
-      amount: null,
+      amount: '',
       date: new Date(),
       account: null,
     });
     transferForm.resetForm({
       to: null,
       from: null,
-      amount: null,
+      amount: '',
       date: new Date(),
     });
     // reset notes form controls
@@ -212,7 +212,6 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
     switch (activeTabIndex) {
       case 0: // expense form.values
         transaction = {
-          _id: (100 * Math.random()).toString(),
           amount: parseInt(form.values.amount.toString().trim()),
           category: form.values.category,
           notes: expenseNotes || "",
@@ -223,7 +222,6 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
         break;
       case 1: // income
         transaction = {
-          _id: (100 * Math.random()).toString(),
           amount: parseInt(form.values.amount.toString().trim()),
           category: form.values.category,
           notes: incomeNotes || "",
@@ -234,7 +232,6 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
         break;
       case 2: // transfer
         transaction = {
-          _id: (100 * Math.random()).toString(),
           amount: parseInt(form.values.amount.toString().trim()),
           from: getWalletById(form.values.from),
           to: getWalletById(form.values.to),

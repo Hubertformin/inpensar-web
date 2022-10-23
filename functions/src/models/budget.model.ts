@@ -8,7 +8,7 @@ import {ProjectDocument} from "./projects.model";
 export interface BudgetBaseDocument {
     _id?: string;
     name?: string;
-    category?: CategoryDocument[];
+    categories: CategoryDocument[];
     amount: number;
     amountSpent: number;
     color: string;
@@ -22,7 +22,7 @@ const budgetSchema = new Schema<BudgetBaseDocument>({
     name: {
         type: String,
     },
-    category: [{
+    categories: [{
         type: Types.ObjectId,
         ref: 'categories'
     }],
