@@ -1,14 +1,14 @@
 import {TransactionsModel, TransactionType} from "../models/transactions.model";
 
-export function formatCurrency(amount: number) {
-    let value = amount || 0;
-    const formatter = new Intl.NumberFormat('en-CM', {
-        style: 'currency',
-        currency: 'XAF'
-    });
-
-    return formatter.format(value);
-}
+// export function utils.formatCurrency(amount: number) {
+//     let value = amount || 0;
+//     const formatter = new Intl.NumberFormat('en-CM', {
+//         style: 'currency',
+//         currency: 'XAF'
+//     });
+//
+//     return formatter.format(value);
+// }
 
 export function sumTransactionEarnings(transactions: TransactionsModel[]) {
     const income = transactions.filter(t => t.type === TransactionType.INCOME);

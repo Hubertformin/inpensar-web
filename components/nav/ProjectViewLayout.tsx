@@ -12,7 +12,7 @@ export default function ProjectViewLayout({children}) {
     const authState = useSelector(selectAuthState);
 
     React.useEffect(() => {
-        console.log(authState);
+        (authState);
         if (authState == AuthState.UNAUTHENTICATED) {
             router.push('/auth/login');
         }

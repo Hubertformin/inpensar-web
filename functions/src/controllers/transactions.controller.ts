@@ -2,7 +2,7 @@ import {createController} from "./index";
 import Transaction, {TransactionType} from "../models/transaction.model";
 import {CustomError} from "../models/error.model";
 import {validateCreateTransaction} from "../validators/transactions.validators";
-import Budget, {BudgetDocument} from "../models/budget.model";
+import Budget, {BudgetDocument, getActivePeriod} from "../models/budget.model";
 import Account, {AccountDocument} from "../models/accounts.model";
 import {Types} from "mongoose";
 
@@ -120,7 +120,7 @@ export const getUserTransactionByIdController = createController(async (req, res
 
 export const updateUserTransactionByIdController = createController(async (req, res) => {
 
-    const transaction = await  Transaction.findOne({ _id: req.params.id, owner: req.$currentUser$?._id }).exec();
+    const transaction = await Transaction.findOne({ _id: req.params.id, owner: req.$currentUser$?._id }).exec();
 
     if (!transaction) {
         throw CustomError(
@@ -128,20 +128,93 @@ export const updateUserTransactionByIdController = createController(async (req, 
         ).status(404);
     }
 
+    let budget: any = undefined;
+    let accounts: AccountDocument[] = [];
+
     // TODO: VALIDATE TRANSACTION Body
     const transactionData = req.body;
+
+    /**
+     * When a transaction is created, the cases apply ->
+     *  CASE 1: EXPENSE
+     * - Increase the amount spent of the budget which the category of the transaction is included
+     * - We decrease the amount from the target wallet
+     * CASE 2: Income:
+     *  - Increase the amount of the wallet by the transaction amount
+     *  CASE 3: TRANSFER
+     *  - Subtract the amount from the target wallet and add the amount to the value t0 the destination wallet
+     */
+
+    switch(transactionData.type as TransactionType) {
+        case TransactionType.EXPENSE:
+            if (transaction.amount != transactionData.amount) {
+                budget = await Budget.findOne({ categories: new Types.ObjectId(transactionData.category) , project: new Types.ObjectId(req.params.projectId) }).exec() as BudgetDocument;
+
+                if (budget) {
+                    budget.amountSpent += transactionData.amount - transaction.amount;
+                    await budget.save();
+                }
+
+                let expense_account = await Account.findOne({ _id: transactionData.account }).exec() as AccountDocument;
+                if (expense_account) {
+                    /**
+                     * The user cannot spend more than is available in a wallet,
+                     * Make sure the amount does not exceed the wallet amount
+                     */
+                    expense_account.amount += transaction.amount - transactionData.amount;
+                    await expense_account.save();
+                    accounts.push(expense_account.toObject());
+                }
+            }
+            break;
+        case TransactionType.INCOME:
+            if (transaction.amount != transactionData.amount) {
+                let account = await Account.findOne({ _id: transactionData.account }).exec() as AccountDocument;
+                if (account) {
+                    account.amount += transactionData.amount - transaction.amount;
+                    await account.save();
+                    accounts.push(account.toObject());
+                }
+            }
+            break;
+        case TransactionType.TRANSFER:
+            if (transaction.amount != transactionData.amount) {
+                const from_account = await Account.findOne({ _id: transactionData.from }).exec() as AccountDocument;
+                const to_account = await Account.findOne({ _id: transactionData.to }).exec() as AccountDocument;
+
+                from_account.amount += transaction.amount - transactionData.amount;
+                to_account.amount += transactionData.amount - transaction.amount;
+
+                await from_account.save();
+                await to_account.save();
+
+                accounts.push(from_account.toObject());
+                accounts.push(to_account.toObject());
+            }
+            break;
+        default:
+            break;
+    }
 
     Object.assign(transaction, transactionData);
 
 
     await transaction.save();
 
-    return { statusCode: 200, data: { results: transaction.toObject() }, message: "" };
+    return {
+        statusCode: 200,
+        data: {
+            results: transaction.toObject(),
+            ...(!!budget && {budget: budget?.toObject()}),
+            ...(accounts.length > 0 && {accounts})
+        },
+        message: ""
+    };
 });
 
 export const deleteUserTransactionByIdController = createController(async (req, res) => {
 
-    const transaction = await  Transaction.deleteOne({ _id: req.params.id, owner: req.$currentUser$?._id }).exec();
+    const transaction = await Transaction.findOne({ _id: req.params.id, owner: req.$currentUser$?._id }).exec();
 
     if (!transaction) {
         throw CustomError(
@@ -149,6 +222,35 @@ export const deleteUserTransactionByIdController = createController(async (req, 
         ).status(404);
     }
 
+    let budget: any = undefined;
 
-    return { statusCode: 200, data: { results: req.params.id }, message: "" };
+    switch(transaction.type as TransactionType) {
+        case TransactionType.EXPENSE:
+            const period = getActivePeriod(transaction.date);
+            const budgets = await Budget.find({
+                categories: new Types.ObjectId(transaction.category as unknown as string),
+                project: new Types.ObjectId(req.params.projectId),
+                activePeriod: period
+            })
+                .exec();
+
+            for (const _budget of budgets) {
+                _budget.amountSpent -= transaction.amount;
+                await _budget.save();
+                budget = _budget;
+            }
+            break;
+    }
+
+    await transaction.delete();
+
+
+    return {
+        statusCode: 200,
+        data: {
+            results: req.params.id,
+            ...(!!budget && {budget: budget?.toObject()}),
+        },
+        message: ""
+    };
 });

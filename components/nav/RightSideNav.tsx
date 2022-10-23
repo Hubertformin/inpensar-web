@@ -21,13 +21,13 @@ export default function RightSideNav() {
 
     React.useEffect(() => {
         if (activeProject && budgets.length == 0) {
-            api.getBudgets().catch(err => console.log(err)).then(() => setIsBudgetLoading(false));
+            api.getBudgets().catch(err => console.error(err)).then(() => setIsBudgetLoading(false));
         } else if (budgets.length > 0) {
             setIsBudgetLoading(false);
         }
 
         if (activeProject && accounts.length == 0) {
-            api.getAccounts().catch(err => console.log(err)).then(() => setIsAccountsLoading(false));
+            api.getAccounts().catch(err => console.error(err)).then(() => setIsAccountsLoading(false));
         } else if (accounts.length > 0) {
             setIsAccountsLoading(false);
         }

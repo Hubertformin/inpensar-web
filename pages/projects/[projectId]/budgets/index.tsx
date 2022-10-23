@@ -23,7 +23,7 @@ export default function BudgetHome() {
         if (budgets.length > 0) {
             setIsPageLoading(false);
         }
-    }, []);
+    }, [budgets]);
 
     return (
         <ProjectViewLayout>

@@ -87,7 +87,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
   };
 
   const onCategoriesSelect = (categories) => {
-    console.log(categories)
+    (categories)
     setCategories(categories);
   };
 
@@ -131,13 +131,13 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
       process = api.updateBudget(budgetData);
     }
 
-    console.log(budgetData)
+    (budgetData)
 
     process.then(() => {
         closeModal();
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         toast({
           title: "We are unable to save your budget",
           description: err.response?.data?.message || 'We are unable to add your budget at this time, Please try again later',

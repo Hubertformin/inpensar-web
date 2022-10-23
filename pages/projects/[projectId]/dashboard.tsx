@@ -8,7 +8,7 @@ export default function Dashboard() {
     const [endDate, setEndDate] = React.useState(new Date());
 
     function onDateRangeSelect(dates) {
-        console.log(dates)
+        (dates)
         const [start, end] = dates;
         setStartDate(start);
         setEndDate(end);

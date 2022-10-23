@@ -90,7 +90,7 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                 closeModal();
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
                 toast({
                     title: "We are unable to save your account",
                     status: "error",
@@ -109,7 +109,7 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                 closeModal();
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
                 toast({
                     title: "We are unable to delete this account",
                     description: err?.response?.data?.errorText || 'Something went wrong, Please try again later',

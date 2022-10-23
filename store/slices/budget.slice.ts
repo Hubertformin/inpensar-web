@@ -28,7 +28,7 @@ export const budgetsSlice = createSlice({
       });
     },
     removeBudgetFromState(state, action) {
-      console.log(action)
+      (action)
       state.data = state.data.filter((t) => t._id !== action.payload._id);
     },
 

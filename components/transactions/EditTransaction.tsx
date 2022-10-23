@@ -246,7 +246,7 @@ export default function EditTransaction({
     /**
      * Add .data to api
      */
-    console.log(transactionData);
+    (transactionData);
     setIsLoading(true);
     api
       .updateTransaction(transactionData)

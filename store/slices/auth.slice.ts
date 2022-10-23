@@ -15,7 +15,9 @@ const initialState = {
         _id: undefined,
         uid: '',
         settings: {
-            language: ''
+            country: '',
+            language: '',
+            currency: ''
         }
     },
     idToken: '',

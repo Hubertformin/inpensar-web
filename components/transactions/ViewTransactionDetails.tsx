@@ -27,13 +27,13 @@ import TransactionAmount from "./TransactionAmount";
 import { IoSyncOutline, IoWalletOutline } from "react-icons/io5";
 import { HiOutlinePencil } from "react-icons/hi";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { formatCurrency } from "../../utils/number";
 import { formatDate } from "../../utils/date";
 import { BsArrowRightShort } from "react-icons/bs";
 import useApi from "../../hooks/useApi";
 import EditTransaction from "./EditTransaction";
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import useUtils from "../../hooks/useUtils";
 
 interface ViewTransactionDetailsProps {
   open: boolean;
@@ -52,6 +52,7 @@ export default function ViewTransactionDetails({
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [editModalOpen, setEditModalOpen] = React.useState(false);
   const api = useApi();
+  const utils = useUtils();
 
   React.useEffect(() => {
     if (open) {
@@ -190,7 +191,7 @@ export default function ViewTransactionDetails({
                           {selectedTransaction?.account.name}
                         </div>
                         <p className="text-sm text-slate-500">
-                          {formatCurrency(selectedTransaction?.account.amount)}
+                          {utils.formatCurrency(selectedTransaction?.account.amount)}
                         </p>
                       </div>
                     </div>

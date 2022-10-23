@@ -21,9 +21,10 @@ import { selectCategoriesState } from "../../../store/slices/categories.slice";
 import { sortArrayOfObjects } from "../../../utils/array";
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 import { selectTransactionInsights } from "../../../store/slices/transaction.slice";
-import { formatCurrency } from "../../../utils/number";
+import useUtils from "../../../hooks/useUtils";
 
 export default function TransactionsHome() {
+  const utils = useUtils();
   const categoriesState = useSelector(selectCategoriesState);
   const transactionInsights = useSelector(selectTransactionInsights);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -110,7 +111,7 @@ export default function TransactionsHome() {
             <Stat>
               <StatLabel>Earnings</StatLabel>
               <StatNumber className={"text-blue-600"}>
-                {formatCurrency(transactionInsights.earnings)}
+                {utils.formatCurrency(transactionInsights.earnings)}
               </StatNumber>
               <StatHelpText>
                 {/*<StatArrow type='increase' />*/}
@@ -121,7 +122,7 @@ export default function TransactionsHome() {
             <Stat>
               <StatLabel>Expenses</StatLabel>
               <StatNumber className={"text-pink-600"}>
-                {formatCurrency(transactionInsights.expenses)}
+                {utils.formatCurrency(transactionInsights.expenses)}
               </StatNumber>
               <StatHelpText>
                 {/*<StatArrow type='decrease' />*/}
@@ -138,7 +139,7 @@ export default function TransactionsHome() {
                     : "text-green-600"
                 }
               >
-                {formatCurrency(transactionInsights.balance)}
+                {utils.formatCurrency(transactionInsights.balance)}
               </StatNumber>
               <StatHelpText>
                 {/*<StatArrow type='increase' />*/}

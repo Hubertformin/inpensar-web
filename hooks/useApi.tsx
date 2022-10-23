@@ -29,10 +29,10 @@ import {UserModel} from "../models/user.model";
 import {ProjectModel} from "../models/project.model";
 import {setCategoriesState} from "../store/slices/categories.slice";
 
-
+const API = process.env.NODE_ENV == 'development' ? 'http://localhost:5001/inpensar-enchird/us-central1/api' : 'https://us-central1-inpensar-enchird.cloudfunctions.net/api'
 export default function useApi() {
   const httpInstance = axios.create({
-    baseURL: 'http://localhost:5001/inpensar-enchird/us-central1/api',
+    baseURL: API,
     httpAgent: 'Inpensar/web'
   });
 
@@ -152,10 +152,15 @@ export default function useApi() {
 
   async function deleteTransaction(transaction: TransactionsModel) {
     // TODO: API CALL
-    await httpInstance.delete(`/projects/${activeProject._id}/transactions/${transaction._id}`, {
+    const {data} = await httpInstance.delete(`/projects/${activeProject._id}/transactions/${transaction._id}`, {
       ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
     });
     dispatch(removeTransactionFromState(transaction));
+
+    if (data['data'].budget) {
+      dispatch(replaceBudgetInState(data['data'].budget));
+    }
+
     return transaction._id;
   }
   /**

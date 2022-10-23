@@ -5,12 +5,12 @@ import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 import {BsPlus} from "react-icons/bs";
 import React, {useState} from "react";
 import styles from '../../../styles/Accounts.module.scss';
-import {formatCurrency} from "../../../utils/number";
 import CreateOrEditAccount from "../../../components/accounts/CreateOrEditAccount";
 import {AccountsModel} from "../../../models/accounts.model";
 import {useSelector} from "react-redux";
 import {selectAccountBalanceState, selectAccountsState} from "../../../store/slices/accounts.slice";
 import AccountTile from "../../../components/accounts/AccountTile";
+import useUtils from "../../../hooks/useUtils";
 
 export default function AccountsHome() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -18,6 +18,7 @@ export default function AccountsHome() {
     const accounts: AccountsModel[] = useSelector(selectAccountsState);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const balance: number = useSelector(selectAccountBalanceState);
+    const utils = useUtils();
 
     React.useEffect(() => {
         if (accounts.length > 0) {
@@ -57,7 +58,7 @@ export default function AccountsHome() {
                 </div>
                 <div className={`${styles.header}`}>
                     <p className="text-slate-500 text-xl">Account Balance</p>
-                    <h1 className="font-bold text-4xl">{formatCurrency(balance)}</h1>
+                    <h1 className="font-bold text-4xl">{utils.formatCurrency(balance)}</h1>
                 </div>
                 <Divider/>
                 <div className="account-body pt-10 pb-8 px-8">

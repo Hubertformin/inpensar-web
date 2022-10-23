@@ -4,6 +4,7 @@ import {CategoryDocument} from "./category.model";
 import {getRandomItemFromList} from "../../../utils/array";
 import {CONSTANTS} from "../../../data/constants";
 import {ProjectDocument} from "./projects.model";
+import * as dayjs from "dayjs";
 
 export interface BudgetBaseDocument {
     _id?: string;
@@ -11,12 +12,23 @@ export interface BudgetBaseDocument {
     categories: CategoryDocument[];
     amount: number;
     amountSpent: number;
+    activePeriod: string;
     resetsMonthly: boolean;
     color: string;
     photoURL: string;
     project: ProjectDocument;
     owner: UserDocument;
 
+}
+
+function setBudgetDefaultActivePeriod(): string {
+    const today = dayjs();
+    return (today.month() + 1) + '-' + today.year();
+}
+
+export function getActivePeriod(date: string): string {
+    const today = dayjs(date);
+    return (today.month() + 1) + '-' + today.year();
 }
 
 const budgetSchema = new Schema<BudgetBaseDocument>({
@@ -34,6 +46,10 @@ const budgetSchema = new Schema<BudgetBaseDocument>({
     resetsMonthly: {
         type: Boolean,
         default: false,
+    },
+    activePeriod: {
+        type: String,
+        default: () => setBudgetDefaultActivePeriod()
     },
     amountSpent: {
         type: Number,

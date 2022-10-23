@@ -66,11 +66,11 @@ function MyApp({Component, pageProps}) {
                 }
 
                 // if (activeProject && budgets.length == 0) {
-                //     await api.getBudgets().catch(err => console.log(err));
+                //     await api.getBudgets().catch(err => console.error(err));
                 // }
                 //
                 // if (accounts.length == 0) {
-                //     await api.getAccounts().catch(err => console.log(err));
+                //     await api.getAccounts().catch(err => console.error(err));
                 // }
 
                 dispatch(setAuthState(AuthState.AUTHENTICATED));

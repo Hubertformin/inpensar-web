@@ -22,7 +22,7 @@ export function createController(controller: ControllerHandler) {
                 .status(statusCode)
                 .json({ message, data: data, ...(count && { count }) });
         } catch (err) {
-            console.log(err);
+            console.error(err);
             if ((err as any).code === 11000) {
                 const duplicateKeys = Object.keys((err as any).keyPattern);
                 return res.status(409).json({

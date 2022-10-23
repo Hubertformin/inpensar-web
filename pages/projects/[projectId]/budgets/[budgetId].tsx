@@ -18,14 +18,15 @@ import {
 import {HiOutlinePencil} from "react-icons/hi";
 import {MdOutlineDeleteOutline} from "react-icons/md";
 import useApi from "../../../../hooks/useApi";
-import {formatCurrency} from "../../../../utils/number";
 import {calculateBudgetBalance, calculateBudgetExpenditurePercentage} from "../../../../utils/budget";
 import {RiErrorWarningFill} from "react-icons/ri";
 import {convertHexToRGBA} from "../../../../utils/colors";
 import {TbLayoutList} from "react-icons/tb";
 import CreateOrEditBudgetForm from "../../../../components/budget/CreateOrEditBudget";
+import useUtils from "../../../../hooks/useUtils";
 
 export default function BudgetDetail() {
+    const utils = useUtils();
     const router = useRouter();
     const cancelRef = React.useRef();
     const deleteDisclosure = useDisclosure();
@@ -89,17 +90,17 @@ export default function BudgetDetail() {
                 {currentBudget &&
                     (<div className="amount-info pt-8">
                         <h1 className="text-4xl mb-3 font-bold"
-                            style={{color: currentBudget?.color}}>{formatCurrency(currentBudget?.amount)}</h1>
+                            style={{color: currentBudget?.color}}>{utils.formatCurrency(currentBudget?.amount)}</h1>
                         {
                             (currentBudget?.amountSpent < currentBudget?.amount) ?
-                                <h1 className="text-lg font-bold">{formatCurrency(calculateBudgetBalance(currentBudget))} left to
+                                <h1 className="text-lg font-bold">{utils.formatCurrency(calculateBudgetBalance(currentBudget))} left to
                                     spend</h1> :
                                 <h1 className="text-lg font-bold flex items-center gap-2 text-red-80">
                                     <RiErrorWarningFill/> You have exceeded this budget</h1>
                         }
                         <div className="amount-spent-info">
                             <div className="flex justify-between pt-4">
-                                <p className="text-lg text-slate-600">Spent <strong>{formatCurrency(currentBudget?.amountSpent)}</strong> of <strong>{formatCurrency(currentBudget?.amount)}</strong> </p>
+                                <p className="text-lg text-slate-600">Spent <strong>{utils.formatCurrency(currentBudget?.amountSpent)}</strong> of <strong>{utils.formatCurrency(currentBudget?.amount)}</strong> </p>
                                 <p className="text-lg font-bold text-slate-600">{expenditurePercent}%</p>
                             </div>
                             <div className="progress mt-2">

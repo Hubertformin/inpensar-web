@@ -29,7 +29,7 @@ connect(process.env.DATABASE_URI as string, {
 }).then(() => {
   console.log("[SERVER]: connected to database!");
   seedCategories();
-}).catch((err) => console.log(err));
+}).catch((err) => console.error(err));
 
 app.use(logger("dev"));
 app.use(express.json());

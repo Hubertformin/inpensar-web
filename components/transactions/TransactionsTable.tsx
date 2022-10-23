@@ -129,7 +129,7 @@ export default function TransactionsTable() {
     // else if (transactionsState.length > 0) {
     //   setIsPageLoading(false);
     // }
-      console.log(transactionsState)
+      (transactionsState)
   }, [loadTransactions, transactionsState, activeTabIndex]);
 
   const onTabChange = (index: number) => {

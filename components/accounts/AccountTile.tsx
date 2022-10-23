@@ -2,12 +2,13 @@ import {AccountsModel} from "../../models/accounts.model";
 import {Avatar} from "@chakra-ui/react";
 import {IoWalletOutline} from "react-icons/io5";
 import {getAccountTypeName} from "../../utils/account";
-import {formatCurrency} from "../../utils/number";
 import React from "react";
+import useUtils from "../../hooks/useUtils";
 
 declare type AccountTileSize = 'sm' | 'md' | 'lg';
 
 export default function AccountTile({account, size = 'md', onClick}: {account: AccountsModel, size?: AccountTileSize, onClick?: () => void}) {
+    const utils = useUtils();
     return (
         <div onClick={() => onClick ? onClick() : null} className={`flex cursor-pointer items-center ${size == 'sm' ? 'mb-3' : 'mb-6'} border-b pb-4 justify-between`}>
             <div className="leading flex gap-2">
@@ -18,7 +19,7 @@ export default function AccountTile({account, size = 'md', onClick}: {account: A
                 </div>
             </div>
             <div className="actions">
-                <p className={`font-medium ${size == 'sm' ? 'text-sm' : 'text-xl'}`}>{formatCurrency(account.amount)}</p>
+                <p className={`font-medium ${size == 'sm' ? 'text-sm' : 'text-xl'}`}>{utils.formatCurrency(account.amount)}</p>
             </div>
         </div>
     )

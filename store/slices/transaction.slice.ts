@@ -21,7 +21,7 @@ const computeInsights = (
   oldTransaction?: TransactionsModel
 ) => {
   console.clear();
-  console.log(transaction);
+  (transaction);
   switch (opp) {
     case "ADD":
       if (transaction.type === TransactionType.INCOME) {
@@ -35,15 +35,15 @@ const computeInsights = (
       }
       break;
     case "SUBTRACT":
-      console.log(transaction.amount);
+      (transaction.amount);
       if (transaction.type === TransactionType.INCOME) {
         state.insights.earnings -= Number(transaction.amount);
         state.insights.balance =
           state.insights.earnings - state.insights.expenses;
       } else if (transaction.type === TransactionType.EXPENSE) {
         state.insights.expenses -= Number(transaction.amount);
-        console.log(state.insights.earnings);
-        console.log(state.insights.expenses);
+        (state.insights.earnings);
+        (state.insights.expenses);
         state.insights.balance =
           state.insights.earnings - state.insights.expenses;
       }

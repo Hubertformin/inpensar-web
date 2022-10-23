@@ -70,13 +70,13 @@ export default function CreateAccountView() {
         setFieldValue('currency', currency);
     }
 
-    const onLogin = (values, actions: FormikHelpers<any>) => {
+    const onCreateAccount = (values, actions: FormikHelpers<any>) => {
         values['country'] = countries.find(country => country.alpha2Code == values.country.alpha2Code);
         values['currency'] = currencies.find(currency => currency.code == values.currency.value);
 
         api.createUserAccount(values)
             .then((data) => {
-                console.log(data);
+                (data);
                 // route to transactions list
                 router.push(`/projects/${data.project.id}/transactions`)
             }).catch((e) => {
@@ -106,7 +106,7 @@ export default function CreateAccountView() {
                                 country: '',
                                 currency: ''
                             }}
-                            onSubmit={onLogin}
+                            onSubmit={onCreateAccount}
                         >
                             {(props) => (
                                 <Form>

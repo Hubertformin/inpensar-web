@@ -39,12 +39,12 @@ export const getUserById = createController(async (req, res) => {
 
 export const createUserController = createController(async (req, res) => {
 
-    const userData = await validateCreateUser(req.body);
+    const userData: any = await validateCreateUser(req.body);
     const user = new User({
         ...userData,
         settings: {
             country: userData.country?.alpha2Code,
-            currency: userData.currency?.code,
+            currency: userData.currency?.code || 'XAF',
             language: 'en'
         }
     });

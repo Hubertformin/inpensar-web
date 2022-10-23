@@ -35,7 +35,7 @@ export const getCurrentUserBudgetsController = createController(async (req, res)
         limit: number = parseInt(req.query.limit as string) || 20,
         startIndex = (page - 1) * limit;
     // search = req.query.searchText;
-    console.log(req.params)
+    (req.params)
 
     const count = await Budget.find({owner: req.$currentUser$}).countDocuments().exec();
 

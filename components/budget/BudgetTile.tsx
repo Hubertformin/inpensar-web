@@ -2,9 +2,9 @@ import React from "react";
 import { BudgetModel } from "../../models/budget.model";
 import styles from "../../styles/BudgetTile.module.scss";
 import { convertHexToRGBA } from "../../utils/colors";
-import { formatCurrency } from "../../utils/number";
 import {RiErrorWarningFill} from "react-icons/ri";
 import {calculateBudgetBalance, calculateBudgetExpenditurePercentage} from "../../utils/budget";
+import useUtils from "../../hooks/useUtils";
 
 interface BudgetTileProps {
   budget: BudgetModel;
@@ -18,6 +18,7 @@ function getListTextOfCategories(categories: any[]) {
 }
 
 export function BudgetTile({ budget, isSummary = false, onClick }: BudgetTileProps) {
+  const utils = useUtils();
   const [expenditurePercent, setExpenditurePercent] = React.useState(0);
   const [isExceeded, setIsExceeded] = React.useState(false);
   React.useEffect(() => {
@@ -41,7 +42,7 @@ export function BudgetTile({ budget, isSummary = false, onClick }: BudgetTilePro
         </div>
         <div className="action">
           <h3 className="text-lg font-bold" style={{ color: budget.color, ...(isSummary && {fontSize: 14}) }}>
-            {formatCurrency(budget.amount)}
+            {utils.formatCurrency(budget.amount)}
           </h3>
         </div>
       </div>
@@ -62,7 +63,7 @@ export function BudgetTile({ budget, isSummary = false, onClick }: BudgetTilePro
       </div>
       <div className="relative">
         <div className={`${styles.spentAmount}`} style={{...(isSummary && {fontSize: 12})}}>
-          {formatCurrency(budget.amountSpent)}
+          {utils.formatCurrency(budget.amountSpent)}
         </div>
         <div className={`${styles.balanceAmount}`}>
           {isExceeded ?
@@ -70,7 +71,7 @@ export function BudgetTile({ budget, isSummary = false, onClick }: BudgetTilePro
                 <RiErrorWarningFill />
                 {isSummary ? <span>Exceeded</span> : <span>You have exceeded this budget</span>}
               </p>):
-              <p>{formatCurrency(calculateBudgetBalance(budget))}</p>
+              <p>{utils.formatCurrency(calculateBudgetBalance(budget))}</p>
           }
 
         </div>

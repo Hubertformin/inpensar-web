@@ -17,9 +17,9 @@ import {
 } from "@chakra-ui/react";
 import { IoIosSearch } from "react-icons/io";
 import { Data } from "../../data";
-import { IoWalletOutline } from "react-icons/io5";
-import { formatCurrency } from "../../utils/number";
+
 import { getRandomItemFromList } from "../../utils/array";
+import useUtils from "../../hooks/useUtils";
 
 interface CreateBudgetProps {
   open: boolean;
@@ -29,6 +29,7 @@ export default function CategoriesMultiSelectModal({
   open,
   onClose,
 }: CreateBudgetProps) {
+  const utils = useUtils();
   const disclosure = useDisclosure();
   const [displayCategories, setDisplayCategories] = React.useState(
     Data.expense_categories
