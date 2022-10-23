@@ -1,4 +1,4 @@
-import {Schema, connection, Document, Types} from "mongoose";
+import {Schema, model, Document, Types} from "mongoose";
 import {ProjectDocument} from "./projects.model";
 
 export enum AccountType {
@@ -47,9 +47,7 @@ const accountSchema = new Schema<AccountBaseDocument>(
     {timestamps: true}
 );
 
-const db = connection.useDb(process.env.DATABASE_NAME as string);
-
-const Account = db.model("accounts", accountSchema);
+const Account = model("accounts", accountSchema);
 
 export type AccountDocument = Document<Types.ObjectId> & AccountBaseDocument;
 

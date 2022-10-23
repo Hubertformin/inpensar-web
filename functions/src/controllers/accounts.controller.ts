@@ -5,8 +5,8 @@ import {validateCreateWalletData} from "../validators/wallet.validators";
 
 export const createWalletController = createController(async (req, res) => {
   // TODO: VALIDATE WALLET BODY
-  const walletData = await validateCreateWalletData(req.body);
-  const wallet = new Account({ ...walletData, owner: req.$currentUser$?._id });
+  const accountData = await validateCreateWalletData(req.body);
+  const wallet = new Account({ ...accountData, owner: req.$currentUser$?._id });
 
   await wallet.save();
   return { statusCode: 200, data: { results: wallet.toObject() }, message: "" };

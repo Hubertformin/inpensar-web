@@ -1,4 +1,4 @@
-import {Schema, Document, Types, connection} from 'mongoose';
+import {Schema, Document, Types, model} from 'mongoose';
 import {UserDocument} from "./user.model";
 import {CategoryDocument} from "./category.model";
 import {getRandomItemFromList} from "../../../utils/array";
@@ -11,6 +11,7 @@ export interface BudgetBaseDocument {
     categories: CategoryDocument[];
     amount: number;
     amountSpent: number;
+    resetsMonthly: boolean;
     color: string;
     photoURL: string;
     project: ProjectDocument;
@@ -23,12 +24,16 @@ const budgetSchema = new Schema<BudgetBaseDocument>({
         type: String,
     },
     categories: [{
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'categories'
     }],
     amount: {
         type: Number,
         default: 0
+    },
+    resetsMonthly: {
+        type: Boolean,
+        default: false,
     },
     amountSpent: {
         type: Number,
@@ -40,17 +45,18 @@ const budgetSchema = new Schema<BudgetBaseDocument>({
     },
     photoURL: String,
     project: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'projects'
     },
     owner: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
+        ref: 'users'
     }
 }, {timestamps: true});
 
-const db = connection.useDb(process.env.DATABASE_NAME as string);
 
-const Budget =  db.model('budgets', budgetSchema);
+
+const Budget =  model('budgets', budgetSchema);
 
 export type BudgetDocument = Document<Types.ObjectId> & BudgetBaseDocument;
 

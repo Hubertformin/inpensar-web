@@ -1,5 +1,5 @@
 import {
-    Button, ButtonGroup, Divider, Skeleton, SkeletonCircle, SkeletonText,
+    Button, ButtonGroup, Divider, Grid, GridItem, Skeleton, SkeletonCircle, SkeletonText,
 } from "@chakra-ui/react";
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 import {BsPlus} from "react-icons/bs";
@@ -11,7 +11,6 @@ import {AccountsModel} from "../../../models/accounts.model";
 import {useSelector} from "react-redux";
 import {selectAccountBalanceState, selectAccountsState} from "../../../store/slices/accounts.slice";
 import AccountTile from "../../../components/accounts/AccountTile";
-import useApi from "../../../hooks/useApi";
 
 export default function AccountsHome() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -19,11 +18,12 @@ export default function AccountsHome() {
     const accounts: AccountsModel[] = useSelector(selectAccountsState);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const balance: number = useSelector(selectAccountBalanceState);
-    const api = useApi();
 
     React.useEffect(() => {
-        api.getAccounts().catch(err => console.log(err)).then(() => setIsPageLoading(false));
-    }, []);
+        if (accounts.length > 0) {
+            setIsPageLoading(false);
+        }
+    }, [accounts]);
 
     const selectAccount = (account) => {
         setSelectedAccount(account);
@@ -99,35 +99,53 @@ export default function AccountsHome() {
 
 function AccountsPageLoadingSchema() {
     return (
-       <>
-           <div className="flex gap-4 items-center border-b pb-4 mb-2">
-               <SkeletonCircle size='55' />
-               <div className={'w-3/4'}>
-                   <Skeleton height={'20px'} />
-                   <Skeleton mt='2' height={'10px'} />
-               </div>
-           </div>
-           <div className="flex gap-4 items-center border-b pb-4 mb-2">
-               <SkeletonCircle size='55' />
-               <div className={'w-3/4'}>
-                   <Skeleton height={'20px'} />
-                   <Skeleton mt='2' height={'10px'} />
-               </div>
-           </div>
-           <div className="flex gap-4 items-center border-b pb-4 mb-2">
-               <SkeletonCircle size='55' />
-               <div className={'w-3/4'}>
-                   <Skeleton height={'20px'} />
-                   <Skeleton mt='2' height={'10px'} />
-               </div>
-           </div>
-           <div className="flex gap-4 items-center border-b pb-4 mb-2">
-               <SkeletonCircle size='55' />
-               <div className={'w-3/4'}>
-                   <Skeleton height={'20px'} />
-                   <Skeleton mt='2' height={'10px'} />
-               </div>
-           </div>
-       </>
+        <div className={'pt-10'}>
+            <Grid templateColumns='repeat(9, 1fr)' gap={6}>
+                <GridItem w='100%'>
+                    <SkeletonCircle size='55' />
+                </GridItem>
+                <GridItem colSpan={8} w='100%'>
+                    <Skeleton height={'20px'} />
+                    <Skeleton mt='2' height={'25px'} />
+                </GridItem>
+            </Grid>
+            <Grid mt='8' templateColumns='repeat(9, 1fr)' gap={6}>
+                <GridItem w='100%'>
+                    <SkeletonCircle size='55' />
+                </GridItem>
+                <GridItem colSpan={8} w='100%'>
+                    <Skeleton height={'20px'} />
+                    <Skeleton mt='2' height={'25px'} />
+                </GridItem>
+            </Grid>
+            <Grid mt='8' templateColumns='repeat(9, 1fr)' gap={6}>
+                <GridItem w='100%'>
+                    <SkeletonCircle size='55' />
+                </GridItem>
+                <GridItem colSpan={8} w='100%'>
+                    <Skeleton height={'20px'} />
+                    <Skeleton mt='2' height={'25px'} />
+                </GridItem>
+            </Grid>
+            <Grid mt='8' templateColumns='repeat(9, 1fr)' gap={6}>
+                <GridItem w='100%'>
+                    <SkeletonCircle size='55' />
+                </GridItem>
+                <GridItem colSpan={8} w='100%'>
+                    <Skeleton height={'20px'} />
+                    <Skeleton mt='2' height={'25px'} />
+                </GridItem>
+            </Grid>
+            <Grid mt='8' templateColumns='repeat(9, 1fr)' gap={6}>
+                <GridItem w='100%'>
+                    <SkeletonCircle size='55' />
+                </GridItem>
+                <GridItem colSpan={8} w='100%'>
+                    <Skeleton height={'20px'} />
+                    <Skeleton mt='2' height={'25px'} />
+                </GridItem>
+            </Grid>
+
+        </div>
     )
 }

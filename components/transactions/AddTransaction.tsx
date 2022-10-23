@@ -216,7 +216,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
           category: form.values.category,
           notes: expenseNotes || "",
           type: TransactionType.EXPENSE,
-          wallet: getWalletById(form.values.account),
+          account: getWalletById(form.values.account),
           date: (form.values.date as Date).toISOString(),
         };
         break;
@@ -226,7 +226,7 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
           category: form.values.category,
           notes: incomeNotes || "",
           type: TransactionType.INCOME,
-          wallet: getWalletById(form.values.account),
+          account: getWalletById(form.values.account),
           date: (form.values.date as Date).toISOString(),
         };
         break;
