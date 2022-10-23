@@ -76,7 +76,6 @@ export default function CreateAccountView() {
 
         api.createUserAccount(values)
             .then((data) => {
-                (data);
                 // route to transactions list
                 router.push(`/projects/${data.project.id}/transactions`)
             }).catch((e) => {

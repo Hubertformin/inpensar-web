@@ -8,14 +8,12 @@ import * as cookieParser from "cookie-parser";
 import * as logger from "morgan";
 import { connect} from "mongoose";
 import * as cors from "cors";
+import {useControllers} from "./routers";
 
 // INit admin app
 initializeApp({
   credential: applicationDefault(),
 });
-
-import {useControllers} from "./routers";
-import {seedCategories} from "../db/seed";
 
 const app = express();
 app.use(cors());
@@ -28,7 +26,6 @@ connect(process.env.DATABASE_URI as string, {
   // useCreateIndex: true
 }).then(() => {
   console.log("[SERVER]: connected to database!");
-  seedCategories();
 }).catch((err) => console.error(err));
 
 app.use(logger("dev"));

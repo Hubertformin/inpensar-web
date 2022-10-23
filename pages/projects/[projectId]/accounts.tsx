@@ -37,7 +37,7 @@ export default function AccountsHome() {
     }
 
     return (
-        <ProjectViewLayout>
+        <ProjectViewLayout title={'Accounts'}>
             <main className="page-view py-6">
                 <div className="toolbar mb-6 px-8 flex justify-between align-items-center">
                     <h1 className="font-bold text-2xl">Accounts</h1>

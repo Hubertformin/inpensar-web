@@ -37,7 +37,7 @@ export default function RightSideNav() {
         <div className={styles.sideNavContainer}>
             <div className={`${styles.topContainer}`}>
                 <div className={`${styles.header} pt-4 px-6`}>
-                    <h4 className="tex-lg font-bold">This month's budgets</h4>
+                    <h4 className="tex-lg font-bold">This month&apos;s budgets</h4>
                 </div>
                 <div className={`${styles.list} px-6 mt-4`}>
                     {isBudgetLoading && <BudgetLoadingSchema />}

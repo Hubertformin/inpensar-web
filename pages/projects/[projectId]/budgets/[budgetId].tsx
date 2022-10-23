@@ -64,7 +64,7 @@ export default function BudgetDetail() {
     }
 
     return (
-        <ProjectViewLayout>
+        <ProjectViewLayout title={`${currentBudget?.name || 'Budget'} Details`}>
             <main className="page-view px-8 py-6">
                 <div className="toolbar mb-6 flex justify-between align-items-center">
                     <h1 className="font-bold text-2xl">{currentBudget?.name}</h1>

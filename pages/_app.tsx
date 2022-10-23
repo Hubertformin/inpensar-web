@@ -82,7 +82,7 @@ function MyApp({Component, pageProps}) {
         }, (err) => {
             console.error(err);
         })
-    }, []);
+    }, [activeProject, api, authUser._id, categories.expenses.length, categories.income.length, dispatch]);
     return (
         <>
             <Head>

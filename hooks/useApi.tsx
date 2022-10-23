@@ -95,6 +95,7 @@ export default function useApi() {
     const expenses = categoriesData.filter(category => category.type === TransactionType.EXPENSE);
     const income = categoriesData.filter(category => category.type === TransactionType.INCOME);
     dispatch(setCategoriesState({ income, expenses }));
+    console.log(categoriesData)
     return categoriesData;
   }
   /**

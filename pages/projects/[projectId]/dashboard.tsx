@@ -15,7 +15,7 @@ export default function Dashboard() {
     }
 
     return (
-        <ProjectViewLayout>
+        <ProjectViewLayout title={'Dashboard'}>
             <main className="page-view px-6 py-6">
                 <div className="toolbar mb-6 flex justify-between align-items-center">
                     <h1 className="font-bold text-2xl">Dashboard</h1>

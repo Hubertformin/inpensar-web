@@ -26,7 +26,7 @@ export default function BudgetHome() {
     }, [budgets]);
 
     return (
-        <ProjectViewLayout>
+        <ProjectViewLayout title={'Budgets'}>
             <main className="page-view px-8 py-6">
                 <div className="toolbar mb-6 flex justify-between align-items-center">
                     <h1 className="font-bold text-2xl">Budgets</h1>
@@ -64,7 +64,7 @@ export default function BudgetHome() {
                 {(budgets?.length > 0 && !isPageLoading) && (<div className="budget-body mt-4">
                     {budgets.map((budget, index) => {
                         return <BudgetTile key={index}
-                                           onClick={() => router.push(`/projects/${activeProject?._id}/budgets/${budget._id}`)}
+                                           onClick={() => router.push(`/projects/${activeProject?.id}/budgets/${budget._id}`)}
                                            budget={budget}/>;
                     })}
                 </div>)}

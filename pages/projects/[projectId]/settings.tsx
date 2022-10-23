@@ -1,16 +1,12 @@
-import BottomNav from "../../../components/nav/BottomBar";
-import {Alert, AlertIcon, AlertTitle} from "@chakra-ui/alert";
 import {
-    AlertDescription,
-    Box, Button,
-    CloseButton, FormControl, Select,
+    Button, FormControl, Select,
 } from "@chakra-ui/react";
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 import React from "react";
 
 export default function SettingsHome() {
     return (
-        <ProjectViewLayout>
+        <ProjectViewLayout title={'Settings'}>
             <main className="page-view px-8 py-6">
                 <div className="toolbar mb-6 flex justify-between align-items-center">
                     <h1 className="font-bold text-2xl">Settings</h1>

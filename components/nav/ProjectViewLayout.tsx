@@ -6,8 +6,9 @@ import PageLoader from "./PageLoader";
 import {useSelector} from "react-redux";
 import {AuthState, selectAuthState} from "../../store/slices/auth.slice";
 import {useRouter} from "next/router";
+import MetaTags from "./MetaTags";
 
-export default function ProjectViewLayout({children}) {
+export default function ProjectViewLayout({title = 'Project', children}) {
     const router = useRouter();
     const authState = useSelector(selectAuthState);
 
@@ -18,14 +19,17 @@ export default function ProjectViewLayout({children}) {
         }
     }, [authState])
     return (
-        authState == 'AUTHENTICATED' ? (<div className={styles.__page_home}>
-            <div className={styles.leftSideNav}>
-                <LeftSideNav />
-            </div>
-            <div className={styles.pageContainer}>{children}</div>
-            <div className={styles.rightSideNav}>
-                <RightSideNav />
-            </div>
-        </div>) : <PageLoader />
+        <>
+            <MetaTags title={title} />
+            {authState == 'AUTHENTICATED' ? (<div className={styles.__page_home}>
+                <div className={styles.leftSideNav}>
+                    <LeftSideNav/>
+                </div>
+                <div className={styles.pageContainer}>{children}</div>
+                <div className={styles.rightSideNav}>
+                    <RightSideNav/>
+                </div>
+            </div>) : <PageLoader/>}
+        </>
     )
 }
