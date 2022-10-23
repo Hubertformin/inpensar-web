@@ -16,7 +16,6 @@ import { formatDate } from "../../utils/date";
 export default function LeftSideNav() {
   const authUser = useSelector(selectAuthUserState);
   const activeProject = useSelector(selectActiveProjectState);
-  console.log(activeProject)
   
   return (
     <div className={styles.sideNavContainer}>

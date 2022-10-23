@@ -1,6 +1,6 @@
 import {Schema, Document, Types, connection} from 'mongoose';
 import {UserDocument} from "./user.model";
-import {generateUID} from "../../utils/uuid";
+import {generateUID} from "../utils/uuid";
 
 export interface ProjectBaseDocument {
     _id?: string;
