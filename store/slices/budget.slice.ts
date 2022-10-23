@@ -1,10 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../";
 import { HYDRATE } from "next-redux-wrapper";
-import { Data } from "../../data";
 
 const initialState = {
-  data: Data.budgets,
+  data: [],
 };
 
 export const budgetsSlice = createSlice({

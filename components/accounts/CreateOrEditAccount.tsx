@@ -112,6 +112,7 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                 console.log(err);
                 toast({
                     title: "We are unable to delete this account",
+                    description: err?.response?.data?.errorText || 'Something went wrong, Please try again later',
                     status: "error",
                     isClosable: true,
                 });

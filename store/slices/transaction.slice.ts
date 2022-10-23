@@ -15,12 +15,12 @@ import {
 } from "../../models/transactions.model";
 
 const initialState = {
-  data: Data.transactions,
+  data: [],
   loading: false,
   insights: {
-    earnings: sumTransactionEarnings(Data.transactions) || 0,
-    expenses: sumTransactionExpenses(Data.transactions) || 0,
-    balance: computeTransactionBalance(Data.transactions) || 0,
+    earnings: 0,
+    expenses: 0,
+    balance: 0,
   },
 };
 

@@ -1,5 +1,5 @@
 import {InferType, object, string} from "yup";
-import {CustomError} from "../src/models/error.model";
+import {CustomError} from "../models/error.model";
 
 let userSchema = object({
     name: string().required(),
@@ -10,13 +10,13 @@ let userSchema = object({
     currency: object().nullable(),
 });
 
-type Account = InferType<typeof userSchema>;
+type UserAccount = InferType<typeof userSchema>;
 
 export async function validateCreateUser(
-    accountData: any
-): Promise<Account> {
+    userData: any
+): Promise<UserAccount> {
     try {
-        return await userSchema.validate(accountData);
+        return await userSchema.validate(userData);
     } catch (e) {
         throw CustomError(e as any).status(400);
     }

@@ -1,12 +1,11 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {AppState} from "../";
 import {HYDRATE} from "next-redux-wrapper";
-import {Data} from "../../data";
 import {getCategoriesThunk} from "../thunks/category.thunk";
 
 const initialState = {
-    income: Data.income_categories,
-    expenses: Data.expense_categories,
+    income: [],
+    expenses: [],
     loading: false
 };
 

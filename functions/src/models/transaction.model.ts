@@ -4,13 +4,19 @@ import {AccountDocument} from "./accounts.model";
 import {UserDocument} from "./user.model";
 import {ProjectDocument} from "./projects.model";
 
+export enum TransactionType {
+    INCOME = 'income',
+    EXPENSE = 'expense',
+    TRANSFER = 'transfer'
+}
+
 interface TransactionBaseDocument {
     _id: string;
     category: CategoryDocument;
     amount: number;
     date: string;
     notes: string;
-    type: string;
+    type: TransactionType;
     attachment: object;
     recurrent: boolean;
     nextRecurrentDate: string;

@@ -1,6 +1,6 @@
 import {createController} from "./index";
 import User from "../models/user.model";
-import {validateCreateUser} from "../../validators/user.validator";
+import {validateCreateUser} from "../validators/user.validator";
 import {getAuth} from "firebase-admin/auth";
 import Project from "../models/projects.model";
 

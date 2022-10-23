@@ -1,24 +1,28 @@
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
-import { CONSTANTS } from "../data/constants";
 import { BudgetModel } from "../models/budget.model";
-import { TransactionsModel } from "../models/transactions.model";
+import {TransactionsModel, TransactionType} from "../models/transactions.model";
 import {appendBudgetState, removeBudgetFromState, replaceBudgetInState} from "../store/slices/budget.slice";
 import {
   prependTransactionState,
   removeTransactionFromState,
   replaceTransactionInState,
 } from "../store/slices/transaction.slice";
-import { getRandomItemFromList } from "../utils/array";
 import {AccountsModel} from "../models/accounts.model";
-import {appendAccountsState, removeAccountsFromState, replaceAccountsInState} from "../store/slices/accounts.slice";
+import {
+  appendAccountsState,
+  removeAccountsFromState,
+  replaceAccountsInState,
+  setAccountsState
+} from "../store/slices/accounts.slice";
 import axios from "axios";
 import {fireAuth} from "../utils/firebase";
 import {signInWithCustomToken} from "@firebase/auth";
 import {selectAuthUserIdTokenState, setAuthUserState} from "../store/slices/auth.slice";
-import {prependProjectState, setActiveProjectState} from "../store/slices/projects.slice";
+import {prependProjectState, selectActiveProjectState, setActiveProjectState} from "../store/slices/projects.slice";
 import {UserModel} from "../models/user.model";
 import {ProjectModel} from "../models/project.model";
+import {setCategoriesState} from "../store/slices/categories.slice";
 
 
 export default function useApi() {
@@ -29,12 +33,8 @@ export default function useApi() {
 
   const dispatch = useDispatch();
   const idToken = useSelector(selectAuthUserIdTokenState);
+  const activeProject = useSelector(selectActiveProjectState);
 
-  React.useEffect(() => {
-    if (idToken) {
-      httpInstance.defaults.headers.common['Authorization'] = `Bearer ${idToken}`;
-    }
-  }, [idToken]);
 
   async function createUserAccount(payload: any) {
     const {data} = await httpInstance.post('/users', payload);
@@ -80,49 +80,90 @@ export default function useApi() {
     return projectData;
   }
   /**
+   *  ===== CATEGORIES =====
+   */
+  async function getAndSetCategories({idToken = null}) {
+    const {data} = await httpInstance.get(`/projects/categories/all`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    const categoriesData = data['data'].results;
+    const expenses = categoriesData.filter(category => category.type === TransactionType.EXPENSE);
+    const income = categoriesData.filter(category => category.type === TransactionType.INCOME);
+    dispatch(setCategoriesState({ income, expenses }));
+    return categoriesData;
+  }
+  /**
    *  ===== TRANSACTIONS =====
    */
   async function addTransaction(
     transaction: TransactionsModel
   ): Promise<TransactionsModel> {
     // Add transaction to database....
-    dispatch(prependTransactionState(transaction));
-    return transaction;
+    const payload = {...transaction, category: transaction.category._id};
+    const {data} = await httpInstance.post(`/projects/${activeProject._id}/transactions`, payload, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    dispatch(prependTransactionState(data['data'].results));
+    // update the state with the wallet(s) or budget that was updated
+    if (data['data'].accounts) {
+      dispatch(replaceAccountsInState(data['data'].accounts));
+    }
+
+    if (data['data'].budget) {
+      dispatch(replaceBudgetInState(data['data'].budget));
+    }
+
+    return data['data'].results;
   }
 
   async function updateTransaction(
     transaction: TransactionsModel
   ): Promise<TransactionsModel> {
     // Update transaction in database....
-    dispatch(replaceTransactionInState(transaction));
-    return transaction;
+    const payload = {...transaction, category: transaction.category._id};
+    const {data} = await httpInstance.put(`/projects/${activeProject._id}/transactions/${transaction._id}`, payload, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    dispatch(replaceTransactionInState(data['data'].results));
+    return data['data'].results;
   }
 
-  function deleteTransaction(transaction: TransactionsModel) {
+  async function deleteTransaction(transaction: TransactionsModel) {
     // TODO: API CALL
+    await httpInstance.delete(`/projects/${activeProject._id}/transactions/${transaction._id}`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
     dispatch(removeTransactionFromState(transaction));
-    return Promise.resolve(transaction._id);
+    return transaction._id;
   }
   /**
    *  ===== Budgets =====
    */
   async function addBudget(budget: BudgetModel): Promise<BudgetModel> {
     // TODO: API CALL
-    budget._id = (Math.random() * 100).toFixed(1).toString();
-    budget.color = getRandomItemFromList(CONSTANTS.COLORS);
-    budget.owner = "USER";
-    dispatch(appendBudgetState(budget));
-    return budget;
+    const payload = budget.categories.map(c => c._id);
+    const {data} = await httpInstance.post(`/projects/${activeProject._id}/budgets`, payload, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    dispatch(appendBudgetState(data['data'].results));
+    return data['data'].results;
   }
 
   async function updateBudget(budget: BudgetModel): Promise<BudgetModel> {
     // TODO: API CALL
-    dispatch(replaceBudgetInState(budget));
-    return budget;
+    const payload = budget.categories.map(c => c._id);
+    const {data} = await httpInstance.put(`/projects/${activeProject._id}/budgets/${budget._id}`, payload, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    dispatch(replaceBudgetInState(data['data'].results));
+    return data['data'].results;
   }
 
   async function deleteBudget(budget: BudgetModel): Promise<BudgetModel> {
     // TODO: API CALL
+    await httpInstance.delete(`/projects/${activeProject._id}/budgets/${budget._id}`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
     dispatch(removeBudgetFromState(budget));
     return null;
   }
@@ -130,24 +171,36 @@ export default function useApi() {
   /**
    * ========= ACCOUNTS =========
    */
-  async function addAccount(account: AccountsModel): Promise<AccountsModel> {
-    // TODO: API CALLS
-    account._id = (Math.random() * 100).toFixed(1).toString();
-    account.owner = "USER";
-    dispatch(appendAccountsState(account));
+  async function getAccounts(): Promise<AccountsModel[]> {
+    const {data} = await httpInstance.get(`/accounts/me`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    dispatch(setAccountsState(data['data'].results));
 
-    return account;
+    return data['data'].results;
+  }
+  async function addAccount(account: AccountsModel): Promise<AccountsModel> {
+    const {data} = await httpInstance.post(`/accounts`, account, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    dispatch(appendAccountsState(data['data'].results));
+
+    return data['data'].results;
   }
 
   async function updateAccount(account: AccountsModel): Promise<AccountsModel> {
-    // TODO: API CALLS
-    dispatch(replaceAccountsInState(account));
+    const {data} = await httpInstance.put(`/accounts/${account._id}`, account, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    dispatch(replaceAccountsInState(data['data'].results));
 
-    return account;
+    return data['data'].results;
   }
 
   async function deleteAccount(account: AccountsModel): Promise<AccountsModel> {
-    // TODO: API CALLS
+    await httpInstance.delete(`/accounts/${account._id}`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
     dispatch(removeAccountsFromState(account));
 
     return account;
@@ -157,12 +210,14 @@ export default function useApi() {
     createUserAccount,
     getAndSetCurrentUsersData,
     getAndSetActiveProject,
+    getAndSetCategories,
     addTransaction,
     updateTransaction,
     deleteTransaction,
     addBudget,
     updateBudget,
     deleteBudget,
+    getAccounts,
     addAccount,
     updateAccount,
     deleteAccount
