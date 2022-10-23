@@ -2,7 +2,6 @@ import {BudgetModel} from "../models/budget.model";
 import {TransactionsModel, TransactionType,} from "../models/transactions.model";
 import {AccountsModel, AccountType} from "../models/accounts.model";
 import {CategoryModel} from "../models/category.model";
-import {ProjectModel} from "../models/project.model";
 import {CONSTANTS} from "./constants";
 
 const month_days: { value: string; label: string }[] = [
@@ -516,20 +515,14 @@ const wallets: AccountsModel[] = [
   },
 ];
 
-const project: ProjectModel = {
-  _id: "yu767sdfsdfwsdscsdcd",
-  title: "Personal Finance",
-  createdAt: "2022-10-30T10:04:46.000Z",
-  updatedAt: "2022-10-30T10:04:46.000Z",
-};
 
 export const Data = {
   // months,
-  project,
   month_days,
   expense_categories,
   income_categories,
   recent_transactions,
+  transaction_segment,
   transactions,
   budgets,
   wallets,

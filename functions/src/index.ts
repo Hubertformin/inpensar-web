@@ -15,6 +15,7 @@ initializeApp({
 });
 
 import {useControllers} from "./routers";
+import {seedCategories} from "../db/seed";
 
 const app = express();
 app.use(cors());
@@ -27,6 +28,7 @@ connect(process.env.DATABASE_URI as string, {
   // useCreateIndex: true
 }).then(() => {
   console.log("[SERVER]: connected to database!");
+  seedCategories();
 }).catch((err) => console.log(err));
 
 app.use(logger("dev"));
