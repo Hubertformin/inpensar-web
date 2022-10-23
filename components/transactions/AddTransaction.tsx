@@ -114,24 +114,26 @@ export default function AddTransaction({ open, onClose }: AddTransactionProps) {
     setTransferNotes('');
   };
 
-  const openModal = React.useCallback(() => {
+  const openModal = () => {
+    disclosure.onOpen();
+  };
+
+  React.useEffect(() => {
     if (!disclosure.isOpen) {
       // set initial date of date controls to today
       // this is done because when the user opens the modal the default value should be the current date and time
       // ! DO NOT ADD `resetForms` function the dependency array, it will cause infinite re-renders
       resetForms();
     }
-    disclosure.onOpen();
-  }, [disclosure]);
+  }, [disclosure.isOpen]);
 
   React.useEffect(() => {
     if (open) {
-      // open modal
       openModal();
     } else {
       disclosure.onClose();
     }
-  }, [disclosure, open, openModal]);
+  }, [open, openModal]);
 
   const closeModal = () => {
     disclosure.onClose();
