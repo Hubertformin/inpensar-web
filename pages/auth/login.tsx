@@ -76,7 +76,13 @@ export default function LoginView() {
                                     </Field>
 
                                     <FormControl>
-                                        <Button colorScheme={'purple'} className={'w-full'}>Login</Button>
+                                        <Button
+                                            type="submit"
+                                            colorScheme={'purple'}
+                                            className={'w-full'}
+                                            isLoading={props.isSubmitting}
+                                            loadingText="Signing in.."
+                                        >Login</Button>
                                     </FormControl>
                                 </Form>
                             )}

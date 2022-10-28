@@ -4,7 +4,7 @@ import {
     getCurrentUserController,
     getUserById,
     getUserByUid,
-    getUsersController
+    getUsersController, updateUserController
 } from "../controllers/user.controller";
 
 const router = Router();
@@ -15,7 +15,9 @@ router.get('/me', getCurrentUserController);
 
 router.get('/uid/:uid', getUserByUid);
 
-router.get('/:id', getUserById);
+router.route('/:id')
+    .get(getUserById)
+    .put(updateUserController)
 
 router.post('/', createUserController);
 

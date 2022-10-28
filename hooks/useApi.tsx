@@ -23,7 +23,7 @@ import {
 import axios from "axios";
 import {fireAuth} from "../utils/firebase";
 import {signInWithCustomToken} from "@firebase/auth";
-import {selectAuthUserIdTokenState, setAuthUserState} from "../store/slices/auth.slice";
+import {selectAuthUserIdTokenState, setAuthUserState, setUserSettings} from "../store/slices/auth.slice";
 import {prependProjectState, selectActiveProjectState, setActiveProjectState} from "../store/slices/projects.slice";
 import {UserModel} from "../models/user.model";
 import {ProjectModel} from "../models/project.model";
@@ -57,6 +57,16 @@ export default function useApi() {
     dispatch(setActiveProjectState(data['data'].project));
 
     return { authUser, project: data['data'].project };
+  }
+
+  async function updateUserSettings(id: string, payload: any) {
+    const {data} = await httpInstance.put(`/users/${id}`, {settings: payload}, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+
+    dispatch(setUserSettings(payload));
+
+    return data;
   }
 
   async function getAndSetCurrentUsersData({idToken = null}) {
@@ -95,7 +105,6 @@ export default function useApi() {
     const expenses = categoriesData.filter(category => category.type === TransactionType.EXPENSE);
     const income = categoriesData.filter(category => category.type === TransactionType.INCOME);
     dispatch(setCategoriesState({ income, expenses }));
-    console.log(categoriesData)
     return categoriesData;
   }
   /**
@@ -248,6 +257,7 @@ export default function useApi() {
 
   return {
     createUserAccount,
+    updateUserSettings,
     getAndSetCurrentUsersData,
     getAndSetActiveProject,
     getAndSetCategories,

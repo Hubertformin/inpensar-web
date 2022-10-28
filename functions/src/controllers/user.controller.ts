@@ -3,6 +3,7 @@ import User from "../models/user.model";
 import {validateCreateUser} from "../validators/user.validator";
 import {getAuth} from "firebase-admin/auth";
 import Project from "../models/projects.model";
+import {CustomError} from "../models/error.model";
 
 export const getUsersController = createController(async (req, res) => {
     // get all User
@@ -81,8 +82,21 @@ export const createUserController = createController(async (req, res) => {
 });
 
 export const updateUserController = createController(async (req, res) => {
-    // get all User
-    const data = await User.find();
+    const user = await User.findOne({ _id: req.params.id });
+
+    if (!user) {
+        throw CustomError(
+            "User not found"
+        ).status(404);
+    }
+
+    const userData = req.body;
+
+    Object.assign(user, userData);
+
+
+    await user.save();
+
     // res.status(200).json({.data, success: true});
-    return { statusCode: 200, data, message: "Users Updated" };
+    return { statusCode: 200, data: user.toObject(), message: "Users Updated" };
 });

@@ -17,7 +17,8 @@ const initialState = {
         settings: {
             country: '',
             language: '',
-            currency: ''
+            currency: '',
+            reportsFrequency: 'weekly'
         }
     },
     idToken: '',
@@ -34,6 +35,9 @@ export const authUserSlice = createSlice({
         },
         setIdTokenState(state, action) {
             state.idToken = action.payload;
+        },
+        setUserSettings(state, action) {
+            state.data = {...state.data, settings: action.payload};
         },
         setAuthState(state, action) {
             state.authState = action.payload;
@@ -61,6 +65,7 @@ export const {
     setAuthUserState,
     setIdTokenState,
     setAuthUserDocument,
+    setUserSettings,
     setAuthState,
     clearAuthUser
 } = authUserSlice.actions;

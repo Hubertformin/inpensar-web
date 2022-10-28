@@ -17,6 +17,7 @@ export const getUsersTransactionsController = createController(async (req, res) 
     const count = await Transaction.find({ owner: req.$currentUser$ }).countDocuments().exec();
 
     const transactions = await Transaction.find({ owner: req.$currentUser$ })
+        .sort({date: -1})
         .skip(startIndex)
         .limit(limit)
         .populate('category')
@@ -35,7 +36,6 @@ export const createTransactionController = createController(async (req, res) => 
     const transaction = new Transaction({
         ...transactionData,
         owner: req.$currentUser$,
-        date: (new Date()).toISOString(),
         project: new Types.ObjectId(req.params.projectId)
     });
     /**
