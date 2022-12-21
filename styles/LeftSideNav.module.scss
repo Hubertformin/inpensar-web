@@ -1,16 +1,19 @@
+@import "responsive";
+
 $primary-color: var(--theme-base);
 .sideNavContainer {
   height: 100%;
   background: var(--theme-fg);
   border-radius: 12px;
-  padding: 16px;
+  // padding: 16px;
   position: relative;
 }
+
 .brand {
   font-size: 28px;
   color: var(--theme-base);
   font-weight: bold;
-  padding:0 32px;
+  // padding:0 32px;
 }
 
 .projectIntro {
@@ -31,12 +34,12 @@ $primary-color: var(--theme-base);
   font-weight: bold;
   font-size: 17px;
 }
+
 .projectDescription {
   font-weight: 500;
   font-size: 14px;
   color: #666666;
 }
-
 
 
 .nav {
@@ -53,17 +56,20 @@ $primary-color: var(--theme-base);
   cursor: pointer;
   transition: all 0.4s linear;
   border-radius: 12px;
+
   &:hover:not(.activeLink) {
     background: transparentize(#666666, .9);
   }
 
 }
+
 .navTabText {
   display: inline-block;
   margin-left: 6px;
   font-size: 14px;
   font-weight: 500;
 }
+
 .navTabIcon {
 
 }
@@ -79,13 +85,19 @@ $primary-color: var(--theme-base);
   border: 1px solid var(--theme-input-border);
   height: 75px;
   border-radius: 12px;
-  left: 15px;
-  right: 15px;
+  left: -5px;
+  right: -5px;
   bottom: 25px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 12px;
+  @include media-gt-tablet {
+    padding: 0 16px;
+    left: 15px;
+    right: 15px;
+
+  }
 }
 
 .projectFooterTitle {

@@ -2,7 +2,7 @@ import {
   Button,
   ButtonGroup,
   Divider,
-  FormControl, Grid, GridItem, Skeleton, SkeletonCircle,
+  FormControl,
   Stat,
   StatGroup,
   StatHelpText,
@@ -22,17 +22,20 @@ import { sortArrayOfObjects } from "../../../utils/array";
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 import { selectTransactionInsights } from "../../../store/slices/transaction.slice";
 import useUtils from "../../../hooks/useUtils";
+import useWindowSize from "../../../hooks/useWindowSize";
+import  {GoSettings} from 'react-icons/go';
 
 export default function TransactionsHome() {
   const utils = useUtils();
+  const size = useWindowSize();
   const categoriesState = useSelector(selectCategoriesState);
   const transactionInsights = useSelector(selectTransactionInsights);
-  const [isPageLoading, setIsPageLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [startDate, setStartDate] = React.useState(new Date());
   const [categoriesSelectOptions, setCategoriesSelectOptions] = React.useState<
     { value: string; label: string }[]
   >([]);
+  const IS_MOBILE = size.width < 768;
 
   useEffect(() => {
     let _categories = [
@@ -51,52 +54,67 @@ export default function TransactionsHome() {
 
   return (
     <ProjectViewLayout title={'Transactions'}>
-      <main className="page-view px-6 py-6">
-        <div className="toolbar mb-6 flex justify-between align-items-center">
-          <h1 className="font-bold text-2xl">Transactions</h1>
-          <div className="date">
-            <div className="actions flex">
-              {/*<Button onClick={toggleColorMode}>*/}
-              {/*    Toggle {colorMode === 'light' ? 'Dark' : 'Light'}*/}
-              {/*</Button>*/}
-              {/*<div className="mr-3" style={{width: '100px'}}>*/}
-              {/*    <Select placeholder='Year' options={[{label: '2022', value: '2022'}]} />*/}
-              {/*</div>*/}
-              <div className="mr-3" style={{ width: "100px" }}>
-                <Select
+      <main className={`page-view px-3 md:px-6 py-6`}>
+        <div className="toolbar mb-4 md:mb-6 flex justify-between align-items-center">
+          <h1 className="font-bold text-xl md:text-2xl">Transactions</h1>
+          <div className="sm-actions md:hidden">
+            <Button
+                className={"sm-button"}
+                colorScheme="purple"
+                variant="ghost"
+                onClick={() => setShowAddModal(true)}
+            >
+              <BsPlus />
+              &nbsp;Add Transaction
+            </Button>
+          </div>
+          <div className="actions hidden md:flex">
+            {/*<Button onClick={toggleColorMode}>*/}
+            {/*    Toggle {colorMode === 'light' ? 'Dark' : 'Light'}*/}
+            {/*</Button>*/}
+            {/*<div className="mr-3" style={{width: '100px'}}>*/}
+            {/*    <Select placeholder='Year' options={[{label: '2022', value: '2022'}]} />*/}
+            {/*</div>*/}
+            <div className="mr-3" style={{ width: "100px" }}>
+              <Select
                   defaultValue={Data.month_days[0]}
                   placeholder="Day"
                   options={Data.month_days}
-                />
-              </div>
-              <div className="mr-3" style={{ width: "160px" }}>
-                {/*<Select placeholder='Month' options={Data.months} />*/}
-                <DatePicker
+              />
+            </div>
+            <div className="mr-3" style={{ width: "160px" }}>
+              {/*<Select placeholder='Month' options={Data.months} />*/}
+              <DatePicker
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
                   showMonthYearPicker
-                  dateFormat="MMMM, yyyy"
-                />
-              </div>
+                  dateFormat={`MMMM, yyyy`}
+              />
             </div>
           </div>
         </div>
-        <div className="pg-header mb-4">
+        <div className="pg-header-sm md:hidden mb-4">
+          <div className="border border-purple-500 w-auto rounded-full text-purple-900 bg-purple-50 h-8 w-24 px-3 font-medium flex items-center gap-2">
+            <GoSettings /><span>Filter</span>
+          </div>
+        </div>
+        <div className="pg-header hidden md:block mb-4">
           <div className="flex justify-between align-items-center">
-            <div className="leading" style={{ width: "180px" }}>
+            <div className="leading hidden md:block" style={{ width: "180px" }}>
               <FormControl>
                 {/*<FormLabel>Filter by category</FormLabel>*/}
                 <Select
-                  placeholder="Select Category"
-                  defaultValue={{ value: "all", label: "All" }}
-                  options={categoriesSelectOptions}
+                    placeholder="Select Category"
+                    defaultValue={{ value: "all", label: "All" }}
+                    options={categoriesSelectOptions}
                 />
               </FormControl>
             </div>
             <ButtonGroup spacing="4">
               <Button
-                colorScheme="purple"
-                onClick={() => setShowAddModal(true)}
+                  className={"md-button"}
+                  colorScheme="purple"
+                  onClick={() => setShowAddModal(true)}
               >
                 <BsPlus />
                 &nbsp;Add Transaction
@@ -111,7 +129,9 @@ export default function TransactionsHome() {
             <Stat>
               <StatLabel>Earnings</StatLabel>
               <StatNumber className={"text-blue-600"}>
-                {utils.formatCurrency(transactionInsights.earnings)}
+                {
+                  IS_MOBILE ? utils.formatShortCurrency(transactionInsights.earnings, { decimalPlaces: 0}) : utils.formatCurrency(transactionInsights.earnings)
+                }
               </StatNumber>
               <StatHelpText>
                 {/*<StatArrow type='increase' />*/}
@@ -122,7 +142,7 @@ export default function TransactionsHome() {
             <Stat>
               <StatLabel>Expenses</StatLabel>
               <StatNumber className={"text-pink-600"}>
-                {utils.formatCurrency(transactionInsights.expenses)}
+                {IS_MOBILE ? utils.formatShortCurrency(transactionInsights.expenses, { decimalPlaces: 0}) : utils.formatCurrency(transactionInsights.expenses)}
               </StatNumber>
               <StatHelpText>
                 {/*<StatArrow type='decrease' />*/}
@@ -139,7 +159,7 @@ export default function TransactionsHome() {
                     : "text-green-600"
                 }
               >
-                {utils.formatCurrency(transactionInsights.balance)}
+                {IS_MOBILE ? utils.formatShortCurrency(transactionInsights.balance, { decimalPlaces: 0}) : utils.formatCurrency(transactionInsights.balance)}
               </StatNumber>
               <StatHelpText>
                 {/*<StatArrow type='increase' />*/}
@@ -161,31 +181,4 @@ export default function TransactionsHome() {
       />
     </ProjectViewLayout>
   );
-}
-
-function PageLoadingSchema() {
-  return (
-      <div className={''}>
-        <div className="row mb-10">
-          <div className="col-sm-4">
-            <Skeleton height={'105px'} />
-          </div>
-          <div className="col-sm-4">
-            <Skeleton height={'105px'} />
-          </div>
-          <div className="col-sm-4">
-            <Skeleton height={'105px'} />
-          </div>
-        </div>
-        <Grid templateColumns='repeat(5, 1fr)' gap={6}>
-          <GridItem w='100%'>
-            <SkeletonCircle size='55' />
-          </GridItem>
-          <GridItem colSpan={4} w='100%'>
-            <Skeleton height={'25px'} />
-            <Skeleton mt='2' height={'30px'} />
-          </GridItem>
-        </Grid>
-      </div>
-  )
 }

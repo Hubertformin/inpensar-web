@@ -27,12 +27,12 @@ export default function BudgetHome() {
 
     return (
         <ProjectViewLayout title={'Budgets'}>
-            <main className="page-view px-8 py-6">
+            <main className="page-view px-4 md:px-8 py-6">
                 <div className="toolbar mb-6 flex justify-between align-items-center">
-                    <h1 className="font-bold text-2xl">Budgets</h1>
+                    <h1 className="font-bold text-xl md:text-2xl">Budgets</h1>
                     <div className="date">
-                        <div className="actions flex">
-                            <div className="mr-3" style={{width: "160px"}}>
+                        <div className="actions flex justify-end">
+                            <div style={{width: "160px"}}>
                                 {/*<Select placeholder='Month' options={Data.months} />*/}
                                 <DatePicker
                                     selected={startDate}
@@ -45,7 +45,7 @@ export default function BudgetHome() {
                     </div>
                 </div>
                 <div className="pg-header mb-4">
-                    <div className="flex justify-between align-items-center">
+                    <div className="md:flex justify-between align-items-center">
                         <div className="leading" style={{width: "180px"}}></div>
                         <ButtonGroup spacing="4">
                             <Button

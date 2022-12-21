@@ -62,7 +62,7 @@ export const withCurrentUser = async (req: HttpRequest, res: Response, next: Nex
         const user = await User.findOne({ uid: req.$firebaseUser$?.uid });
 
         if (user == null) {
-            res.status(401).json({
+            res.status(404).json({
                 errorText: "User's record not found",
                 message: 'You are not authorized to access this API',
             });

@@ -17,10 +17,6 @@ import {
 import useApi from "../hooks/useApi";
 import {selectActiveProjectState} from "../store/slices/projects.slice";
 import {selectCategoriesState} from "../store/slices/categories.slice";
-import {AccountsModel} from "../models/accounts.model";
-import {selectAccountsState} from "../store/slices/accounts.slice";
-import {BudgetModel} from "../models/budget.model";
-import {selectBudgetState} from "../store/slices/budget.slice";
 
 function MyApp({Component, pageProps}) {
     const dispatch = useDispatch();
@@ -28,8 +24,6 @@ function MyApp({Component, pageProps}) {
     const authUser = useSelector(selectAuthUserState);
     const activeProject = useSelector(selectActiveProjectState);
     const categories = useSelector(selectCategoriesState);
-    const accounts: AccountsModel[] = useSelector(selectAccountsState);
-    const budgets: BudgetModel[] = useSelector(selectBudgetState);
 
     useEffect(() => {
         if (typeof window == 'undefined') {
@@ -44,7 +38,7 @@ function MyApp({Component, pageProps}) {
         fireAuth.onAuthStateChanged(async (user) => {
             // get id token
             if (user) {
-                const idToken = await user.getIdToken();
+                const idToken = user.accessToken ? user.accessToken : await user.getIdToken();
                 await dispatch(setIdTokenState(idToken));
 
                 if (!authUser._id) {
@@ -61,7 +55,7 @@ function MyApp({Component, pageProps}) {
 
                 // Load categories when the user opens a project, these categories will be used for transactions budgets
                 // Do not fetch categories if they have already been searched
-                if (categories.income.length === 0 || categories.expenses.length == 0) {
+                if (activeProjectId && (categories.income.length === 0 || categories.expenses.length == 0)) {
                     await api.getAndSetCategories({idToken});
                 }
 

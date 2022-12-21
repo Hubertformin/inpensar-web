@@ -46,7 +46,7 @@ export function BudgetTile({ budget, isSummary = false, onClick }: BudgetTilePro
           </h3>
         </div>
       </div>
-      {!isSummary && <div title={getListTextOfCategories(budget.categories)} className="categories text-slate-500 w-96 truncate pr-6">
+      {!isSummary && <div title={getListTextOfCategories(budget.categories)} className="categories text-slate-500 md:w-96 truncate pr-6">
         {getListTextOfCategories(budget.categories)}
       </div>}
       <div className={`${styles.containerStyles} mt-3 mb-4`} style={{...(isSummary && {height: 4})}}>

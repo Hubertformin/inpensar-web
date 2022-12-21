@@ -1,12 +1,12 @@
 .navBar {
-  height: 75px;
+  height: 100%;
   // width: 500px;
-  border-radius: 12px;
-  background: var(--theme-bg);
-  position: absolute;
-  left: 55px;
-  right: 55px;
-  bottom: 32px;
+  // border-radius: 12px;
+  // background: var(--theme-bg);
+  //position: absolute;
+  //left: 55px;
+  //right: 55px;
+  //bottom: 32px;
   // left: 50%;
   // transform: translateX(-50%);
   display: grid;
@@ -29,7 +29,7 @@
 .navTabText {
   display: inline-block;
   margin-top: 6px;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 500;
 }
 .navTabIcon {

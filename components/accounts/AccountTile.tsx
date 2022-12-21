@@ -14,12 +14,12 @@ export default function AccountTile({account, size = 'md', onClick}: {account: A
             <div className="leading flex gap-2">
                 <Avatar size={size} icon={<IoWalletOutline size={size == 'sm' ? 16 : 24}/>} />
                 <div>
-                    <h2 className={`font-medium w-32 truncate ${size == 'sm' ? '' : 'text-lg'}`}>{account.name}</h2>
+                    <h2 className={`font-medium w-32 truncate ${size == 'sm' ? '' : 'md:text-lg'}`}>{account.name}</h2>
                     <p className={`text-slate-500 ${size == 'sm' ? 'text-sm' : ''}`}>{getAccountTypeName(account.type)}</p>
                 </div>
             </div>
             <div className="actions">
-                <p className={`font-medium ${size == 'sm' ? 'text-sm' : 'text-xl'}`}>{utils.formatCurrency(account.amount)}</p>
+                <p className={`font-medium ${size == 'sm' ? 'text-sm' : 'text-lg md:text-xl'}`}>{utils.formatCurrency(account.amount)}</p>
             </div>
         </div>
     )

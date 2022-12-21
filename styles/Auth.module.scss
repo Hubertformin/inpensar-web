@@ -1,11 +1,14 @@
+@import "responsive";
 .pageView {
   height: 100vh;
   width: 100vw;
   position: relative;
-  background-image: url('https://firebasestorage.googleapis.com/v0/b/snag-spreed-us.appspot.com/o/placeholders%2Fcover2.jpg?alt=media&token=11c9cf9e-feb1-4bfc-a6b3-841d125df307');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  @include media-gt-phone {
+    background-image: url('https://firebasestorage.googleapis.com/v0/b/snag-spreed-us.appspot.com/o/placeholders%2Fcover2.jpg?alt=media&token=11c9cf9e-feb1-4bfc-a6b3-841d125df307');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
 }
 
 .pageOverlay {
@@ -14,37 +17,49 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.78);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include media-gt-phone {
+    background-color: rgba(0, 0, 0, 0.78);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .formContainer {
-  height: 500px;
-  width: 760px;
+  height: 100vh;
+  width: 100vw;
   background-color: var(--theme-fg);
-  border-radius: 12px;
-  display: grid;
-  grid-template-columns: 50% 50%;
+
+  @include media-gt-phone {
+    height: 500px;
+    width: 760px;
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+  }
 }
 
 .createAccountForm {
   // height: 600px;
-  width: 800px;
+  width: 100%;
   background-color: var(--theme-fg);
   border-radius: 12px;
+  @include media-gt-phone {
+    width: 800px;
+  }
 }
 
 .form {
 
 }
 .formImage {
-  background-image: url('https://source.unsplash.com/random/1200×800/?budget');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  border-radius: 16px;
+  @include media-gt-phone {
+    background-image: url('https://source.unsplash.com/random/1200×800/?budget');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    border-radius: 16px;
+  }
 }
 .logoImage {
   height: 40px;

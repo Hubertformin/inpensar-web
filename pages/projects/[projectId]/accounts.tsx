@@ -11,6 +11,7 @@ import {useSelector} from "react-redux";
 import {selectAccountBalanceState, selectAccountsState} from "../../../store/slices/accounts.slice";
 import AccountTile from "../../../components/accounts/AccountTile";
 import useUtils from "../../../hooks/useUtils";
+import useWindowSize from "../../../hooks/useWindowSize";
 
 export default function AccountsHome() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -19,6 +20,8 @@ export default function AccountsHome() {
     const [selectedAccount, setSelectedAccount] = useState(null);
     const balance: number = useSelector(selectAccountBalanceState);
     const utils = useUtils();
+    const size = useWindowSize();
+    const IS_MOBILE = size.width < 768;
 
     React.useEffect(() => {
         if (accounts.length > 0) {
@@ -39,13 +42,14 @@ export default function AccountsHome() {
     return (
         <ProjectViewLayout title={'Accounts'}>
             <main className="page-view py-6">
-                <div className="toolbar mb-6 px-8 flex justify-between align-items-center">
-                    <h1 className="font-bold text-2xl">Accounts</h1>
+                <div className="toolbar mb-6 px-6 md:px-8 flex justify-between align-items-center">
+                    <h1 className="font-bold text-xl md:text-2xl">Accounts</h1>
                     <div className="date">
                         <div className="actions flex">
                             <ButtonGroup spacing="4">
                                 <Button
                                     colorScheme="purple"
+                                    variant={IS_MOBILE ? "outline" : "solid"}
                                     onClick={() => setShowAddModal(true)}
                                 >
                                     <BsPlus/>
@@ -61,13 +65,14 @@ export default function AccountsHome() {
                     <h1 className="font-bold text-4xl">{utils.formatCurrency(balance)}</h1>
                 </div>
                 <Divider/>
-                <div className="account-body pt-10 pb-8 px-8">
+                <div className="account-body pt-10 pb-8 px-4 md:px-8">
                     {isPageLoading && <AccountsPageLoadingSchema />}
                     {
                         (accounts.length > 0 && !isPageLoading) && accounts.map((account, index) => {
                             return (
                                 <AccountTile
                                     key={'account_tile_' + index}
+                                    size={'md'}
                                     account={account}
                                     onClick={() => selectAccount(account)}
                                 />)

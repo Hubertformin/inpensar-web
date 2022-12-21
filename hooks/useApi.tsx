@@ -1,6 +1,6 @@
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
-import { BudgetModel } from "../models/budget.model";
+import {BudgetModel} from "../models/budget.model";
 import {TransactionsModel, TransactionType} from "../models/transactions.model";
 import {
   appendBudgetState,
@@ -11,7 +11,8 @@ import {
 import {
   prependTransactionState,
   removeTransactionFromState,
-  replaceTransactionInState, setTransactionState,
+  replaceTransactionInState,
+  setTransactionState,
 } from "../store/slices/transaction.slice";
 import {AccountsModel} from "../models/accounts.model";
 import {
@@ -29,7 +30,7 @@ import {UserModel} from "../models/user.model";
 import {ProjectModel} from "../models/project.model";
 import {setCategoriesState} from "../store/slices/categories.slice";
 
-const API = process.env.NODE_ENV == 'development' ? 'http://localhost:5001/inpensar-enchird/us-central1/api' : 'https://us-central1-inpensar-enchird.cloudfunctions.net/api'
+const API = process.env.NODE_ENV == 'development' ? 'http://localhost:5100/inpensar-enchird/us-central1/api' : 'https://us-central1-inpensar-enchird.cloudfunctions.net/api'
 export default function useApi() {
   const httpInstance = axios.create({
     baseURL: API,
@@ -86,6 +87,13 @@ export default function useApi() {
   /**
    *  ===== PROJECTS =====
    */
+  async function getProjects(): Promise<ProjectModel[]> {
+    const {data} = await httpInstance.get(`/projects/`, {
+      ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
+    });
+    return data['data'].results;
+  }
+
   async function getAndSetActiveProject({projectId, idToken }): Promise<ProjectModel> {
     const {data} = await httpInstance.get(`/projects/${projectId}`, {
       ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
@@ -161,7 +169,6 @@ export default function useApi() {
   }
 
   async function deleteTransaction(transaction: TransactionsModel) {
-    // TODO: API CALL
     const {data} = await httpInstance.delete(`/projects/${activeProject._id}/transactions/${transaction._id}`, {
       ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
     });
@@ -184,7 +191,6 @@ export default function useApi() {
     dispatch(setBudgetState(data['data'].results));
   }
   async function addBudget(budget: BudgetModel): Promise<BudgetModel> {
-    // TODO: API CALL
     const payload = {
       ...budget,
       categories: budget.categories.map(c => c._id)
@@ -209,7 +215,6 @@ export default function useApi() {
   }
 
   async function deleteBudget(budget: BudgetModel): Promise<BudgetModel> {
-    // TODO: API CALL
     await httpInstance.delete(`/projects/${activeProject._id}/budgets/${budget._id}`, {
       ...(idToken && { headers: { 'Authorization': `Bearer ${idToken}` }})
     });
@@ -259,6 +264,7 @@ export default function useApi() {
     createUserAccount,
     updateUserSettings,
     getAndSetCurrentUsersData,
+    getProjects,
     getAndSetActiveProject,
     getAndSetCategories,
     getTransactions,

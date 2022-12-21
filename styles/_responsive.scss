@@ -1,0 +1,58 @@
+// ===========================================
+// Breakpoints
+// ===========================================
+$screen-phone: 767px;
+$screen-tablet: 922px;
+$screen-desktop: 1200px;
+
+// ===========================================
+// Responsive Mixins
+// ===========================================
+@mixin media-phone() {
+  @media screen and (max-width: $screen-phone) {
+    @content;
+  }
+}
+
+@mixin media-tablet() {
+  @media screen and (min-width: ($screen-phone + 1px)) and (max-width: ($screen-desktop - 1px)) {
+    @content;
+  }
+}
+
+@mixin media-desktop() {
+  @media screen and (min-width: $screen-desktop) {
+    @content;
+  }
+}
+
+@mixin media-custom-max($width, ) {
+  @media screen and (max-width: $width) {
+    @content;
+  }
+}
+
+@mixin media-custom-min($width, ) {
+  @media screen and (min-width: $width) {
+    @content;
+  }
+}
+
+// Greater Than
+@mixin media-gt-phone() {
+  @media (min-width: ($screen-phone + 1px)) {
+    @content;
+  }
+}
+
+@mixin media-gt-tablet() {
+  @media (min-width: ($screen-tablet + 1px)) {
+    @content;
+  }
+}
+
+@mixin rwd($width) {
+  @media (min-width: ($width)) {
+    @content;
+  }
+}

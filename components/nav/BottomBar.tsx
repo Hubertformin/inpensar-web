@@ -4,15 +4,17 @@ import {TbLayoutDashboard, TbLayoutList} from "react-icons/tb";
 import {BsPiggyBank} from "react-icons/bs";
 import {FiSettings} from "react-icons/fi";
 import ActiveLink from "./ActiveLink";
-import {useRouter} from "next/router";
 import {IoWalletOutline} from "react-icons/io5";
+import {useSelector} from "react-redux";
+import {selectActiveProjectState} from "../../store/slices/projects.slice";
 
 export default function BottomNav() {
-    const router = useRouter();
+    const activeProject = useSelector(selectActiveProjectState);
+
     return (
         <nav className={styles.navBar}>
             <>
-                <ActiveLink href="/app/dashboard" activeClassName={styles.activeLink}>
+                <ActiveLink href={`/projects/${activeProject?.id}/dashboard`} activeClassName={styles.activeLink}>
                     <div className={styles.navTab}>
                         <span className={styles.navTabIcon}>
                         <TbLayoutDashboard size={24}/>
@@ -23,7 +25,7 @@ export default function BottomNav() {
                 </ActiveLink>
             </>
             <>
-                <ActiveLink href="/app/transactions" activeClassName={styles.activeLink}>
+                <ActiveLink href={`/projects/${activeProject?.id}/transactions`} activeClassName={styles.activeLink}>
                     <div className={styles.navTab}>
                     <span className={styles.navTabIcon}>
                         <TbLayoutList size={24}/>
@@ -34,7 +36,7 @@ export default function BottomNav() {
 
             </>
             <>
-                <ActiveLink href="/app/accounts" activeClassName={styles.activeLink}>
+                <ActiveLink href={`/projects/${activeProject?.id}/accounts`} activeClassName={styles.activeLink}>
                     <div className={styles.navTab}>
                     <span className={styles.navTabIcon}>
                         <IoWalletOutline size={24}/>
@@ -50,7 +52,7 @@ export default function BottomNav() {
             {/*    <span className={styles.navTabText}>Reports</span>*/}
             {/*</div>*/}
             <>
-                <ActiveLink href="/app/budget" activeClassName={styles.activeLink}>
+                <ActiveLink href={`/projects/${activeProject?.id}/budgets`} activeClassName={styles.activeLink}>
                     <div className={styles.navTab}>
                     <span className={styles.navTabIcon}>
                         <BsPiggyBank size={24}/>
@@ -60,7 +62,7 @@ export default function BottomNav() {
                 </ActiveLink>
             </>
             <>
-                <ActiveLink href="/app/settings" activeClassName={styles.activeLink}>
+                <ActiveLink href={`/projects/${activeProject?.id}/settings`} activeClassName={styles.activeLink}>
                     <div className={styles.navTab}>
                     <span className={styles.navTabIcon}>
                         <FiSettings size={24}/>

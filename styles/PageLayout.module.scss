@@ -1,10 +1,61 @@
+@import "responsive";
 .__page_home {
   height: 100vh;
   display: grid;
   padding: 0 16px;
   // justify-content: center;
   grid-template-columns: 330px auto 350px;
+  @include media-desktop {
+    width: 91vw;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
+.__page_home_no_right {
+  grid-template-columns: 330px auto;
+}
+
+//-- small screens
+.__page_home_sm {
+  height: 100vh;
+  background-color: var(--theme-bg);
+}
+.toolbar_sm {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 55px;
+  background-color: var(--theme-base);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.page_container_sm {
+  padding: 8px 0;
+  position: fixed;
+  top: 70px;
+  left: 10px;
+  right: 10px;
+  bottom: 93px;
+  border-radius: 10px;
+  overflow-y: auto;
+  background-color: var(--theme-fg);
+}
+.bottom_navigation_sm {
+  position: fixed;
+  bottom: 22px;
+  height: 65px;
+  left: 10px;
+  right: 10px;
+  border-radius: 10px;
+  background-color: var(--theme-fg);
+}
+
 .pageContainer {
   padding: 16px 8px;
   // width: 50vw;

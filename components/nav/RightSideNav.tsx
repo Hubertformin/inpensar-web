@@ -36,10 +36,10 @@ export default function RightSideNav() {
     return (
         <div className={styles.sideNavContainer}>
             <div className={`${styles.topContainer}`}>
-                <div className={`${styles.header} pt-4 px-6`}>
+                <div className={`${styles.header} pt-4 md:px-6`}>
                     <h4 className="tex-lg font-bold">This month&apos;s budgets</h4>
                 </div>
-                <div className={`${styles.list} px-6 mt-4`}>
+                <div className={`${styles.list} md:px-6 mt-4`}>
                     {isBudgetLoading && <BudgetLoadingSchema />}
                     {(budgets?.length > 0 && !isBudgetLoading) && (<div className="budget-body mt-4">
                         {budgets.map((budget, index) => {
@@ -65,10 +65,10 @@ export default function RightSideNav() {
                 </div>
             </div>
             <div className={styles.bottomContainer}>
-                <div className={`${styles.header} pt-4 px-6`}>
+                <div className={`${styles.header} pt-4 md:px-6`}>
                     <h4 className="tex-lg font-bold">Accounts</h4>
                 </div>
-                <div className="px-6 pt-6">
+                <div className="md:px-6 pt-6">
                     {isAccountsLoading && <AccountsLoadingSchema />}
                     {(accounts.length > 0 && !isAccountsLoading) && accounts.map((account, index) => {
                             return (<AccountTile size={'sm'} key={'account_tile_' + index} account={account}/>)

@@ -16,6 +16,7 @@ import {formatDate} from "../../utils/date";
 import ViewTransactionDetails from "./ViewTransactionDetails";
 import TransactionAmount from "./TransactionAmount";
 import useApi from "../../hooks/useApi";
+import useWindowSize from "../../hooks/useWindowSize";
 
 export default function TransactionsTable() {
     const transactionsState = useSelector(selectTransactionData);
@@ -95,7 +96,7 @@ export default function TransactionsTable() {
             {isPageLoading && <PageLoadingSchema/>}
             {(!isPageLoading && transactions.length > 0) && (
                 <Tabs colorScheme={"purple"} onChange={onTabChange}>
-                    <TabList>
+                    <TabList className={'overflow-x-auto'}>
                         <Tab name="all">
                             <BsGrid/>
                             &nbsp;All
@@ -211,6 +212,8 @@ function TransactionItem({
     transaction: TransactionsModel;
     onClick?: () => void;
 }) {
+    const size = useWindowSize();
+
     return (
         <div className={Styles.transactionItem} onClick={onClick}>
             {transaction.type == TransactionType.TRANSFER ? (
@@ -223,7 +226,7 @@ function TransactionItem({
                             <span>{transaction.to.name}</span>
                         </h2>
                         <p className={Styles.transactionItemTextDate}>
-                            {formatDate(transaction.date)}
+                            {formatDate(transaction.date, size.width < 788 ? 'DD MMM, YYYY [at] HH:MM' : null)}
                         </p>
                     </div>
                 </div>
@@ -240,7 +243,7 @@ function TransactionItem({
                             {transaction.category.name}
                         </h2>
                         <p className={Styles.transactionItemTextDate}>
-                            {formatDate(transaction.date)}
+                            {formatDate(transaction.date, size.width < 788 ? 'DD MMM, YYYY [at] HH:MM' : null)}
                         </p>
                     </div>
                 </div>

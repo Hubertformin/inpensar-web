@@ -30,10 +30,10 @@ export default function LoginView() {
                 router.push(`/projects/`);
             })
             .catch((e) => {
-                console.error(e);
+                console.dir(e.toString());
                 toast({
                     title: "Opps! we couldn't sign you in",
-                    description: e.response?.data?.message || 'There was an error signing you into your account. Please try again later',
+                    description: formatFirebaseErrorMessages(e.toString()),
                     status: 'error'
                 });
                 actions.setSubmitting(false);
@@ -44,8 +44,8 @@ export default function LoginView() {
     return (
         <main className={`${styles.pageView}`}>
             <div className={`${styles.pageOverlay}`}>
-                <div className={`${styles.formContainer} p-3`}>
-                    <div className={`${styles.form} pb-8 pt-6 px-8`}>
+                <div className={`${styles.formContainer} md:p-3`}>
+                    <div className={`${styles.form} pb-8 pt-6 px-4 md:px-8`}>
                         <img src="/images/logotype.png" alt="" className={`${styles.logoImage} mb-6`} />
                         <h2 className="text-2xl md:text-3xl mb-8 font-bold">Welcome Back</h2>
                         <Formik
@@ -70,7 +70,7 @@ export default function LoginView() {
                                         {({field, form}) => (
                                             <FormControl className={'mb-8'}>
                                                 <FormLabel>Password</FormLabel>
-                                                <Input {...field} placeholder="Enter email" type="password" />
+                                                <Input {...field} placeholder="Enter password" type="password" />
                                             </FormControl>
                                         )}
                                     </Field>
@@ -99,4 +99,14 @@ export default function LoginView() {
             </div>
         </main>
     );
+}
+
+function formatFirebaseErrorMessages(firebaseMsg: string): string {
+    if (firebaseMsg.includes('auth/network-request-failed')) {
+        return 'Your internet connection is unstable, Please switch networks or try again later'
+    } else if (firebaseMsg.includes('auth/wrong-password')) {
+        return 'Your password is incorrect';
+    } else {
+        return 'There was an error signing you into your account. Please try again later'
+    }
 }

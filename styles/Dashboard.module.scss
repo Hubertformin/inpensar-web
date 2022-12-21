@@ -1,0 +1,10 @@
+
+$toolbar-height: 90px;
+.toolbar {
+  height: $toolbar-height;
+}
+
+.viewBody {
+  height: calc(100% - $toolbar-height);
+  overflow-y: auto;
+}

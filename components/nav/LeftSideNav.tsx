@@ -6,25 +6,32 @@ import { IoWalletOutline } from "react-icons/io5";
 import { FiSettings } from "react-icons/fi";
 import {Avatar, AvatarBadge, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
 import { BiChevronUp } from "react-icons/bi";
-import Image from "next/image";
 import {useSelector} from "react-redux";
 import {selectAuthUserState} from "../../store/slices/auth.slice";
 import {selectActiveProjectState} from "../../store/slices/projects.slice";
 import { AiOutlinePieChart } from "react-icons/ai";
 import { formatDate } from "../../utils/date";
+import {fireAuth} from "../../utils/firebase";
+import {signOut} from "@firebase/auth";
+import {useRouter} from "next/router";
 
-export default function LeftSideNav() {
+export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
   const authUser = useSelector(selectAuthUserState);
   const activeProject = useSelector(selectActiveProjectState);
+  const router = useRouter();
+
+  function logOut() {
+    signOut(fireAuth).then(() => {
+      router.push('/auth/login');
+    });
+  }
   
   return (
-    <div className={styles.sideNavContainer}>
-      <h1 className={styles.brand}>
-        <Image
+    <div className={`${styles.sideNavContainer} md:px-4`}>
+      <h1 className={`${styles.brand} border-b pb-2`}>
+        <img
           src="/images/logotype.png"
-          width={160}
-          height={55.5}
-          layout="responsive"
+          style={{height: '50px'}}
           alt="logo"
         />
       </h1>
@@ -45,7 +52,7 @@ export default function LeftSideNav() {
           </div>
         </div>
       </div>
-      <nav className={styles.nav}>
+      {!hideLinks && <nav className={styles.nav}>
         <>
           <ActiveLink href={`/projects/${activeProject?.id}/dashboard`} activeClassName={styles.activeLink}>
             <div className={styles.navTab}>
@@ -105,7 +112,7 @@ export default function LeftSideNav() {
             </div>
           </ActiveLink>
         </>
-      </nav>
+      </nav>}
       <div className={styles.navFooter}>
         <div className="leading flex">
           <Avatar
@@ -133,7 +140,7 @@ export default function LeftSideNav() {
               <MenuItem>Profile</MenuItem>
               {/*<MenuItem>Create new project</MenuItem>*/}
               <MenuItem>Settings</MenuItem>
-              <MenuItem>Log out</MenuItem>
+              <MenuItem onClick={logOut}>Log out</MenuItem>
             </MenuList>
           </Menu>
         </div>

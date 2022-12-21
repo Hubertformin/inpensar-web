@@ -3,6 +3,22 @@ import {CustomError} from "../models/error.model";
 import Project from "../models/projects.model";
 import Category from "../models/category.model";
 
+export const getUserProjectsController = createController(async (req, res) => {
+    const page: number = parseInt(req.query.page as string) || 1,
+        limit: number = parseInt(req.query.limit as string) || 20,
+        startIndex = (page - 1) * limit;
+    // search = req.query.searchText;
+
+    const count = await Project.find({ owner: req.$currentUser$ }).countDocuments().exec();
+
+    const projects = await Project.find({ owner: req.$currentUser$ })
+        .sort({date: -1})
+        .skip(startIndex)
+        .limit(limit)
+        .exec();
+    // res.status(200).json({.data, success: true});
+    return { statusCode: 200, data: { results: projects, count }, message: "" };
+});
 export const getUserProjectByIdController = createController(async (req, res) => {
 
     const project = await  Project.findOne({ id: req.params.projectId, owner: req.$currentUser$?._id }).exec();

@@ -1,5 +1,9 @@
 import {Router} from "express";
-import {getUserProjectByIdController, getUserProjectCategoriesController} from "../controllers/projects.controller";
+import {
+    getUserProjectByIdController,
+    getUserProjectCategoriesController,
+    getUserProjectsController
+} from "../controllers/projects.controller";
 import {
     createBudgetController, deleteUserBudgetController,
     getCurrentUserBudgetsController,
@@ -12,6 +16,8 @@ import {
 } from "../controllers/transactions.controller";
 
 const router = Router();
+
+router.get('/', getUserProjectsController);
 
 router.get('/:projectId', getUserProjectByIdController);
 

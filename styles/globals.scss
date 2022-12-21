@@ -1,10 +1,12 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+@import 'tailwindcss/utilities';
 
 @import "colors";
 @import "markdown";
 @import "grid";
+@import "responsive";
 html,
 body {
   height: 100%;
@@ -28,6 +30,10 @@ a {
   height: 100%;
   background: var( --theme-fg);
   border-radius: 12px;
+  overflow: auto;
+  @include media-gt-tablet {
+    overflow-y: hidden;
+  }
 }
 
 // ========= RESETS ======

@@ -100,8 +100,8 @@ export default function SettingsHome() {
     }
 
     return (
-        <ProjectViewLayout title={'Settings'}>
-            <main className="page-view px-8 py-6">
+        <ProjectViewLayout title={'Settings'} showRightNav={false}>
+            <main className="page-view px-4 md:px-8 py-6">
                 <div className="toolbar mb-6 flex justify-between align-items-center">
                     <h1 className="font-bold text-2xl">Settings</h1>
                 </div>

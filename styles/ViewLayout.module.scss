@@ -1,0 +1,89 @@
+@import "responsive";
+$sidenav-width: 250px;
+$toolbar-height: 65px;
+.sideNav {
+  display: none;
+  background-color: var(--theme-bg);
+  @include media-gt-tablet {
+    position: fixed;
+    display: block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: $sidenav-width;
+  }
+}
+
+.sideHeader {
+  height: 100px;
+}
+
+.toolbar {
+  position: absolute;
+  right: 0;
+  height: $toolbar-height;
+  left: 0;
+  // background-color: var(--theme-fg);
+  @include media-gt-tablet {
+    left: $sidenav-width;
+  }
+}
+
+.toolbarImg {
+  height: 45px;
+  width: auto;
+  display: inline-block;
+  @include media-gt-tablet {
+    display: none;
+  }
+}
+
+.viewBody {
+  position: fixed;
+  top: $toolbar-height;
+  bottom: 10px;
+  right: 10px;
+  border-radius: 12px;
+  left: 10px;
+  background-color: var(--theme-fg);
+  @include media-gt-tablet {
+    left: $sidenav-width;
+    right: 15px;
+    bottom: 15px;
+  }
+}
+
+.navTab {
+  display: flex;
+  align-items: center;
+  // justify-content: center;
+  width: 100%;
+  padding: 15px 12px;
+  cursor: pointer;
+  transition: all 0.4s linear;
+  border-radius: 12px;
+  &:hover:not(.activeLink) {
+    background: transparentize(#666666, .9);
+  }
+
+}
+
+.navTabText {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.bottomLInks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5%;
+}
+
+.activeLink {
+  background-color: var(--theme-base);
+  color: white;
+  // background-color: transparentize($primary-color, 0.5);
+}

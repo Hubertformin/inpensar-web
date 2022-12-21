@@ -92,8 +92,8 @@ export default function CreateAccountView() {
     return (
         <main className={`${styles.pageView}`}>
             <div className={`${styles.pageOverlay}`}>
-                <div className={`${styles.createAccountForm} p-3`}>
-                    <div className={`${styles.form} pb-8 pt-6 px-6`}>
+                <div className={`${styles.createAccountForm} md:p-3`}>
+                    <div className={`${styles.form} pb-8 pt-6 px-4 md:px-6`}>
                         <img src="/images/logotype.png" alt="" className={`${styles.logoImage} mb-6`}/>
                         <h2 className="text-2xl md:text-3xl mb-8 font-bold">Get started.</h2>
                         <Formik
