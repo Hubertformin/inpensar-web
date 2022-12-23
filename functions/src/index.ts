@@ -26,7 +26,11 @@ connect(process.env.DATABASE_URI as string, {
   // useCreateIndex: true
 }).then(() => {
   console.log("[SERVER]: connected to database!");
-}).catch((err) => console.error(err));
+}).catch((err) => {
+  console.error('DATABASE_URI')
+  console.error(process.env.DATABASE_URI);
+  // console.error(err)
+});
 
 app.use(logger("dev"));
 app.use(express.json());

@@ -3,7 +3,6 @@ import {UserDocument} from "./user.model";
 import {generateUID} from "../utils/uuid";
 
 export interface ProjectBaseDocument {
-    _id?: string;
     id: string;
     name?: string;
     currency: {

@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { DecodedIdToken } from "firebase-admin/auth";
 import {UserBaseDocument} from "./user.model";
+import {ProjectDocument} from "./projects.model";
 
 export enum ROUTE_ACCESS {
     ADMIN = "admin",
@@ -41,6 +42,7 @@ export interface HttpRequest extends Request {
     $currentUser$?: UserBaseDocument;
     $permissionGranted$?: boolean;
     $idToken$?: string;
+    $currentProject$?: ProjectDocument;
     $firebaseUser$?: DecodedIdToken;
     $routeType$?: ROUTE_TYPES;
     $access$?: ROUTE_ACCESS;

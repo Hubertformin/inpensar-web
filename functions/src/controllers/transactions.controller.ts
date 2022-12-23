@@ -5,18 +5,33 @@ import {validateCreateTransaction} from "../validators/transactions.validators";
 import Budget, {BudgetDocument, getActivePeriod} from "../models/budget.model";
 import Account, {AccountDocument} from "../models/accounts.model";
 import {Types} from "mongoose";
+import * as dayjs from "dayjs";
 
 export const getUsersTransactionsController = createController(async (req, res) => {
     // get all transactions
 
     const page: number = parseInt(req.query.page as string) || 1,
         limit: number = parseInt(req.query.limit as string) || 20,
+        startDate: string = req.query.startDate as string || 'all',
+        endDate: string = req.query.endDate as string || 'all',
         startIndex = (page - 1) * limit;
     // search = req.query.searchText;
 
-    const count = await Transaction.find({ owner: req.$currentUser$ }).countDocuments().exec();
+    /// Create query
+    let query: any = {};
+    if (startDate !== 'all' && endDate !== 'all') {
 
-    const transactions = await Transaction.find({ owner: req.$currentUser$ })
+        let start = dayjs(startDate), end = dayjs(endDate);
+
+        start = start.startOf('day');
+        end = end.endOf('day');
+
+        query.date = {$gte: start.toISOString(), $lt: end.toISOString()}
+    }
+
+    const count = await Transaction.find({ owner: req.$currentUser$, ...query }).countDocuments().exec();
+
+    const transactions = await Transaction.find({ owner: req.$currentUser$, ...query })
         .sort({date: -1})
         .skip(startIndex)
         .limit(limit)
@@ -35,8 +50,8 @@ export const createTransactionController = createController(async (req, res) => 
 
     const transaction = new Transaction({
         ...transactionData,
-        owner: req.$currentUser$,
-        project: new Types.ObjectId(req.params.projectId)
+        owner: req.$currentUser$?._id,
+        project: new Types.ObjectId(req.$currentProject$?._id)
     });
     /**
      * When a transaction is created, the cases apply ->

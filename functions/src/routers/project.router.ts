@@ -14,12 +14,18 @@ import {
     getUsersTransactionsController,
     getUserTransactionByIdController, updateUserTransactionByIdController
 } from "../controllers/transactions.controller";
+import {getProjectReports} from "../controllers/reports.controller";
 
 const router = Router();
 
 router.get('/', getUserProjectsController);
 
 router.get('/:projectId', getUserProjectByIdController);
+
+/**
+ * Reports
+ */
+router.get('/:projectId/reports/', getProjectReports)
 
 /**
  * Budgets
