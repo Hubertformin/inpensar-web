@@ -69,7 +69,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
       setOperation('EDIT');
       setCategories(budget.categories || []);
     }
-  }, [disclosure, open, openModal]);
+  }, [disclosure, open, openModal, budget, categories.length]);
 
   const closeModal = () => {
     disclosure.onClose();

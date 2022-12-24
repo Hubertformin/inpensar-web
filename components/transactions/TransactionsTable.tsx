@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Avatar, Grid, GridItem, Skeleton, SkeletonCircle, Tab, TabList, Tabs} from "@chakra-ui/react";
-import {BsArrowRightShort, BsGrid, BsPlus} from "react-icons/bs";
+import {BsArrowRightShort, BsGrid} from "react-icons/bs";
 import {TbDatabaseImport} from "react-icons/tb";
 import {BiTransfer} from "react-icons/bi";
 import {RiShareCircleLine} from "react-icons/ri";
@@ -16,9 +16,8 @@ import {formatDate} from "../../utils/date";
 import ViewTransactionDetails from "./ViewTransactionDetails";
 import TransactionAmount from "./TransactionAmount";
 import useApi from "../../hooks/useApi";
-import useWindowSize from "../../hooks/useWindowSize";
 
-export default function TransactionsTable() {
+export default function TransactionsTable({loading = false}) {
     const transactionsState = useSelector(selectTransactionData);
     const [transactions, setTransactions] = React.useState<TransactionsModel[]>(
         []
@@ -26,64 +25,51 @@ export default function TransactionsTable() {
     const [isPageLoading, setIsPageLoading] = useState(true);
     const [activeTabIndex, setActiveTabIndex] = React.useState(0);
     const [openDetailsModal, setOpenDetailsModal] = React.useState(false);
-    const api = useApi();
     const [selectedTransaction, setSelectedTransaction] =
         React.useState<TransactionsModel | null>(null);
 
-    const loadTransactions = React.useCallback((tabIndex) => {
-            // Fetch data from api
-            switch (tabIndex) {
-                case 0:
-                default:
-                    setTransactions(transactionsState);
-                    break;
-                case 1:
-                    setTransactions(() =>
-                        transactionsState.filter(
-                            (transaction) => transaction.type === TransactionType.INCOME
-                        )
-                    );
-                    break;
-                case 2:
-                    setTransactions(() =>
-                        transactionsState.filter(
-                            (transaction) => transaction.type === TransactionType.EXPENSE
-                        )
-                    );
-                    break;
-                case 3:
-                    setTransactions(() =>
-                        transactionsState.filter(
-                            (transaction) => transaction.type === TransactionType.TRANSFER
-                        )
-                    );
-                    break;
-            }
-        },
-        [transactionsState]
-    );
 
     React.useEffect(() => {
-        if (transactionsState.length == 0) {
-            api.getTransactions().then(() => setIsPageLoading(false));
+        if (loading) {
+            setIsPageLoading(true);
         } else {
             setIsPageLoading(false);
         }
-    }, []);
+    }, [loading]);
 
     React.useEffect(() => {
-        if (transactionsState.length > 0) {
-            loadTransactions(activeTabIndex);
+        switch (activeTabIndex) {
+            case 0:
+            default:
+                setTransactions(transactionsState);
+                break;
+            case 1:
+                setTransactions(() =>
+                    transactionsState.filter(
+                        (transaction) => transaction.type === TransactionType.INCOME
+                    )
+                );
+                break;
+            case 2:
+                setTransactions(() =>
+                    transactionsState.filter(
+                        (transaction) => transaction.type === TransactionType.EXPENSE
+                    )
+                );
+                break;
+            case 3:
+                setTransactions(() =>
+                    transactionsState.filter(
+                        (transaction) => transaction.type === TransactionType.TRANSFER
+                    )
+                );
+                break;
         }
-        // else if (transactionsState.length > 0) {
-        //   setIsPageLoading(false);
-        // }
-        (transactionsState)
-    }, [loadTransactions, transactionsState, activeTabIndex]);
+    }, [transactionsState, activeTabIndex]);
 
     const onTabChange = (index: number) => {
         setActiveTabIndex(index);
-        loadTransactions(index);
+        // loadTransactions(index);
     };
 
     const showDetails = (transaction) => {
@@ -212,7 +198,7 @@ function TransactionItem({
     transaction: TransactionsModel;
     onClick?: () => void;
 }) {
-    const size = useWindowSize();
+    // const size = useWindowSize();
 
     return (
         <div className={Styles.transactionItem} onClick={onClick}>
@@ -226,7 +212,7 @@ function TransactionItem({
                             <span>{transaction.to.name}</span>
                         </h2>
                         <p className={Styles.transactionItemTextDate}>
-                            {formatDate(transaction.date, size.width < 788 ? 'DD MMM, YYYY [at] HH:MM' : null)}
+                            {formatDate(transaction.date,'DD MMM, YYYY [at] HH:MM')}
                         </p>
                     </div>
                 </div>
@@ -243,7 +229,7 @@ function TransactionItem({
                             {transaction.category.name}
                         </h2>
                         <p className={Styles.transactionItemTextDate}>
-                            {formatDate(transaction.date, size.width < 788 ? 'DD MMM, YYYY [at] HH:MM' : null)}
+                            {formatDate(transaction.date,'DD MMM, YYYY [at] HH:MM')}
                         </p>
                     </div>
                 </div>

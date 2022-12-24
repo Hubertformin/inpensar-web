@@ -23,7 +23,7 @@ export default function ProjectViewLayout({title = 'Project', showRightNav = tru
         if (authState == AuthState.UNAUTHENTICATED) {
             router.push('/auth/login');
         }
-    }, [authState]);
+    }, [authState, router]);
     return (
         <>
             <MetaTags title={title}/>

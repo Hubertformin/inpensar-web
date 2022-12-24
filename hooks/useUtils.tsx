@@ -33,7 +33,7 @@ function useUtils() {
 
     function formatShortCurrency(val: number, options?: {decimalPlaces: number}) {
         // format values to two dec
-        const fractionDigits = typeof options?.decimalPlaces == 'number' ? options.decimalPlaces : 2;
+        const fractionDigits = typeof options?.decimalPlaces == 'number' ? options.decimalPlaces : 0;
 
         if (val >= Math.pow(10, 9)) {
             return `${getCurrency().symbol}${(val / Math.pow(10, 9)).toFixed(fractionDigits)}B`;

@@ -2,49 +2,25 @@ import { createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../";
 import { HYDRATE } from "next-redux-wrapper";
 
-export enum AuthState {
-    LOADING = 'LOADING',
-    AUTHENTICATED = 'AUTHENTICATED',
-    UNAUTHENTICATED = 'UNAUTHENTICATED',
-}
-
 const initialState = {
-    data: {
-        name: '',
-        email: '',
-        _id: undefined,
-        uid: '',
-        settings: {
-            country: '',
-            language: '',
-            currency: '',
-            reportsFrequency: 'weekly'
-        }
+    filters: {
+        startDate: '',
+        endDate: '',
+        dateFilter: 'this_month'
     },
-    idToken: '',
-    authState: AuthState.LOADING
+    data: null
 };
 
 
-export const authUserSlice = createSlice({
-    name: "authUser",
+export const analyticsSlice = createSlice({
+    name: "analytics",
     initialState,
     reducers: {
-        setAuthUserState(state, action) {
-            Object.assign(state.data, action.payload);
+        setAnalyticsState(state, action) {
+            state.data = action.payload;
         },
-        setIdTokenState(state, action) {
-            state.idToken = action.payload;
-        },
-        setUserSettings(state, action) {
-            state.data = {...state.data, settings: action.payload};
-        },
-        setAuthState(state, action) {
-            state.authState = action.payload;
-        },
-        clearAuthUser(state, action) {
-            state.data = null;
-            state.idToken = null
+        setAnalyticsFiltersState(state, action) {
+            state.filters = action.payload;
         },
 
         // Special reducer for hydrating the state. Special case for next-redux-wrapper
@@ -53,7 +29,7 @@ export const authUserSlice = createSlice({
             [HYDRATE]: (state, action) => {
                 return {
                     ...state,
-                    ...action.payload.authUser,
+                    ...action.payload.analytics,
                 };
             },
         },
@@ -62,18 +38,12 @@ export const authUserSlice = createSlice({
 });
 
 export const {
-    setAuthUserState,
-    setIdTokenState,
-    setAuthUserDocument,
-    setUserSettings,
-    setAuthState,
-    clearAuthUser
-} = authUserSlice.actions;
+    setAnalyticsState,
+    setAnalyticsFiltersState
+} = analyticsSlice.actions;
 
-export const selectAuthUserState = (state: AppState) => state.authUser.data;
+export const selectAnalyticsState = (state: AppState) => state.analytics.data;
 
-export const selectAuthState = (state: AppState) => state.authUser.authState;
+export const selectAnalyticsFilters = (state: AppState) => state.analytics.filters;
 
-export const selectAuthUserIdTokenState = (state: AppState) => state.authUser.idToken;
-
-export default authUserSlice.reducer;
+export default analyticsSlice.reducer;

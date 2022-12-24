@@ -5,29 +5,43 @@ import {validateCreateTransaction} from "../validators/transactions.validators";
 import Budget, {BudgetDocument, getActivePeriod} from "../models/budget.model";
 import Account, {AccountDocument} from "../models/accounts.model";
 import {Types} from "mongoose";
-import * as dayjs from "dayjs";
+import {getStartAndEndDateFromDateFilter} from "../utils/date";
 
 export const getUsersTransactionsController = createController(async (req, res) => {
     // get all transactions
 
     const page: number = parseInt(req.query.page as string) || 1,
         limit: number = parseInt(req.query.limit as string) || 20,
-        startDate: string = req.query.startDate as string || 'all',
-        endDate: string = req.query.endDate as string || 'all',
         startIndex = (page - 1) * limit;
+    let startDate: string = req.query.startDate as string || 'all',
+        endDate: string = req.query.endDate as string || 'all';
     // search = req.query.searchText;
 
     /// Create query
     let query: any = {};
-    if (startDate !== 'all' && endDate !== 'all') {
 
-        let start = dayjs(startDate), end = dayjs(endDate);
+    if (req.query.startDate && req.query.endDate) {
+        startDate = req.query.startDate as string;
+        endDate = req.query.endDate as string;
+        query.date = {$gte: startDate, $lt: endDate};
 
-        start = start.startOf('day');
-        end = end.endOf('day');
+    } else if (req.query.dateFilter && req.query.dateFilter !== 'all') {
+        const filter = getStartAndEndDateFromDateFilter(req.query.dateFilter.toString());
+        startDate = filter.startDate;
+        endDate = filter.endDate;
+        query.date = {$gte: startDate, $lt: endDate}
 
-        query.date = {$gte: start.toISOString(), $lt: end.toISOString()}
     }
+
+    // if (startDate !== 'all' && endDate !== 'all') {
+    //
+    //     let start = dayjs(startDate), end = dayjs(endDate);
+    //
+    //     start = start.startOf('day');
+    //     end = end.endOf('day');
+    //
+    //     query.date = {$gte: start.toISOString(), $lt: end.toISOString()}
+    // }
 
     const count = await Transaction.find({ owner: req.$currentUser$, ...query }).countDocuments().exec();
 
@@ -51,6 +65,7 @@ export const createTransactionController = createController(async (req, res) => 
     const transaction = new Transaction({
         ...transactionData,
         owner: req.$currentUser$?._id,
+        date: new Date(transactionData.date),
         project: new Types.ObjectId(req.$currentProject$?._id)
     });
     /**

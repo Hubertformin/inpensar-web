@@ -27,8 +27,8 @@ connect(process.env.DATABASE_URI as string, {
 }).then(() => {
   console.log("[SERVER]: connected to database!");
 }).catch((err) => {
-  console.error('DATABASE_URI')
-  console.error(process.env.DATABASE_URI);
+  console.log('DATABASE_URI not loader')
+  console.log(process.env.DATABASE_URI);
   // console.error(err)
 });
 

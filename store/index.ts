@@ -6,6 +6,7 @@ import { categoriesSlice } from "./slices/categories.slice";
 import { projectsSlice } from "./slices/projects.slice";
 import { authUserSlice } from "./slices/auth.slice";
 import { createWrapper } from "next-redux-wrapper";
+import {analyticsSlice} from "./slices/analytics.slice";
 
 const makeStore = () =>
     configureStore({
@@ -16,6 +17,7 @@ const makeStore = () =>
             [categoriesSlice.name]: categoriesSlice.reducer,
             [projectsSlice.name]: projectsSlice.reducer,
             [authUserSlice.name]: authUserSlice.reducer,
+            [analyticsSlice.name]: analyticsSlice.reducer,
         },
         devTools: true,
     });

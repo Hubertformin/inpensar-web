@@ -47,7 +47,7 @@ export default function BudgetDetail() {
             setExpenditurePercent(calculateBudgetExpenditurePercentage(_currentBudget));
             setIsExceeded(_currentBudget.amountSpent > _currentBudget.amount);
         }
-    }, [budgets]);
+    }, [budgets, budgetId]);
 
     const deleteBudget = () => {
         setIsDeleting(true)

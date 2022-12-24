@@ -31,7 +31,7 @@ export default function RightSideNav() {
         } else if (accounts.length > 0) {
             setIsAccountsLoading(false);
         }
-    }, [accounts, budgets]);
+    }, [accounts, budgets, activeProject, api]);
 
     return (
         <div className={styles.sideNavContainer}>

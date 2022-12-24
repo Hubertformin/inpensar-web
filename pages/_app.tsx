@@ -1,4 +1,4 @@
-import {ChakraProvider} from '@chakra-ui/react'
+import {ChakraProvider, useToast} from '@chakra-ui/react'
 import '../styles/globals.scss';
 import theme from '../utils/theme';
 import "react-datepicker/dist/react-datepicker.css";
@@ -15,12 +15,15 @@ import {
     setIdTokenState
 } from "../store/slices/auth.slice";
 import useApi from "../hooks/useApi";
-import {selectActiveProjectState} from "../store/slices/projects.slice";
+import {selectActiveProjectState, setActiveProjectId, setActiveProjectState} from "../store/slices/projects.slice";
 import {selectCategoriesState} from "../store/slices/categories.slice";
+import {useRouter} from "next/router";
 
 function MyApp({Component, pageProps}) {
     const dispatch = useDispatch();
     const api = useApi();
+    const router = useRouter();
+    const toast = useToast();
     const authUser = useSelector(selectAuthUserState);
     const activeProject = useSelector(selectActiveProjectState);
     const categories = useSelector(selectCategoriesState);
@@ -33,6 +36,7 @@ function MyApp({Component, pageProps}) {
         let activeProjectId;
         if (url.pathname.startsWith('/projects')) {
             activeProjectId = url.pathname.split('/')[2];
+            dispatch(setActiveProjectId(activeProjectId))
         }
         // Listen to authstate changes
         fireAuth.onAuthStateChanged(async (user) => {
@@ -51,6 +55,12 @@ function MyApp({Component, pageProps}) {
                  */
                 if (!activeProject && activeProjectId) {
                     await api.getAndSetActiveProject({projectId: activeProjectId, idToken})
+                        .catch(err => {
+                            if (err.response.status === 404) {
+                                toast({title: 'Project not found',description: 'Your project was either moved or deleted!', status: 'error'});
+                                router.push(`/projects/`);
+                            }
+                        })
                 }
 
                 // Load categories when the user opens a project, these categories will be used for transactions budgets

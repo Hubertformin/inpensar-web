@@ -33,7 +33,8 @@ export default function ViewLayout({pageTitle, children}) {
         if (authState == AuthState.UNAUTHENTICATED) {
             router.push('/auth/login');
         }
-    }, [authState]);
+    }, [authState, router]);
+
     return (
         authState == 'AUTHENTICATED' ? <>
             <MetaTags title={pageTitle}/>

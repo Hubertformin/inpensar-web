@@ -1,13 +1,18 @@
 
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
 import DatePicker from "react-datepicker";
-import React from "react";
+import React, {useState} from "react";
 import dayjs from "dayjs";
-import {Divider, Select} from "@chakra-ui/react";
+import {Divider, Select, Skeleton, useToast} from "@chakra-ui/react";
 import useUtils from "../../../hooks/useUtils";
 import dynamic from "next/dynamic";
 import CategoriesReportsTable from "../../../components/dashboard/CategoriesReportsTable";
 import styles from '../../../styles/Dashboard.module.scss'
+import useApi from "../../../hooks/useApi";
+import {useSelector} from "react-redux";
+import {selectAuthUserState} from "../../../store/slices/auth.slice";
+import {selectAnalyticsFilters, selectAnalyticsState} from "../../../store/slices/analytics.slice";
+import {AnalyticsModel} from "../../../models/analytics.model";
 
 const MonthlyChart = dynamic(
     () => import("../../../components/dashboard/MonthlyChart"),
@@ -17,41 +22,73 @@ const MonthlyChart = dynamic(
 export default function Dashboard() {
     const [startDate, setStartDate] = React.useState<Date>();
     const [endDate, setEndDate] = React.useState(new Date());
-    const [showDatePicker, setShowDatePicker] =React.useState(false);
+    const [isPageLoading, setIsPageLoading] = React.useState(true);
+    const [dateFilter, setDateFilter] = useState<string>('this_month');
     const utils = useUtils();
+    const api = useApi();
+    const toast = useToast();
+    // Redux states
+    const authUserState = useSelector(selectAuthUserState);
+    const analyticsState: AnalyticsModel = useSelector(selectAnalyticsState);
+    const analyticsFilters = useSelector(selectAnalyticsFilters);
 
     React.useEffect(() => {
-        const startOfMonth = dayjs().startOf('month').toDate();
-        setStartDate(startOfMonth)
+        if (analyticsFilters.startDate && analyticsFilters.endDate) {
+            setStartDate(new Date(analyticsFilters.startDate))
+            setEndDate(new Date(analyticsFilters.endDate))
+        } else {
+            const startOfMonth = dayjs().startOf('month').toDate();
+            setStartDate(startOfMonth);
+        }
+
+        if (analyticsFilters.dateFilter) {
+            setDateFilter(dateFilter)
+        }
     }, []);
 
-    const onRangeSelect = (val) => {
-        console.log(val)
-        switch (val) {
-            case 'This Week':
-                setStartDate(dayjs().startOf('week').toDate());
-                setShowDatePicker(false);
-                break;
-            case 'This Month':
-                setStartDate(dayjs().startOf('month').toDate());
-                setShowDatePicker(false);
-                break;
-            case 'This Year':
-                setStartDate(dayjs().startOf('year').toDate());
-                setShowDatePicker(false);
-                break;
-            case 'Custom':
-                setStartDate(new Date());
-                setShowDatePicker(true);
-                break;
+    React.useEffect(() => {
+        // get reports
+        if (authUserState._id && !analyticsState) {
+            api.getProjectReports({ dateFilter: 'this_month' })
+                .then(() => setIsPageLoading(false))
+                .catch(console.error)
+        } else {
+            console.log('setting false from use effect')
+            setIsPageLoading(false);
         }
-        console.log(startDate)
+    }, [authUserState, analyticsState]);
+
+    function onFilterDate(props: {startDate?: string, endDate?: string, dateFilter?: string}) {
+        setIsPageLoading(true)
+        api.getProjectReports(props).then(console.log).catch((e) => {
+            console.error(e);
+            toast({
+                title: 'Failed to load Analytics',
+                description: 'We are not able to load your analytics at this time. Please try again later',
+                status: "warning"
+            })
+        })
+    }
+
+    function onDateFilterChange(event) {
+        const value = event.target.value;
+        setDateFilter(value);
+        // It the user selects custom, the date picker will be used
+        if (value === 'custom') return;
+        // If the value is all, fetch all data from the database
+        // Load filters
+        onFilterDate({ dateFilter: value });
     }
 
     function onDateRangeSelect(dates) {
         const [start, end] = dates;
         setStartDate(start);
         setEndDate(end);
+        // Load data if both dates have been set
+        if (start && end) {
+            // Find new Data
+            onFilterDate({ startDate: start.toISOString().split('T')[0], endDate: end.toISOString().split('T')[0]});
+        }
     }
 
     return (
@@ -65,18 +102,18 @@ export default function Dashboard() {
                     <div className="date">
                         <div className="actions flex">
                             <div className={'w-40'}>
-                                <Select defaultValue="This Month" onChange={e => onRangeSelect(e.target.value)}>
-                                    <option value="This Week">This Week</option>
-                                    <option value="This Month">This Month</option>
-                                    <option value="This Year">This Year</option>
-                                    <option value="Custom">Custom</option>
+                                <Select disabled={isPageLoading} defaultValue={dateFilter} onChange={onDateFilterChange}>
+                                    <option value="this_week">This Week</option>
+                                    <option value="this_month">This Month</option>
+                                    <option value="this_year">This Year</option>
+                                    <option value="custom">Custom</option>
                                 </Select>
                             </div>
-                            {showDatePicker && <div className="ml-3" style={{width: "320px"}}>
+                            {dateFilter === 'custom' && <div className="ml-3" style={{width: "240px"}}>
                                 <DatePicker
                                     startDate={startDate}
                                     onChange={onDateRangeSelect}
-                                    dateFormat="dd MMMM, yyyy"
+                                    dateFormat="dd MMM yyyy"
                                     endDate={endDate}
                                     selectsRange
                                 />
@@ -85,14 +122,16 @@ export default function Dashboard() {
                     </div>
                 </div>
                     <Divider />
-                <div className={`${styles.viewBody} pt-4`}>
-                    <div className="cards md:grid md:grid-cols-4 md:gap-4 mb-6">
+                {isPageLoading ?
+                    <DashboardSkeleton /> :
+                    <div className={`${styles.viewBody} pt-4`}>
+                    <div className="cards md:grid md:grid-cols-3 md:gap-4 mb-6">
                         <div className="">
                             <div className={"data-card rounded-lg py-3 px-3 border md:border-0 mb-4 md:mb-0 md:shadow flex items-center h-20"}>
                                 <img src="/icons/income_icon.jpg" alt="" className={"h-11 w-11 rounded-full"}/>
                                 <div className="text pl-2">
                                     <p className="font-semibold text-sm mb-0">Earnings</p>
-                                    <h3 className="font-bold text-blue-500 text-xl">{/*utils.formatCurrency(10500000) :*/ utils.formatShortCurrency(10500000)}</h3>
+                                    <h3 className="font-bold text-blue-500 text-xl">{/*utils.formatCurrency(10500000) :*/ utils.formatShortCurrency(analyticsState?.earnings)}</h3>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +140,7 @@ export default function Dashboard() {
                                 <img src="/icons/expense_icon.jpg" alt="" className={"h-12 w-12 rounded-full"}/>
                                 <div className="text pl-2">
                                     <p className="font-semibold text-sm mb-0">Expenses</p>
-                                    <h3 className="font-bold text-red-500 text-xl">{/*utils.formatCurrency(10500000) :*/ utils.formatShortCurrency(2500000)}</h3>
+                                    <h3 className="font-bold text-red-500 text-xl">{/*utils.formatCurrency(10500000) :*/ utils.formatShortCurrency(analyticsState?.expenses)}</h3>
                                 </div>
                             </div>
                         </div>
@@ -110,19 +149,19 @@ export default function Dashboard() {
                                 <img src="/icons/balance_icon.jpg" alt="" className={"h-12 w-12 rounded-full"}/>
                                 <div className="text pl-2">
                                     <p className="font-semibold text-sm mb-0">Balance</p>
-                                    <h3 className="font-bold text-purple-500 text-xl">{/*utils.formatCurrency(10500000) :*/ utils.formatShortCurrency(6000000)}</h3>
+                                    <h3 className="font-bold text-purple-500 text-xl">{/*utils.formatCurrency(10500000) :*/ utils.formatShortCurrency(analyticsState?.balance)}</h3>
                                 </div>
                             </div>
                         </div>
-                        <div className="">
-                            <div className="data-card rounded-lg py-3 px-3 border md:border-0 mb-4 md:mb-0 md:shadow flex items-center h-20">
-                                <img src="/icons/savings_icon.jpg" alt="" className={"h-12 w-12 rounded-full"}/>
-                                <div className="text pl-2">
-                                    <p className="font-semibold text-sm mb-0">Savings</p>
-                                    <h3 className="font-bold text-green-500 text-xl">{/*utils.formatCurrency(10500000) :*/ utils.formatShortCurrency(2000000)}</h3>
-                                </div>
-                            </div>
-                        </div>
+                        {/*<div className="savings">*/}
+                        {/*    <div className="data-card rounded-lg py-3 px-3 border md:border-0 mb-4 md:mb-0 md:shadow flex items-center h-20">*/}
+                        {/*        <img src="/icons/savings_icon.jpg" alt="" className={"h-12 w-12 rounded-full"}/>*/}
+                        {/*        <div className="text pl-2">*/}
+                        {/*            <p className="font-semibold text-sm mb-0">Savings</p>*/}
+                        {/*            <h3 className="font-bold text-green-500 text-xl"> utils.formatShortCurrency(2000000)}</h3>*/}
+                        {/*        </div>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
                     </div>
                     <div className="area-chart shadow rounded-lg md:px-3 mb-4 pt-4">
                         <div className="title">
@@ -131,8 +170,26 @@ export default function Dashboard() {
                         <MonthlyChart />
                     </div>
                     <CategoriesReportsTable />
-                </div>
+                </div>}
             </main>
         </ProjectViewLayout>
+    )
+}
+
+function DashboardSkeleton() {
+    return(
+        <div className="">
+            <div className="cards md:grid md:grid-cols-3 md:gap-4 mb-3">
+                <Skeleton height='100px' />
+                <Skeleton height='100px' />
+                <Skeleton height='100px' />
+            </div>
+            <div className="area-chart mb-4 pt-4">
+                <Skeleton height='350px' />
+            </div>
+            <div className="area-chart mb-4 pt-4">
+                <Skeleton height='240px' />
+            </div>
+        </div>
     )
 }

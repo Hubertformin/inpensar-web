@@ -1,7 +1,11 @@
 import {createController} from "./index";
 import Transaction, {TransactionType} from "../models/transaction.model";
+import {getStartAndEndDateFromDateFilter} from "../utils/date";
 
 export const getProjectReports = createController(async (req, res) => {
+
+    let startDate: string,
+        endDate: string;
     // Get reports from db
     let analytics: any = {
         earnings: 0,
@@ -17,7 +21,29 @@ export const getProjectReports = createController(async (req, res) => {
         }
     }
 
+    if (req.query.startDate && req.query.endDate) {
+        startDate = req.query.startDate as string;
+        endDate = req.query.endDate as string;
+    } else if (req.query.dateFilter) {
+        const filter = getStartAndEndDateFromDateFilter(req.query.dateFilter.toString());
+        startDate = filter.startDate;
+        endDate = filter.endDate;
+    } else {
+        const filter = getStartAndEndDateFromDateFilter('this_month');
+        startDate = filter.startDate;
+        endDate = filter.endDate;
+    }
+
+    console.log(startDate)
+    console.log(endDate)
+
     const computedTransaction = await Transaction.aggregate([
+        {
+            $match: {
+                project: req.$currentProject$?._id,
+                date: {$gte: startDate, $lt: endDate}
+            }
+        },
         {
             $group: {
                 _id: {type: "$type"},
@@ -41,6 +67,12 @@ export const getProjectReports = createController(async (req, res) => {
     }
 
     const groupedByDate = await Transaction.aggregate([
+        {
+            $match: {
+                project: req.$currentProject$?._id,
+                date: {$gte: startDate, $lt: endDate}
+            }
+        },
         {
             $group: {
                 _id: {
@@ -74,6 +106,12 @@ export const getProjectReports = createController(async (req, res) => {
 
     // 2. Categories data
     let categoriesAnalytics = await Transaction.aggregate([
+        {
+            $match: {
+                project: req.$currentProject$?._id,
+                date: {$gte: startDate, $lt: endDate}
+            }
+        },
         {
             $group: {
                 _id: {categoryId: "$category"},

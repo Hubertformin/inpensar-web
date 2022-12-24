@@ -51,7 +51,7 @@ export default function SettingsHome() {
             getCountriesAndCurrencies();
         }
         setReportsFrequencyControl(reportsFrequencyOptions.find(r => r.value == authState.settings.reportsFrequency))
-    }, [authState]);
+    }, [authState, countries.length, currencies.length]);
 
     function onCountrySelect(val) {
         const country = countries.find(country => country.alpha2Code === val.value);

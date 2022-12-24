@@ -26,7 +26,7 @@ export default function ProjectsHome() {
                     setIsPageLoading(false);
             });
         }
-    }, [authUser]);
+    }, [authUser, api, projects.length]);
 
 
     return(

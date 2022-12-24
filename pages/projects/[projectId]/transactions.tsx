@@ -2,55 +2,112 @@ import {
   Button,
   ButtonGroup,
   Divider,
-  FormControl,
   Stat,
+  Select,
   StatGroup,
   StatHelpText,
   StatLabel,
   StatNumber,
 } from "@chakra-ui/react";
-import Select from "react-select";
 import DatePicker from "react-datepicker";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AddTransaction from "../../../components/transactions/AddTransaction";
-import { Data } from "../../../data";
 import TransactionsTable from "../../../components/transactions/TransactionsTable";
 import { BsPlus } from "react-icons/bs";
 import { useSelector } from "react-redux";
-import { selectCategoriesState } from "../../../store/slices/categories.slice";
-import { sortArrayOfObjects } from "../../../utils/array";
 import ProjectViewLayout from "../../../components/nav/ProjectViewLayout";
-import { selectTransactionInsights } from "../../../store/slices/transaction.slice";
+import {selectTransactionData, selectTransactionInsights} from "../../../store/slices/transaction.slice";
 import useUtils from "../../../hooks/useUtils";
 import useWindowSize from "../../../hooks/useWindowSize";
 import  {GoSettings} from 'react-icons/go';
+import useApi from "../../../hooks/useApi";
+import {selectAuthUserState} from "../../../store/slices/auth.slice";
+import dayjs from "dayjs";
 
 export default function TransactionsHome() {
   const utils = useUtils();
+  const api = useApi();
   const size = useWindowSize();
-  const categoriesState = useSelector(selectCategoriesState);
+
+  const authUserState = useSelector(selectAuthUserState);
   const transactionInsights = useSelector(selectTransactionInsights);
+  const transactionsState = useSelector(selectTransactionData);
+
   const [showAddModal, setShowAddModal] = useState(false);
-  const [startDate, setStartDate] = React.useState(new Date());
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState(new Date());
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const [categoriesSelectOptions, setCategoriesSelectOptions] = React.useState<
     { value: string; label: string }[]
   >([]);
-  const IS_MOBILE = size.width < 768;
 
-  useEffect(() => {
-    let _categories = [
-      ...categoriesState.income.map((c) => ({ value: c.name, label: c.name })),
-      ...categoriesState.expenses.map((c) => ({
-        value: c.name,
-        label: c.name,
-      })),
-    ];
-    // sort art
-    _categories = sortArrayOfObjects(_categories, "label");
-    // add generic label
-    _categories.unshift({ value: "all", label: "All" });
-    setCategoriesSelectOptions(_categories);
-  }, [categoriesState.expenses, categoriesState.income]);
+  const IS_MOBILE = size.width < 768;
+  // State for data filtering
+  const [dateFilter, setDateFilter] = useState<string>('all');
+
+
+
+  // useEffect(() => {
+  //   let _categories = [
+  //     ...categoriesState.income.map((c) => ({ value: c.name, label: c.name })),
+  //     ...categoriesState.expenses.map((c) => ({
+  //       value: c.name,
+  //       label: c.name,
+  //     })),
+  //   ];
+  //   // sort art
+  //   _categories = sortArrayOfObjects(_categories, "label");
+  //   // add generic label
+  //   _categories.unshift({ value: "all", label: "All" });
+  //   setCategoriesSelectOptions(_categories);
+  // }, [categoriesState.expenses, categoriesState.income]);
+
+  React.useEffect(() => {
+    const startOfMonth = dayjs().startOf('month').toDate();
+    setStartDate(startOfMonth);
+  }, []);
+
+  React.useEffect(() => {
+    if (transactionsState.length == 0 && dateFilter == 'all' && authUserState._id) {
+      setIsPageLoading(true);
+      api.getTransactions().then(() => setIsPageLoading(false));
+    } else {
+      setIsPageLoading(false);
+    }
+  }, [authUserState, transactionsState]);
+
+  /**
+   * When the user attempts to filter the date
+   */
+  function onFilterDate(props: {startDate?: string, endDate?: string, dateFilter?: string}) {
+    setIsPageLoading(true)
+    api.getTransactions(props).then((data) => {
+      console.log(data)
+      setIsPageLoading(false)
+    })
+  }
+
+  function onDateFilterChange(event) {
+    const value = event.target.value;
+    setDateFilter(value);
+    // It the user selects custom, the date picker will be used
+    if (value === 'custom') return;
+    // If the value is all, fetch all data from the database
+    // Load filters
+    onFilterDate({dateFilter: value});
+  }
+
+  // When the date picture is changed
+  function onDatePickerChange(dates) {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+    // Load data if both dates have been set
+    if (start && end) {
+      // Find new Data
+      onFilterDate({ startDate: start.toISOString().split('T')[0], endDate: end.toISOString().split('T')[0]});
+    }
+  }
 
   return (
     <ProjectViewLayout title={'Transactions'}>
@@ -68,28 +125,40 @@ export default function TransactionsHome() {
               &nbsp;Add Transaction
             </Button>
           </div>
-          <div className="actions hidden md:flex">
+          <div className="actions hidden md:block">
             {/*<Button onClick={toggleColorMode}>*/}
             {/*    Toggle {colorMode === 'light' ? 'Dark' : 'Light'}*/}
             {/*</Button>*/}
             {/*<div className="mr-3" style={{width: '100px'}}>*/}
             {/*    <Select placeholder='Year' options={[{label: '2022', value: '2022'}]} />*/}
             {/*</div>*/}
-            <div className="mr-3" style={{ width: "100px" }}>
-              <Select
-                  defaultValue={Data.month_days[0]}
-                  placeholder="Day"
-                  options={Data.month_days}
-              />
-            </div>
-            <div className="mr-3" style={{ width: "160px" }}>
-              {/*<Select placeholder='Month' options={Data.months} />*/}
-              <DatePicker
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
-                  showMonthYearPicker
-                  dateFormat={`MMMM, yyyy`}
-              />
+            <p className="label mb-1 text-sm font-bold">Showing:</p>
+            <div className="md:flex">
+              <div className="mr-3" style={{ width: "130px" }}>
+                <Select
+                    defaultValue={dateFilter}
+                    isDisabled={isPageLoading}
+                    onChange={onDateFilterChange}
+                >
+                  <option value="all">All</option>
+                  <option value="today">Today</option>
+                  <option value="this_week">This Week</option>
+                  <option value="this_month">This Month</option>
+                  <option value="this_year">This Year</option>
+                  <option value="custom">Custom</option>
+                </Select>
+              </div>
+              {dateFilter === 'custom' && <div className="mr-3" style={{ width: "240px" }}>
+                {/*<Select placeholder='Month' options={Data.months} />*/}
+                <DatePicker
+                    startDate={startDate}
+                    endDate={endDate}
+                    disabled={isPageLoading}
+                    onChange={onDatePickerChange}
+                    selectsRange
+                    dateFormat={`dd MMM yyyy`}
+                />
+              </div>}
             </div>
           </div>
         </div>
@@ -101,14 +170,14 @@ export default function TransactionsHome() {
         <div className="pg-header hidden md:block mb-4">
           <div className="flex justify-between align-items-center">
             <div className="leading hidden md:block" style={{ width: "180px" }}>
-              <FormControl>
-                {/*<FormLabel>Filter by category</FormLabel>*/}
-                <Select
-                    placeholder="Select Category"
-                    defaultValue={{ value: "all", label: "All" }}
-                    options={categoriesSelectOptions}
-                />
-              </FormControl>
+              {/*<FormControl>*/}
+              {/*  /!*<FormLabel>Filter by category</FormLabel>*!/*/}
+              {/*  <Select*/}
+              {/*      placeholder="Select Category"*/}
+              {/*      defaultValue={{ value: "all", label: "All" }}*/}
+              {/*      options={categoriesSelectOptions}*/}
+              {/*  />*/}
+              {/*</FormControl>*/}
             </div>
             <ButtonGroup spacing="4">
               <Button
@@ -169,7 +238,7 @@ export default function TransactionsHome() {
           </StatGroup>
 
           <div className="transaction-body mt-4">
-            <TransactionsTable />
+            <TransactionsTable loading={isPageLoading} />
           </div>
         </div>}
       </main>

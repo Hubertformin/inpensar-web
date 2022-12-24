@@ -10,6 +10,7 @@ let transactions = object({
     category: string().required(),
     type: mixed().oneOf(Object.values(TransactionType)).required(),
     account: string().nullable(),
+    date: string().required(),
     to: string().nullable(),
     from: string().nullable()
 });

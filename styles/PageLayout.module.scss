@@ -6,11 +6,14 @@
   // justify-content: center;
   grid-template-columns: 330px auto 350px;
   @include media-desktop {
-    width: 91vw;
+    width: 98vw;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+  @include media-custom-min(3048) {
+    width: 75vw;
   }
 }
 .__page_home_no_right {

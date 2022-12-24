@@ -15,6 +15,7 @@ import {
     getUserTransactionByIdController, updateUserTransactionByIdController
 } from "../controllers/transactions.controller";
 import {getProjectReports} from "../controllers/reports.controller";
+import {withCurrentProject} from "../middlewares/projects.middleware";
 
 const router = Router();
 
@@ -25,7 +26,7 @@ router.get('/:projectId', getUserProjectByIdController);
 /**
  * Reports
  */
-router.get('/:projectId/reports/', getProjectReports)
+router.get('/:projectId/reports/', withCurrentProject, getProjectReports)
 
 /**
  * Budgets
