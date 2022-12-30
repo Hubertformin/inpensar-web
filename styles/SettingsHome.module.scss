@@ -1,0 +1,17 @@
+@import "responsive";
+
+.tab_body {
+  height: 79.5vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  @include media-gt-phone {
+    height: 81vh;
+  }
+}
+
+.profile_tab {
+  @include media-gt-phone {
+    display: grid;
+    grid-template-columns: 560px auto;
+  }
+}

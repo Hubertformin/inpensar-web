@@ -26,7 +26,7 @@ function setBudgetDefaultActivePeriod(): string {
     return (today.month() + 1) + '-' + today.year();
 }
 
-export function getActivePeriod(date: string): string {
+export function getActivePeriod(date: string | Date): string {
     const today = dayjs(date);
     return (today.month() + 1) + '-' + today.year();
 }

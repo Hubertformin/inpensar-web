@@ -22,6 +22,9 @@ export const projectsSlice = createSlice({
         setActiveProjectState(state, action) {
             state.activeProject = action.payload;
         },
+        updateActiveProjectState(state, action) {
+            state.activeProject = { ...state.data, ...action.payload };
+        },
         appendProjectState(state, action) {
             state.data = [...state.data, action.payload]
         },
@@ -58,6 +61,7 @@ export const {
     setProjectState,
     appendProjectState,
     setActiveProjectId,
+    updateActiveProjectState,
     prependProjectState,
     setActiveProjectState,
     replaceProjectInState,

@@ -1,6 +1,7 @@
 import {createController} from "./index";
 import Transaction, {TransactionType} from "../models/transaction.model";
 import {getStartAndEndDateFromDateFilter} from "../utils/date";
+import * as dayjs from "dayjs";
 
 export const getProjectReports = createController(async (req, res) => {
 
@@ -33,9 +34,6 @@ export const getProjectReports = createController(async (req, res) => {
         startDate = filter.startDate;
         endDate = filter.endDate;
     }
-
-    console.log(startDate)
-    console.log(endDate)
 
     const computedTransaction = await Transaction.aggregate([
         {
@@ -84,7 +82,7 @@ export const getProjectReports = createController(async (req, res) => {
                 amount: {$sum: "$amount"}
             },
         },
-        {$sort: {date: -1}},
+        // {$sort: {date: -1}},
         {$limit: 30}
     ]).exec();
 
@@ -92,14 +90,14 @@ export const getProjectReports = createController(async (req, res) => {
         if (data._id.type === TransactionType.EXPENSE) {
             analytics.activity.expenses.push({
                 amount: data.amount,
-                date: (new Date(`${data['_id']['year']}-${data['_id']['month']}-${data['_id']['day']}`).toDateString())
+                date: dayjs(`${data['_id']['year']}-${data['_id']['month']}-${data['_id']['day']}`).format('DD/MM/YY')
             })
         }
 
         if (data._id.type === TransactionType.INCOME) {
             analytics.activity.earnings.push({
                 amount: data.amount,
-                date: (new Date(`${data['_id']['year']}-${data['_id']['month']}-${data['_id']['day']}`).toDateString())
+                date: dayjs(`${data['_id']['year']}-${data['_id']['month']}-${data['_id']['day']}`).format('DD/MM/YY')
             })
         }
     });

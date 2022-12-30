@@ -19,6 +19,7 @@ export const getUserProjectsController = createController(async (req, res) => {
     // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: projects, count }, message: "" };
 });
+
 export const getUserProjectByIdController = createController(async (req, res) => {
 
     const project = await  Project.findOne({ id: req.params.projectId, owner: req.$currentUser$?._id }).exec();
@@ -28,6 +29,25 @@ export const getUserProjectByIdController = createController(async (req, res) =>
             "Project not found"
         ).status(404);
     }
+
+    return { statusCode: 200, data: { results: project.toObject() }, message: "" };
+});
+
+export const updateUserProjectByIdController = createController(async (req, res) => {
+
+    const project = await  Project.findOne({ id: req.params.projectId, owner: req.$currentUser$?._id }).exec();
+
+    if (!project) {
+        throw CustomError(
+            "Project not found"
+        ).status(404);
+    }
+
+    const projectData = req.body;
+
+    Object.assign(project, projectData);
+
+    await project.save();
 
     return { statusCode: 200, data: { results: project.toObject() }, message: "" };
 });

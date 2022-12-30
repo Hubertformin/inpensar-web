@@ -65,8 +65,8 @@ export const createTransactionController = createController(async (req, res) => 
     const transaction = new Transaction({
         ...transactionData,
         owner: req.$currentUser$?._id,
-        date: new Date(transactionData.date),
-        project: new Types.ObjectId(req.$currentProject$?._id)
+        // date: new Date(transactionData.date),
+        project: req.$currentProject$?._id
     });
     /**
      * When a transaction is created, the cases apply ->

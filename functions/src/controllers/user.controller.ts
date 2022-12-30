@@ -94,6 +94,13 @@ export const updateUserController = createController(async (req, res) => {
 
     Object.assign(user, userData);
 
+    // Update firebase info
+    if (userData.name) {
+        await getAuth().updateUser(user.uid as string, {
+            displayName: userData.name
+        });
+    }
+
 
     await user.save();
 

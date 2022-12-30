@@ -20,7 +20,6 @@ export default function ProjectsHome() {
         if (authUser._id && projects.length == 0) {
             api.getProjects()
                 .then((data) => {
-                    console.log(data);
                     setProjects(data);
                 }).finally(() => {
                     setIsPageLoading(false);

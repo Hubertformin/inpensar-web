@@ -2,7 +2,7 @@ import {Router} from "express";
 import {
     getUserProjectByIdController,
     getUserProjectCategoriesController,
-    getUserProjectsController
+    getUserProjectsController, updateUserProjectByIdController
 } from "../controllers/projects.controller";
 import {
     createBudgetController, deleteUserBudgetController,
@@ -21,7 +21,9 @@ const router = Router();
 
 router.get('/', getUserProjectsController);
 
-router.get('/:projectId', getUserProjectByIdController);
+router.route('/:projectId')
+    .get(getUserProjectByIdController)
+    .put(updateUserProjectByIdController)
 
 /**
  * Reports

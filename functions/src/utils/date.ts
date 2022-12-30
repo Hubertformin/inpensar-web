@@ -8,20 +8,20 @@ export function getStartAndEndDateFromDateFilter(value: DateFilter | string): {s
 
     switch (value) {
         case 'today':
-            startDate = date.startOf('day').toISOString().split('T')[0];
-            endDate = date.endOf('day').toISOString().split('T')[0];
+            startDate = date.startOf('day').toISOString();
+            endDate = date.endOf('day').toISOString();
             break;
         case 'this_week':
-            startDate = date.startOf('week').toISOString().split('T')[0];
-            endDate = date.endOf('week').toISOString().split('T')[0];
+            startDate = date.startOf('week').toISOString();
+            endDate = date.endOf('week').toISOString();
             break;
         case 'this_month':
-            startDate = date.startOf('month').toISOString().split('T')[0];
-            endDate = date.endOf('month').toISOString().split('T')[0];
+            startDate = date.startOf('month').toISOString();
+            endDate = date.endOf('month').toISOString();
             break;
         case 'this_year':
-            startDate = date.startOf('year').toISOString().split('T')[0];
-            endDate = date.endOf('year').toISOString().split('T')[0];
+            startDate = date.startOf('year').toISOString();
+            endDate = date.endOf('year').toISOString();
             break;
     }
 

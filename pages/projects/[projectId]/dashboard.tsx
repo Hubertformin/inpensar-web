@@ -42,6 +42,7 @@ export default function Dashboard() {
         }
 
         if (analyticsFilters.dateFilter) {
+            console.log(analyticsFilters.dateFilter)
             setDateFilter(dateFilter)
         }
     }, []);
@@ -53,7 +54,6 @@ export default function Dashboard() {
                 .then(() => setIsPageLoading(false))
                 .catch(console.error)
         } else {
-            console.log('setting false from use effect')
             setIsPageLoading(false);
         }
     }, [authUserState, analyticsState]);
@@ -102,7 +102,7 @@ export default function Dashboard() {
                     <div className="date">
                         <div className="actions flex">
                             <div className={'w-40'}>
-                                <Select disabled={isPageLoading} defaultValue={dateFilter} onChange={onDateFilterChange}>
+                                <Select disabled={isPageLoading} value={dateFilter} onChange={onDateFilterChange}>
                                     <option value="this_week">This Week</option>
                                     <option value="this_month">This Month</option>
                                     <option value="this_year">This Year</option>

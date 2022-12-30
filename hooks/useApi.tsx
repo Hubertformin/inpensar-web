@@ -24,8 +24,13 @@ import {
 import axios from "axios";
 import {fireAuth} from "../utils/firebase";
 import {signInWithCustomToken} from "@firebase/auth";
-import {selectAuthUserIdTokenState, setAuthUserState, setUserSettings} from "../store/slices/auth.slice";
-import {prependProjectState, selectActiveProjectIdState, setActiveProjectState} from "../store/slices/projects.slice";
+import {selectAuthUserIdTokenState, setAuthUserState, setUser} from "../store/slices/auth.slice";
+import {
+    prependProjectState,
+    selectActiveProjectIdState,
+    setActiveProjectState,
+    updateActiveProjectState
+} from "../store/slices/projects.slice";
 import {UserModel} from "../models/user.model";
 import {ProjectModel} from "../models/project.model";
 import {setCategoriesState} from "../store/slices/categories.slice";
@@ -60,14 +65,19 @@ export default function useApi() {
         return {authUser, project: data['data'].project};
     }
 
-    async function updateUserSettings(id: string, payload: any) {
-        const {data} = await httpInstance.put(`/users/${id}`, {settings: payload}, {
+
+    async function updateUser(id: string, payload: any) {
+        const {data} = await httpInstance.put(`/users/${id}`, payload, {
             ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
         });
 
-        dispatch(setUserSettings(payload));
+        dispatch(setUser(payload));
 
         return data;
+    }
+
+    function updateUserSettings(id: string, payload: any) {
+        return updateUser(id, {settings: payload});
     }
 
     async function getAndSetCurrentUsersData({idToken = null}) {
@@ -104,6 +114,15 @@ export default function useApi() {
         return projectData;
     }
 
+    async function updateProject(id: string, payload: any): Promise<ProjectModel> {
+        const {data} = await httpInstance.put(`/projects/${id}`, payload, {
+            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        });
+        const projectData = data['data'].results;
+        dispatch(updateActiveProjectState({...projectData}));
+        return projectData;
+    }
+
     /**
      *  ===== CATEGORIES =====
      */
@@ -136,6 +155,7 @@ export default function useApi() {
         const {data} = await httpInstance.get(`/projects/${activeProjectId}/reports?${searchParams}`, {
             ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
         });
+        console.log(data['data'])
         dispatch(setAnalyticsState(data['data']));
 
         return data['data'];
@@ -322,10 +342,12 @@ export default function useApi() {
 
     return {
         createUserAccount,
+        updateUser,
         updateUserSettings,
         getAndSetCurrentUsersData,
         getProjects,
         getAndSetActiveProject,
+        updateProject,
         getAndSetCategories,
         getProjectReports,
         getTransactions,

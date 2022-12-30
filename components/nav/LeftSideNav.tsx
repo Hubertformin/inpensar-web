@@ -4,8 +4,8 @@ import ActiveLink from "./ActiveLink";
 import { TbLayoutDashboard, TbLayoutList } from "react-icons/tb";
 import { IoWalletOutline } from "react-icons/io5";
 import { FiSettings } from "react-icons/fi";
-import {Avatar, AvatarBadge, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
-import { BiChevronUp } from "react-icons/bi";
+import {Avatar, AvatarBadge, Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
+import {BiArrowBack, BiChevronUp } from "react-icons/bi";
 import {useSelector} from "react-redux";
 import {selectAuthUserState} from "../../store/slices/auth.slice";
 import {selectActiveProjectState} from "../../store/slices/projects.slice";
@@ -14,11 +14,16 @@ import { formatDate } from "../../utils/date";
 import {fireAuth} from "../../utils/firebase";
 import {signOut} from "@firebase/auth";
 import {useRouter} from "next/router";
+import Link from "next/link";
 
 export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
   const authUser = useSelector(selectAuthUserState);
   const activeProject = useSelector(selectActiveProjectState);
   const router = useRouter();
+
+  const navigate = (url: string) => {
+    router.push(url)
+  }
 
   function logOut() {
     signOut(fireAuth).then(() => {
@@ -35,6 +40,11 @@ export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
           alt="logo"
         />
       </h1>
+      <div className="mt-2">
+        <Link href="/projects">
+          <Button variant="ghost"><BiArrowBack />&nbsp;Back to Projects</Button>
+        </Link>
+      </div>
       <div className={styles.projectIntro}>
         <p className={styles.projectLabel}>PROJECT</p>
         <div className="project">
@@ -137,9 +147,9 @@ export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
               <BiChevronUp size={24} style={{ margin: "auto" }} />
             </MenuButton>
             <MenuList>
-              <MenuItem>Profile</MenuItem>
+              <MenuItem onClick={() => navigate('/settings?t=profile')}>Profile</MenuItem>
               {/*<MenuItem>Create new project</MenuItem>*/}
-              <MenuItem>Settings</MenuItem>
+              <MenuItem onClick={() => navigate('/settings?t=settings')}>Settings</MenuItem>
               <MenuItem onClick={logOut}>Log out</MenuItem>
             </MenuList>
           </Menu>

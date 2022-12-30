@@ -18,14 +18,17 @@ import {BiChevronDown} from "react-icons/bi";
 import {FiSettings} from "react-icons/fi";
 import {useRouter} from "next/router";
 import {useSelector} from "react-redux";
-import {AuthState, selectAuthState} from "../../store/slices/auth.slice";
+import {AuthState, selectAuthState, selectAuthUserState} from "../../store/slices/auth.slice";
 import PageLoader from "./PageLoader";
 import {HiMenuAlt2} from "react-icons/hi";
 import useWindowSize from "../../hooks/useWindowSize";
+import {signOut} from "@firebase/auth";
+import {fireAuth} from "../../utils/firebase";
 
 export default function ViewLayout({pageTitle, children}) {
     const router = useRouter();
     const authState = useSelector(selectAuthState);
+    const authUser = useSelector(selectAuthUserState);
     const drawerDisclosure = useDisclosure();
     const size = useWindowSize();
 
@@ -34,6 +37,16 @@ export default function ViewLayout({pageTitle, children}) {
             router.push('/auth/login');
         }
     }, [authState, router]);
+
+    const navigate = (url: string) => {
+        router.push(url)
+    }
+
+    function logOut() {
+        signOut(fireAuth).then(() => {
+            router.push('/auth/login');
+        });
+    }
 
     return (
         authState == 'AUTHENTICATED' ? <>
@@ -56,14 +69,14 @@ export default function ViewLayout({pageTitle, children}) {
                     <Menu>
                         <MenuButton>
                             <div className="flex items-center gap-2.5">
-                                <Avatar size="sm" colorScheme="purple" name="Hubert Formin" />
-                                <p className="font-semibold hidden md:block">Hubert Formin</p>
+                                <Avatar size="sm" bg="red" color="white" name={authUser.name} />
+                                <p className="font-semibold hidden md:block">{authUser.name}</p>
                                 <BiChevronDown />
                             </div>
                         </MenuButton>
                         <MenuList>
-                            <MenuItem>Profile</MenuItem>
-                            <MenuItem>Log out</MenuItem>
+                            <MenuItem onClick={() => navigate('/settings?t=profile')}>Profile</MenuItem>
+                            <MenuItem onClick={logOut}>Log out</MenuItem>
                         </MenuList>
                     </Menu>
                 </div>

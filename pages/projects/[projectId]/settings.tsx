@@ -7,60 +7,47 @@ import axios from "axios";
 import useApi from "../../../hooks/useApi";
 import {getSelectOption, getSelectOptions} from "../../../utils/array";
 import Select from "react-select";
-import {useDispatch, useSelector} from "react-redux";
-import {selectAuthUserState, setUserSettings} from "../../../store/slices/auth.slice";
+import {useSelector} from "react-redux";
+import {selectAuthUserState} from "../../../store/slices/auth.slice";
+import {selectActiveProjectState} from "../../../store/slices/projects.slice";
 
-export default function SettingsHome() {
-    const [countries, setCountries] = React.useState<any[]>([]);
+export default function ProjectSettings() {
     const [currencies, setCurrencies] = React.useState<any[]>([]);
     const [selectedCurrencyControl, setSelectedCurrencyControl] = React.useState<{ label: string, value: string }>();
-    const [selectedCountryControl, setSelectedCountryControl] = React.useState<{ label: string, value: string }>();
-    const [reportsFrequencyControl, setReportsFrequencyControl] = React.useState<{ label: string, value: string }>();
+   const [reportsFrequencyControl, setReportsFrequencyControl] = React.useState<{ label: string, value: string }>({
+       value: 'weekly',
+       label: 'Weekly'
+   });
     const [isPageLoading, setIsPageLoading] = React.useState(true);
     const [isLoading, setIsLoading] = React.useState(false);
     const api = useApi();
     const toast = useToast();
-    const authState = useSelector(selectAuthUserState);
+    const activeProject = useSelector(selectActiveProjectState);
 
     const reportsFrequencyOptions = [
         { value: 'weekly', label: 'Weekly'},
         { value: 'monthly', label: 'Monthly'}
     ];
 
-    const getCountriesAndCurrencies = async () => {
-        const [countries, currencies] = await Promise.all([
-            axios.get('https://restcountries.com/v2/all?fields=name,currencies,alpha2Code'),
-            axios.get('https://openexchangerates.org/api/currencies.json'),
-        ]);
+    const getCurrencies = async () => {
+        const currencies = await axios.get('https://openexchangerates.org/api/currencies.json');
 
-        setCountries(countries.data);
         const _currencies = Object.keys(currencies.data).map(key => ({name: currencies.data[key], code: key}));
         setCurrencies(_currencies);
 
-        const userCountry = countries.data.find(c => c.alpha2Code.toLowerCase() == authState.settings.country.toLowerCase());
-        const userCurrency = _currencies.find(c => c.code == authState.settings.currency);
+        const userCurrency = _currencies.find(c => c.code == activeProject.settings.currency);
 
-        setSelectedCountryControl(getSelectOption(userCountry, 'name', 'alpha2Code'));
-        setSelectedCurrencyControl(getSelectOption(userCurrency, 'name', 'code'));
+       setSelectedCurrencyControl(getSelectOption(userCurrency, 'name', 'code'));
 
         setIsPageLoading(false);
     }
 
     React.useEffect(() => {
-        if (authState._id && (countries.length == 0 || currencies.length == 0)) {
-            getCountriesAndCurrencies();
+        if (activeProject._id && (currencies.length == 0)) {
+            getCurrencies();
         }
-        setReportsFrequencyControl(reportsFrequencyOptions.find(r => r.value == authState.settings.reportsFrequency))
-    }, [authState, countries.length, currencies.length]);
-
-    function onCountrySelect(val) {
-        const country = countries.find(country => country.alpha2Code === val.value);
-        setSelectedCountryControl(val);
-        const _selectedCurrency = currencies.find(c => c.code === country.currencies[0].code);
-        if (_selectedCurrency) {
-            setSelectedCurrencyControl(() => ({label: _selectedCurrency.name, value: _selectedCurrency.code}));
-        }
-    }
+        setReportsFrequencyControl(reportsFrequencyOptions.find(r => r.value == activeProject.settings.reportsFrequency))
+    }, [activeProject, currencies]);
 
     function onCurrencySelect(_currency) {
         setSelectedCurrencyControl(_currency);
@@ -74,15 +61,13 @@ export default function SettingsHome() {
     const saveSettings = () => {
         // validate function
         const payload = {
-            country: selectedCountryControl.value,
-            language: authState.settings.language,
             currency: selectedCurrencyControl.value,
             reportsFrequency: reportsFrequencyControl.value
         };
 
         setIsLoading(true);
 
-        api.updateUserSettings(authState._id, payload)
+        api.updateProject(activeProject.id, { settings: payload })
             .then(() => {
                 toast({
                     title: 'Saved',
@@ -109,40 +94,6 @@ export default function SettingsHome() {
                     isPageLoading ?
                         <PageLoadingSchema />
                         : (<div className="pt-8">
-                            <div className="settings-item mb-6">
-                                <h4 className="font-bold mb-1">Country</h4>
-                                {/*<p className="text-slate-500 mb-3">*/}
-                                {/*    Select your base currency. Changing currency, the registered records will not be converted*/}
-                                {/*</p>*/}
-                                <div className="w-72">
-                                    <FormControl>
-                                        <Select
-                                            value={selectedCountryControl}
-                                            options={getSelectOptions(countries, 'name', 'alpha2Code')}
-                                            placeholder={'Select your country'}
-                                            onChange={(val) => onCountrySelect(val)}
-                                        />
-                                    </FormControl>
-                                </div>
-                            </div>
-
-                            <div className="settings-item mb-6">
-                                <h4 className="font-bold mb-1">Language</h4>
-                                {/*<p className="text-slate-500 mb-3">*/}
-                                {/*    Select your base currency. Changing currency, the registered records will not be converted*/}
-                                {/*</p>*/}
-                                <div className="w-72">
-                                    <FormControl>
-                                        <Select
-                                            value={{value: 'en', label: 'English'}}
-                                            options={[{value: 'en', label: 'English'}]}
-                                            placeholder={'Select your default language'}
-                                        />
-                                    </FormControl>
-                                </div>
-                            </div>
-
-
                             <div className="settings-item mb-6">
                                 <h4 className="font-bold mb-1">Currency</h4>
                                 <p className="text-slate-500 mb-3">

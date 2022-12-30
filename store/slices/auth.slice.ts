@@ -36,8 +36,8 @@ export const authUserSlice = createSlice({
         setIdTokenState(state, action) {
             state.idToken = action.payload;
         },
-        setUserSettings(state, action) {
-            state.data = {...state.data, settings: action.payload};
+        setUser(state, action) {
+            state.data = {...state.data, ...action.payload};
         },
         setAuthState(state, action) {
             state.authState = action.payload;
@@ -65,7 +65,7 @@ export const {
     setAuthUserState,
     setIdTokenState,
     setAuthUserDocument,
-    setUserSettings,
+    setUser,
     setAuthState,
     clearAuthUser
 } = authUserSlice.actions;

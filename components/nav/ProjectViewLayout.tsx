@@ -35,7 +35,6 @@ export default function ProjectViewLayout({title = 'Project', showRightNav = tru
 
 function Layout({screenSize, showRightNav, children}) {
     const PHONE_SIZE_LIMIT = 768;
-    // console.log(size)
     if (screenSize.width < PHONE_SIZE_LIMIT) {
         return <SMLayout>{children}</SMLayout>
     } else {

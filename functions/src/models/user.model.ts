@@ -57,10 +57,6 @@ const UserSchema = new Schema<UserBaseDocument>(
       city: String,
       currency: String,
       language: String,
-      reportsFrequency: {
-        type: String,
-        default: UserReportsFrequency.WEEKLY,
-      },
     },
   },
   { timestamps: true }

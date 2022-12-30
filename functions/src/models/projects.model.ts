@@ -1,5 +1,5 @@
 import {Schema, Document, Types, model} from 'mongoose';
-import {UserDocument} from "./user.model";
+import {UserDocument, UserReportsFrequency} from "./user.model";
 import {generateUID} from "../utils/uuid";
 
 export interface ProjectBaseDocument {
@@ -9,8 +9,11 @@ export interface ProjectBaseDocument {
         name: string;
         code: string;
     },
+    settings: {
+        currency: string;
+        reportsFrequency: UserReportsFrequency
+    },
     owner: UserDocument;
-
 }
 
 const projectSchema = new Schema<ProjectBaseDocument>({
@@ -25,6 +28,13 @@ const projectSchema = new Schema<ProjectBaseDocument>({
     currency: {
         name: String,
         code: String
+    },
+    settings: {
+        currency: String,
+        reportsFrequency: {
+            type: String,
+            default: UserReportsFrequency.WEEKLY,
+        },
     },
     owner: {
         type: Types.ObjectId,
