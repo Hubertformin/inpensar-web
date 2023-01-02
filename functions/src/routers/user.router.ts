@@ -1,5 +1,6 @@
 import {Router} from 'express';
 import {
+    createFirebaseUserData,
     createUserController,
     getCurrentUserController,
     getUserById,
@@ -13,7 +14,10 @@ router.get('/', getUsersController);
 
 router.get('/me', getCurrentUserController);
 
-router.get('/uid/:uid', getUserByUid);
+router
+    .route('/uid/:uid')
+    .get(getUserByUid)
+    .post(createFirebaseUserData)
 
 router.route('/:id')
     .get(getUserById)

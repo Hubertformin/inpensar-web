@@ -81,18 +81,16 @@ $primary-color: var(--theme-base);
 }
 
 .navFooter {
-  position: absolute;
   border: 1px solid var(--theme-input-border);
   height: 75px;
   border-radius: 12px;
-  left: -5px;
-  right: -5px;
-  bottom: 25px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 12px;
   @include media-gt-tablet {
+    position: absolute;
+    bottom: 25px;
     padding: 0 16px;
     left: 15px;
     right: 15px;

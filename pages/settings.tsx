@@ -4,7 +4,7 @@ import {
     FormControl, FormErrorMessage, FormHelperText,
     FormLabel,
     Input, Skeleton, Tab, TabList, TabPanel, TabPanels,
-    Tabs, useQuery,
+    Tabs,
     useToast
 } from "@chakra-ui/react";
 import styles from '../styles/SettingsHome.module.scss'

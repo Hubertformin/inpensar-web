@@ -12,6 +12,7 @@ import {HiMenuAlt2} from "react-icons/hi";
 import BottomNav from "./BottomBar";
 import {FaCoins} from "react-icons/fa";
 import {Drawer, DrawerBody, DrawerContent, DrawerOverlay, useDisclosure} from "@chakra-ui/react";
+import Link from "next/link";
 
 export default function ProjectViewLayout({title = 'Project', showRightNav = true, children}) {
     const router = useRouter();
@@ -65,11 +66,13 @@ function SMLayout({children}) {
                 <button onClick={leftDisclosure.onOpen} className="inline">
                     <HiMenuAlt2 fontSize={26} color="#fff"/>
                 </button>
-                <img
-                    src="/images/logotype.png"
-                    style={{height: '50px'}}
-                    alt="logo"
-                />
+                <Link href={'/projects'}>
+                    <img
+                        src="/logotype_white.png"
+                        style={{height: '50px'}}
+                        alt="logo"
+                    />
+                </Link>
                 <button onClick={rightDisclosure.onOpen} className="inline">
                     <FaCoins fontSize={22} color="#fff"/>
                 </button>
@@ -81,7 +84,7 @@ function SMLayout({children}) {
                 <BottomNav/>
             </div>
             {/*  Left Drawer  */}
-            <Drawer placement={'left'} onClose={leftDisclosure.onClose} isOpen={leftDisclosure.isOpen}>
+            <Drawer placement={'bottom'} orientation={'vertical'} onClose={leftDisclosure.onClose} isOpen={leftDisclosure.isOpen}>
                 <DrawerOverlay/>
                 <DrawerContent>
                     {/*<DrawerHeader borderBottomWidth='1px'>Basic Drawer</DrawerHeader>*/}

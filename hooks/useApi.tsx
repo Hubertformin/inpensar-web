@@ -95,6 +95,21 @@ export default function useApi() {
         return userData;
     }
 
+    async function createFirebaseUserData(uid: string, payload) {
+        const {data} = await httpInstance.post(`/users/uid/${uid}`, payload, {
+            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        });
+        const userData = data['data'].results;
+        dispatch(setAuthUserState({
+            _id: userData._id,
+            name: userData.name,
+            email: userData.email,
+            settings: userData.settings,
+            uid: userData.uid
+        }));
+        return userData;
+    }
+
     /**
      *  ===== PROJECTS =====
      */
@@ -345,6 +360,7 @@ export default function useApi() {
         updateUser,
         updateUserSettings,
         getAndSetCurrentUsersData,
+        createFirebaseUserData,
         getProjects,
         getAndSetActiveProject,
         updateProject,

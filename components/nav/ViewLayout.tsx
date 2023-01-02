@@ -8,7 +8,6 @@ import {
     Drawer, DrawerBody, DrawerCloseButton,
     DrawerContent, DrawerHeader,
     DrawerOverlay,
-    Input,
     Menu,
     MenuButton,
     MenuItem,
@@ -24,6 +23,7 @@ import {HiMenuAlt2} from "react-icons/hi";
 import useWindowSize from "../../hooks/useWindowSize";
 import {signOut} from "@firebase/auth";
 import {fireAuth} from "../../utils/firebase";
+import Link from "next/link";
 
 export default function ViewLayout({pageTitle, children}) {
     const router = useRouter();
@@ -56,11 +56,13 @@ export default function ViewLayout({pageTitle, children}) {
                     <button onClick={drawerDisclosure.onOpen} className="inline md:hidden">
                         <HiMenuAlt2 fontSize={26} color="#683ab7" />
                     </button>
-                    <img
-                        className={styles.toolbarImg}
-                        src="/images/logotype.png"
-                        alt="logo"
-                    />
+                    <Link href={'/'}>
+                        <img
+                            className={styles.toolbarImg}
+                            src="/images/logotype.png"
+                            alt="logo"
+                        />
+                    </Link>
                 </div>
                 {/*<div className="w-1/2">*/}
                 {/*    <Input placeholder={'Search..'} />*/}

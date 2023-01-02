@@ -82,7 +82,7 @@ export const getProjectReports = createController(async (req, res) => {
                 amount: {$sum: "$amount"}
             },
         },
-        // {$sort: {date: -1}},
+        {$sort: {createdAt: 1}},
         {$limit: 30}
     ]).exec();
 

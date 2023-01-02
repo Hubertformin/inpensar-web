@@ -1,6 +1,6 @@
 import {createController} from "./index";
 import User from "../models/user.model";
-import {validateCreateUser} from "../validators/user.validator";
+import {validateCreateFirebaseUserData, validateCreateUser} from "../validators/user.validator";
 import {getAuth} from "firebase-admin/auth";
 import Project from "../models/projects.model";
 import {CustomError} from "../models/error.model";
@@ -28,12 +28,40 @@ export const getUserByUid = createController(async (req, res) => {
     return { statusCode: 200, data: { results: user }, message: "User fetched" };
 });
 
+/**
+ * This controller will be invoked when the firebase user data exist and the data does not exist in the database...
+ */
+export const createFirebaseUserData = createController(async (req, res) => {
+
+    const userData: any = await validateCreateFirebaseUserData(req.body);
+    const user = new User({
+        ...userData,
+        uid: req.params.uid,
+        settings: {
+            country: userData.country?.alpha2Code,
+            currency: userData.currency?.code || 'XAF',
+            language: 'en'
+        }
+    });
+
+    await user.save();
+    // res.status(200).json({.data, success: true});
+    return { statusCode: 200, data: { results: user }, message: "User fetched" };
+});
+
 export const getUserById = createController(async (req, res) => {
-    // get all User
+    // get user
     const user = await User
         .findOne({ uid: req.params.uid })
         .populate('wallets')
         .exec();
+
+    // If user does not exist, return 404
+    if (!user) {
+        throw CustomError(
+            "User not found"
+        ).status(404);
+    }
     // res.status(200).json({.data, success: true});
     return { statusCode: 200, data: { results: user }, message: "User fetched" };
 });

@@ -7,10 +7,13 @@ import Link from "next/link";
 import {signInWithEmailAndPassword} from "@firebase/auth";
 import {fireAuth} from "../../utils/firebase";
 import {useRouter} from "next/router";
+import {AxiosError} from "axios";
+import useApi from "../../hooks/useApi";
 
 export default function LoginView() {
     const toast = useToast();
     const router = useRouter();
+    const api = useApi();
     React.useEffect(() => {
 
     }, []);
@@ -26,17 +29,22 @@ export default function LoginView() {
     const onLogin = (values, actions) => {
         const {email, password} = values;
         signInWithEmailAndPassword(fireAuth, email, password)
-            .then(() => {
-                router.push(`/projects/`);
-            })
+            .then( (userCred) => userCred.user.getIdToken())
+            .then((idToken) => api.getAndSetCurrentUsersData({idToken}))
+            .then(() => router.push(`/projects/`))
             .catch((e) => {
                 console.dir(e.toString());
-                toast({
-                    title: "Opps! we couldn't sign you in",
-                    description: formatFirebaseErrorMessages(e.toString()),
-                    status: 'error'
-                });
-                actions.setSubmitting(false);
+                // If account data does not exist, redirect the user to complete is account
+                if (e.response.status === 404) {
+                    router.push('/auth/complete-account');
+                } else {
+                    toast({
+                        title: "Opps! we couldn't sign you in",
+                        description: formatFirebaseErrorMessages(e.toString()),
+                        status: 'error'
+                    });
+                    actions.setSubmitting(false);
+                }
             });
     }
 

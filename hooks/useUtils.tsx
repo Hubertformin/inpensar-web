@@ -31,9 +31,10 @@ function useUtils() {
         return currencyFormatter.format(value, {locale: 'en-US', code: authState.settings.currency || 'XAF'})
     }
 
-    function formatShortCurrency(val: number, options?: {decimalPlaces: number}) {
+    function formatShortCurrency(value: number, options?: {decimalPlaces: number}) {
+        const val = value || 0;
         // format values to two dec
-        const fractionDigits = typeof options?.decimalPlaces == 'number' ? options.decimalPlaces : 0;
+        const fractionDigits = typeof options?.decimalPlaces == 'number' ? options.decimalPlaces : 1;
 
         if (val >= Math.pow(10, 9)) {
             return `${getCurrency().symbol}${(val / Math.pow(10, 9)).toFixed(fractionDigits)}B`;

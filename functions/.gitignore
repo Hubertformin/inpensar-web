@@ -9,5 +9,6 @@ typings/
 node_modules/
 
 .env
+.env.local
 .env.dev
 .env.prod

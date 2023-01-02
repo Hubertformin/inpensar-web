@@ -18,6 +18,7 @@ import useApi from "../hooks/useApi";
 import {selectActiveProjectState, setActiveProjectId, setActiveProjectState} from "../store/slices/projects.slice";
 import {selectCategoriesState} from "../store/slices/categories.slice";
 import {useRouter} from "next/router";
+import {AxiosError} from "axios";
 
 function MyApp({Component, pageProps}) {
     const dispatch = useDispatch();
@@ -42,12 +43,19 @@ function MyApp({Component, pageProps}) {
         fireAuth.onAuthStateChanged(async (user) => {
             // get id token
             if (user) {
-                const idToken = user.accessToken ? user.accessToken : await user.getIdToken();
+                const idToken = (user as any).accessToken ? (user as any).accessToken : await user.getIdToken();
                 await dispatch(setIdTokenState(idToken));
 
                 if (!authUser._id) {
                     // get user's data from server
-                    await api.getAndSetCurrentUsersData({idToken});
+                    await api.getAndSetCurrentUsersData({idToken})
+                        .catch((err: AxiosError) => {
+                            console.log(err)
+                            // If account data does not exist, redirect the user to complete is account
+                            if (err?.response?.status === 404) {
+                                router.push('/auth/complete-account');
+                            }
+                        })
                 }
 
                 /**

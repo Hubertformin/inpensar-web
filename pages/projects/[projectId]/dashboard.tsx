@@ -13,6 +13,7 @@ import {useSelector} from "react-redux";
 import {selectAuthUserState} from "../../../store/slices/auth.slice";
 import {selectAnalyticsFilters, selectAnalyticsState} from "../../../store/slices/analytics.slice";
 import {AnalyticsModel} from "../../../models/analytics.model";
+import {selectActiveProjectState} from "../../../store/slices/projects.slice";
 
 const MonthlyChart = dynamic(
     () => import("../../../components/dashboard/MonthlyChart"),
@@ -29,6 +30,7 @@ export default function Dashboard() {
     const toast = useToast();
     // Redux states
     const authUserState = useSelector(selectAuthUserState);
+    const activeProjectState = useSelector(selectActiveProjectState);
     const analyticsState: AnalyticsModel = useSelector(selectAnalyticsState);
     const analyticsFilters = useSelector(selectAnalyticsFilters);
 
@@ -42,25 +44,26 @@ export default function Dashboard() {
         }
 
         if (analyticsFilters.dateFilter) {
-            console.log(analyticsFilters.dateFilter)
             setDateFilter(dateFilter)
         }
     }, []);
 
     React.useEffect(() => {
         // get reports
-        if (authUserState._id && !analyticsState) {
+        if (authUserState._id && activeProjectState && !analyticsState) {
             api.getProjectReports({ dateFilter: 'this_month' })
                 .then(() => setIsPageLoading(false))
                 .catch(console.error)
         } else {
             setIsPageLoading(false);
         }
-    }, [authUserState, analyticsState]);
+    }, [authUserState, analyticsState, activeProjectState]);
 
     function onFilterDate(props: {startDate?: string, endDate?: string, dateFilter?: string}) {
         setIsPageLoading(true)
-        api.getProjectReports(props).then(console.log).catch((e) => {
+        api.getProjectReports(props)
+            .then(console.log)
+            .catch((e) => {
             console.error(e);
             toast({
                 title: 'Failed to load Analytics',

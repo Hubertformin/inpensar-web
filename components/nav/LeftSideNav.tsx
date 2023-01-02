@@ -33,19 +33,19 @@ export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
   
   return (
     <div className={`${styles.sideNavContainer} md:px-4`}>
-      <h1 className={`${styles.brand} border-b pb-2`}>
+      {!hideLinks && <h1 className={`${styles.brand} border-b pb-2`}>
         <img
-          src="/images/logotype.png"
-          style={{height: '50px'}}
-          alt="logo"
+            src="/images/logotype.png"
+            style={{height: '50px'}}
+            alt="logo"
         />
-      </h1>
+      </h1>}
       <div className="mt-2">
         <Link href="/projects">
           <Button variant="ghost"><BiArrowBack />&nbsp;Back to Projects</Button>
         </Link>
       </div>
-      <div className={styles.projectIntro}>
+      <div className={`${styles.projectIntro} mb-8 md:mb-0`}>
         <p className={styles.projectLabel}>PROJECT</p>
         <div className="project">
           <div className="leading flex align-items-center">
@@ -123,7 +123,7 @@ export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
           </ActiveLink>
         </>
       </nav>}
-      <div className={styles.navFooter}>
+      <div className={`${styles.navFooter} mb-6 md:mb-0`}>
         <div className="leading flex">
           <Avatar
             size="md"
