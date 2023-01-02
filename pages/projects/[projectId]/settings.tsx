@@ -8,7 +8,6 @@ import useApi from "../../../hooks/useApi";
 import {getSelectOption, getSelectOptions} from "../../../utils/array";
 import Select from "react-select";
 import {useSelector} from "react-redux";
-import {selectAuthUserState} from "../../../store/slices/auth.slice";
 import {selectActiveProjectState} from "../../../store/slices/projects.slice";
 
 export default function ProjectSettings() {

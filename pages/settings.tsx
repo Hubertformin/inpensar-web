@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import styles from '../styles/SettingsHome.module.scss'
 import {Field, Formik} from "formik";
-import React from "react";
+import React, {ReactNode} from "react";
 import useApi from "../hooks/useApi";
 import {useSelector} from "react-redux";
 import {selectAuthUserState} from "../store/slices/auth.slice";
@@ -172,7 +172,7 @@ export default function SettingsHome() {
                                                             return error;
                                                         }}
                                                     />
-                                                    <FormErrorMessage>{errors.name}</FormErrorMessage>
+                                                    <FormErrorMessage>{errors.name as ReactNode}</FormErrorMessage>
                                                 </FormControl>
                                                 <FormControl mt="4">
                                                     <FormLabel htmlFor="email">Email</FormLabel>
