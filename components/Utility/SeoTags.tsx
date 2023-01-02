@@ -10,7 +10,7 @@ function SeoTags({title, description = "", imageUrl = INPENSAR_COVER}) {
             description={description}
             canonical="https://www.canonical.ie/"
             openGraph={{
-                url: 'https://www.bichedesigns.com',
+                url: 'https://www.inpensar.vercel.app',
                 title,
                 description,
                 images: [
@@ -18,10 +18,10 @@ function SeoTags({title, description = "", imageUrl = INPENSAR_COVER}) {
                         url: imageUrl,
                         width: 800,
                         height: 600,
-                        alt: 'biche designs',
+                        alt: 'inpensar',
                     }
                 ],
-                site_name: 'Biche Designs',
+                site_name: 'Inpensar',
             }}
         />
     )
