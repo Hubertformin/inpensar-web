@@ -1,7 +1,15 @@
 import React from "react";
 import {Field, Form, Formik, FormikHelpers} from "formik";
-import {Button, FormControl, FormErrorMessage, FormLabel, Input, useToast} from "@chakra-ui/react";
-import {FcGoogle} from "react-icons/fc";
+import {
+    Button,
+    FormControl,
+    FormErrorMessage,
+    FormLabel,
+    Input,
+    InputGroup,
+    InputLeftAddon,
+    useToast
+} from "@chakra-ui/react";
 import styles from '../../styles/Auth.module.scss';
 import Link from "next/link";
 import axios from "axios";
@@ -19,13 +27,16 @@ export default function CreateAccountView() {
     const toast = useToast();
 
     React.useEffect(() => {
-        getCountriesAndCurrencies();
+        console.log(countries.length == 0 || currencies.length == 0)
+        if (countries.length == 0 || currencies.length == 0) {
+            getCountriesAndCurrencies();
+        }
     }, []);
 
     const validateRequired = (label, value) => {
         let error;
         if (!value) {
-            error = `Please insert a valid ${label}`;
+            error = `Please insert a valids ${label}`;
         }
         return error;
     };
@@ -44,9 +55,10 @@ export default function CreateAccountView() {
 
     const getCountriesAndCurrencies = async () => {
         const [countries, currencies] = await Promise.all([
-            axios.get('https://restcountries.com/v2/all?fields=name,currencies,alpha2Code'),
+            axios.get('https://restcountries.com/v2/all?fields=name,callingCodes,currencies,alpha2Code'),
             axios.get('https://openexchangerates.org/api/currencies.json'),
         ]);
+        console.log(countries.data)
         setCountries(countries.data);
         const _currencies = Object.keys(currencies.data).map(key => ({name: currencies.data[key], code: key}));
         setCurrencies(_currencies);
@@ -71,20 +83,27 @@ export default function CreateAccountView() {
     }
 
     const onCreateAccount = (values, actions: FormikHelpers<any>) => {
-        values['country'] = countries.find(country => country.alpha2Code == values.country.alpha2Code);
-        values['currency'] = currencies.find(currency => currency.code == values.currency.value);
+        const currency = currencies.find(currency => currency.code == values.currency.value);
+        // Format phone
+        const phoneNumber = `+${values.country?.callingCodes[0]}${values['phoneNumber']}`;
 
-        api.createUserAccount(values)
+        api.createUserAccount({...values, currency, phoneNumber})
             .then((data) => {
                 // route to transactions list
                 router.push(`/projects/${data.project.id}/transactions`)
             }).catch((e) => {
                 console.error(e);
-                toast({
-                    title: 'We are unable to create your account',
-                    description: e.response?.data?.message || 'There was an error creating your account. Please try again later',
-                    status: 'error'
-                });
+                // In case of invalid phone number, show it on input
+                const includes = err => (e.response?.data?.message as string).includes(err)
+                if (includes('TOO_LONG') || includes('Invalid format') || includes('E.164 standard compliant')) {
+                    actions.setErrors({phoneNumber: 'This phone number appears to be invalid. Please correct it and try again'})
+                } else {
+                    toast({
+                        title: 'We are unable to create your account',
+                        description: e.response?.data?.message || 'There was an error creating your account. Please try again later',
+                        status: 'error'
+                    });
+                }
             actions.setSubmitting(false);
         });
     }
@@ -101,8 +120,11 @@ export default function CreateAccountView() {
                                 name: '',
                                 email: '',
                                 password: '',
+                                phoneNumber: '',
                                 confirmPassword: '',
-                                country: '',
+                                country: {
+                                    callingCodes: ['237']
+                                },
                                 currency: ''
                             }}
                             onSubmit={onCreateAccount}
@@ -137,46 +159,6 @@ export default function CreateAccountView() {
                                                         <Input {...field} placeholder="Enter email" type="email"/>
                                                         <FormErrorMessage>
                                                             {form.errors.email}
-                                                        </FormErrorMessage>
-                                                    </FormControl>
-                                                )}
-                                            </Field>
-                                        </div>
-                                    </div>
-
-                                    <div className="row">
-                                        <div className="col-sm-6">
-                                            <Field name="password"
-                                                   validate={(val) => validateRequired("password", val)}
-                                            >
-                                                {({field, form}) => (
-                                                    <FormControl
-                                                        className={'mb-8'}
-                                                        isInvalid={form.errors.password && form.touched.password}
-                                                    >
-                                                        <FormLabel>Password</FormLabel>
-                                                        <Input {...field} placeholder="Enter password" type="password"/>
-                                                        <FormErrorMessage>
-                                                            {form.errors.password}
-                                                        </FormErrorMessage>
-                                                    </FormControl>
-                                                )}
-                                            </Field>
-                                        </div>
-                                        <div className="col-sm-6">
-                                            <Field name="confirmPassword"
-                                                   validate={(val) => validateConfirmPasswordInput(props.values.password, val)}
-                                            >
-                                                {({field, form}) => (
-                                                    <FormControl
-                                                        className={'mb-8'}
-                                                        isInvalid={form.errors.confirmPassword && form.touched.confirmPassword}
-                                                    >
-                                                        <FormLabel>Confirm Password</FormLabel>
-                                                        <Input {...field} placeholder="Confirm password"
-                                                               type="password"/>
-                                                        <FormErrorMessage>
-                                                            {form.errors.confirmPassword}
                                                         </FormErrorMessage>
                                                     </FormControl>
                                                 )}
@@ -228,9 +210,76 @@ export default function CreateAccountView() {
                                         </div>
                                     </div>
 
+                                    <div className="phone mb-5">
+                                        <Field name="phoneNumber" validate={(val) => validateRequired("phoneNumber", val)}>
+                                            {({field, form}) => (
+                                                <FormControl
+                                                    isInvalid={form.errors.phoneNumber && form.touched.phoneNumber}
+                                                >
+                                                    <FormLabel>Phone Number</FormLabel>
+                                                    <InputGroup>
+                                                        <InputLeftAddon>{`+${form.values.country?.callingCodes[0]}`}</InputLeftAddon>
+                                                        <Input {...field} placeholder="Enter phone number" type="tel"/>
+                                                    </InputGroup>
+                                                    <FormErrorMessage>
+                                                        {form.errors.phoneNumber}
+                                                    </FormErrorMessage>
+                                                </FormControl>
+                                            )}
+                                        </Field>
+                                    </div>
+
+                                    <div className="row">
+                                        <div className="col-sm-6">
+                                            <Field name="password"
+                                                   validate={(val) => validateRequired("password", val)}
+                                            >
+                                                {({field, form}) => (
+                                                    <FormControl
+                                                        className={'mb-8'}
+                                                        isInvalid={form.errors.password && form.touched.password}
+                                                    >
+                                                        <FormLabel>Password</FormLabel>
+                                                        <Input {...field} placeholder="Enter password" type="password"/>
+                                                        <FormErrorMessage>
+                                                            {form.errors.password}
+                                                        </FormErrorMessage>
+                                                    </FormControl>
+                                                )}
+                                            </Field>
+                                        </div>
+                                        <div className="col-sm-6">
+                                            <Field name="confirmPassword"
+                                                   validate={(val) => validateConfirmPasswordInput(props.values.password, val)}
+                                            >
+                                                {({field, form}) => (
+                                                    <FormControl
+                                                        className={'mb-8'}
+                                                        isInvalid={form.errors.confirmPassword && form.touched.confirmPassword}
+                                                    >
+                                                        <FormLabel>Confirm Password</FormLabel>
+                                                        <Input {...field} placeholder="Confirm password"
+                                                               type="password"/>
+                                                        <FormErrorMessage>
+                                                            {form.errors.confirmPassword}
+                                                        </FormErrorMessage>
+                                                    </FormControl>
+                                                )}
+                                            </Field>
+                                        </div>
+                                    </div>
+
                                     <FormControl>
-                                        <Button type="submit" isLoading={props.isSubmitting} loadingText={'Creating account..'} colorScheme={'purple'} className={'w-full'}>Create
-                                            Account</Button>
+                                        <Button
+                                            type="submit"
+                                            isLoading={props.isSubmitting}
+                                            loadingText={'Creating account..'}
+                                            colorScheme={'purple'}
+                                            className={'w-full'}
+                                            disabled={countries.length == 0 || currencies.length == 0 || props.isSubmitting}
+                                        >
+                                            Create Account
+                                        </Button>
                                     </FormControl>
                                 </Form>
                             )}

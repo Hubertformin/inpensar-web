@@ -19,7 +19,8 @@ const app = express();
 app.use(cors());
 
 // Connect to database
-connect(process.env.DATABASE_URI as string, {
+const DATABASE_URI = process.env.NODE_ENV === 'production' ? process.env.DATABASE_URI : process.env.TEST_DATABASE_URI;
+connect(DATABASE_URI as string, {
   // useNewUrlParser: true,
   // useUnifiedTopology: true,
   // useFindAndModify: false,

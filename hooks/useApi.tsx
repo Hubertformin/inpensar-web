@@ -24,7 +24,7 @@ import {
 import axios from "axios";
 import {fireAuth} from "../utils/firebase";
 import {signInWithCustomToken} from "@firebase/auth";
-import {selectAuthUserIdTokenState, setAuthUserState, setUser} from "../store/slices/auth.slice";
+import {selectAuthUserIdTokenState, setAuthUserState, setIdTokenState, setUser} from "../store/slices/auth.slice";
 import {
     prependProjectState,
     selectActiveProjectIdState,
@@ -37,14 +37,30 @@ import {setCategoriesState} from "../store/slices/categories.slice";
 import {setAnalyticsFiltersState, setAnalyticsState} from "../store/slices/analytics.slice";
 
 export default function useApi() {
+    const dispatch = useDispatch();
+    const idToken = useSelector(selectAuthUserIdTokenState);
+    const activeProjectId = useSelector(selectActiveProjectIdState);
+
     const httpInstance = axios.create({
         baseURL: process.env.NEXT_PUBLIC_API_URL,
         httpAgent: 'Inpensar/web'
     });
-
-    const dispatch = useDispatch();
-    const idToken = useSelector(selectAuthUserIdTokenState);
-    const activeProjectId = useSelector(selectActiveProjectIdState);
+    /**
+     * Set up axios interceptors
+     */
+    httpInstance.interceptors.response.use(response => response,
+        async (error) => {
+        // If error was 401, get new token from user
+        if (error.status === 401 && fireAuth?.currentUser?.uid) {
+            const idToken = await fireAuth.currentUser.getIdToken();
+            dispatch(setIdTokenState(idToken));
+            // Retry the request
+            error.config.headers['Authorization'] = `Bearer ${idToken}`;
+            error.config.baseURL = undefined;
+            return httpInstance.request(error.config);
+        }
+        return Promise.reject(error);
+    });
 
 
     async function createUserAccount(payload: any) {
