@@ -6,7 +6,7 @@ const INPENSAR_COVER = 'https://firebasestorage.googleapis.com/v0/b/inpensar-enc
 function SeoTags({title, description = "", imageUrl = INPENSAR_COVER}) {
     return(
         <NextSeo
-            title={`${title} - BICHE Designs`}
+            title={`${title} - INPENSARZ`}
             description={description}
             canonical="https://www.canonical.ie/"
             openGraph={{

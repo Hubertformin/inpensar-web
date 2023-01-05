@@ -38,7 +38,7 @@ export default function Home() {
                         <img src="/images/logotype.png" className={`${styles.logo} mx-auto md:mx-0`} />
                         <h1 className={`${styles.text_color} text-3xl mt-3 md:text-5xl text-white mb-6 font-bold`}>Welcome to inpensar</h1>
                         <p className={`${styles.text_color} text-lg md:text-xl`}>
-                            Inpensar is an app allows you to monitor and categorize your expenses
+                            Inpensar is an app that allows you to monitor and categorize your expenses
                             across different wallets/accounts with budgeting tools.
                         </p>
                         <div className="mt-6">
