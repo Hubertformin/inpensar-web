@@ -5,6 +5,7 @@ declare type ControllerHandler = (
     req: HttpRequest,
     res: Response
 ) => Promise<{ statusCode: number; message: string; data: any }>;
+
 interface ControllerReturnProps {
     statusCode: number;
     message: string;
@@ -12,15 +13,24 @@ interface ControllerReturnProps {
     count?: number;
 }
 
+/**
+ * The createController function is a helper function that creates a controller handler.
+ *
+ *
+ * @param controller:ControllerHandler Define the controller function
+ *
+ * @return A function that takes a request and a response
+ *
+ */
 export function createController(controller: ControllerHandler) {
     return async function (req: HttpRequest, res: Response) {
         try {
-            const { statusCode, message, data, count }: ControllerReturnProps =
+            const {statusCode, message, data, count}: ControllerReturnProps =
                 await controller(req, res);
 
             return res
                 .status(statusCode)
-                .json({ message, data: data, ...(count && { count }) });
+                .json({message, data: data, ...(count && {count})});
         } catch (err) {
             console.error(err);
             if ((err as any).code === 11000) {
@@ -31,7 +41,7 @@ export function createController(controller: ControllerHandler) {
                 });
             }
             if ((err as any).statusCode) {
-                return res.status((err as any).statusCode).json({ message: (err as any).message });
+                return res.status((err as any).statusCode).json({message: (err as any).message});
             }
             // Response with status code <500: Internal server error>
             return res.status(500).json({

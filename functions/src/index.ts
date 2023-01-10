@@ -1,7 +1,5 @@
 import * as functions from "firebase-functions";
 
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
 import {applicationDefault, initializeApp} from 'firebase-admin/app';
 import * as express from "express";
 import * as cookieParser from "cookie-parser";
