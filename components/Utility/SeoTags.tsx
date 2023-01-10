@@ -21,7 +21,6 @@ function SeoTags({title, description = "", imageUrl = INPENSAR_COVER}) {
                         alt: 'inpensar',
                     }
                 ],
-                site_name: 'Inpensar',
             }}
         />
     )

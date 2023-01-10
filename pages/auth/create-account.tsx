@@ -58,7 +58,6 @@ export default function CreateAccountView() {
             axios.get('https://restcountries.com/v2/all?fields=name,callingCodes,currencies,alpha2Code'),
             axios.get('https://openexchangerates.org/api/currencies.json'),
         ]);
-        console.log(countries.data)
         setCountries(countries.data);
         const _currencies = Object.keys(currencies.data).map(key => ({name: currencies.data[key], code: key}));
         setCurrencies(_currencies);
@@ -72,12 +71,12 @@ export default function CreateAccountView() {
 
         setFieldValue('country', country);
         if (_selectedCurrency) {
-            setFieldValue('currency',{label: _selectedCurrency.name, value: _selectedCurrency.code});
+            setFieldValue('currency', {label: _selectedCurrency.name, value: _selectedCurrency.code});
             setSelectedCurrencyControl(() => ({label: _selectedCurrency.name, value: _selectedCurrency.code}));
         }
     }
 
-    function onCurrencySelect(currency, setFieldValue ) {
+    function onCurrencySelect(currency, setFieldValue) {
         setSelectedCurrencyControl(currency);
         setFieldValue('currency', currency);
     }
@@ -90,20 +89,20 @@ export default function CreateAccountView() {
         api.createUserAccount({...values, currency, phoneNumber})
             .then((data) => {
                 // route to transactions list
-                router.push(`/projects/${data.project.id}/transactions`)
+                router.push(`/projects/${data.project.id}/transactions`);
             }).catch((e) => {
-                console.error(e);
-                // In case of invalid phone number, show it on input
-                const includes = err => (e.response?.data?.message as string).includes(err)
-                if (includes('TOO_LONG') || includes('Invalid format') || includes('E.164 standard compliant')) {
-                    actions.setErrors({phoneNumber: 'This phone number appears to be invalid. Please correct it and try again'})
-                } else {
-                    toast({
-                        title: 'We are unable to create your account',
-                        description: e.response?.data?.message || 'There was an error creating your account. Please try again later',
-                        status: 'error'
-                    });
-                }
+            console.error(e);
+            // In case of invalid phone number, show it on input
+            const includes = err => (e.response?.data?.message as string).includes(err)
+            if (includes('TOO_LONG') || includes('Invalid format') || includes('E.164 standard compliant')) {
+                actions.setErrors({phoneNumber: 'This phone number appears to be invalid. Please correct it and try again'})
+            } else {
+                toast({
+                    title: 'We are unable to create your account',
+                    description: e.response?.data?.message || 'There was an error creating your account. Please try again later',
+                    status: 'error'
+                });
+            }
             actions.setSubmitting(false);
         });
     }
@@ -211,7 +210,8 @@ export default function CreateAccountView() {
                                     </div>
 
                                     <div className="phone mb-5">
-                                        <Field name="phoneNumber" validate={(val) => validateRequired("phoneNumber", val)}>
+                                        <Field name="phoneNumber"
+                                               validate={(val) => validateRequired("phoneNumber", val)}>
                                             {({field, form}) => (
                                                 <FormControl
                                                     isInvalid={form.errors.phoneNumber && form.touched.phoneNumber}

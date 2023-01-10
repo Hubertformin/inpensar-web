@@ -23,7 +23,7 @@ import {
 } from "../store/slices/accounts.slice";
 import axios from "axios";
 import {fireAuth} from "../utils/firebase";
-import {signInWithCustomToken} from "@firebase/auth";
+import {signInWithCustomToken, signInWithEmailAndPassword} from "@firebase/auth";
 import {selectAuthUserIdTokenState, setAuthUserState, setIdTokenState, setUser} from "../store/slices/auth.slice";
 import {
     prependProjectState,
@@ -65,7 +65,7 @@ export default function useApi() {
 
     async function createUserAccount(payload: any) {
         const {data} = await httpInstance.post('/users', payload);
-        const authUser = await signInWithCustomToken(fireAuth, data['data'].authToken);
+        const authUser = await signInWithEmailAndPassword(fireAuth, payload.email, payload.password)
         const userData = data['data'].results as UserModel;
         dispatch(setAuthUserState({
             _id: userData._id,

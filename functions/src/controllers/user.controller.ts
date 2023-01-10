@@ -93,7 +93,7 @@ export const createUserController = createController(async (req, res) => {
      *
      * Create custom token to be user by the user to sign in
      */
-    const authToken = await getAuth().createCustomToken(userCredential.uid);
+    // const authToken = await getAuth().createCustomToken(userCredential.uid);
 
     // Create default project for the user
     const project = new Project({ name: 'Personal Finance', currency: userData.currency, owner: user._id});
@@ -103,7 +103,7 @@ export const createUserController = createController(async (req, res) => {
         statusCode: 200,
         data: {
             results: user.toObject(),
-            authToken,
+            // authToken,
             project: project.toObject()
         },
         message: "Users Created" };
