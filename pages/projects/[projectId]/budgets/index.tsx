@@ -7,7 +7,7 @@ import CreateOrEditBudgetForm from "../../../../components/budget/CreateOrEditBu
 import {BudgetTile} from "../../../../components/budget/BudgetTile";
 import {useSelector} from "react-redux";
 import {BudgetModel} from "../../../../models/budget.model";
-import {selectBudgetState} from "../../../../store/slices/budget.slice";
+import {selectBudgetLoadingState, selectBudgetState} from "../../../../store/slices/budget.slice";
 import {useRouter} from "next/router";
 import {selectActiveProjectState} from "../../../../store/slices/projects.slice";
 
@@ -17,13 +17,8 @@ export default function BudgetHome() {
     const [showAddModal, setShowAddModal] = useState(false);
     const budgets: BudgetModel[] = useSelector(selectBudgetState);
     const activeProject = useSelector(selectActiveProjectState);
+    const budgetLoading: boolean = useSelector(selectBudgetLoadingState);
     const router = useRouter();
-
-    React.useEffect(() => {
-        if (budgets.length > 0) {
-            setIsPageLoading(false);
-        }
-    }, [budgets]);
 
     return (
         <ProjectViewLayout title={'Budgets'}>
@@ -49,7 +44,7 @@ export default function BudgetHome() {
                         <div className="leading" style={{width: "180px"}}></div>
                         <ButtonGroup spacing="4">
                             <Button
-                                colorScheme="purple"
+                                colorScheme="brand"
                                 onClick={() => setShowAddModal(true)}
                             >
                                 <BsPlus/>
@@ -60,15 +55,15 @@ export default function BudgetHome() {
                     </div>
                 </div>
                 <Divider/>
-                {isPageLoading && <PageLoadingSchema />}
-                {(budgets?.length > 0 && !isPageLoading) && (<div className="budget-body mt-4">
+                {budgetLoading && <PageLoadingSchema />}
+                {(budgets?.length > 0 && !budgetLoading) && (<div className="budget-body mt-4">
                     {budgets.map((budget, index) => {
                         return <BudgetTile key={index}
                                            onClick={() => router.push(`/projects/${activeProject?.id}/budgets/${budget._id}`)}
                                            budget={budget}/>;
                     })}
                 </div>)}
-                {(budgets?.length == 0 && !isPageLoading) &&(
+                {(budgets?.length == 0 && !budgetLoading) &&(
                     <div className="budget-body mt-4">
                         <div className={`emptyState w-max-50`}>
                             <img

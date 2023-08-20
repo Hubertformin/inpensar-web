@@ -30,13 +30,13 @@ export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
       router.push('/auth/login');
     });
   }
-  
+
   return (
     <div className={`${styles.sideNavContainer} md:px-4`}>
       {!hideLinks && <h1 className={`${styles.brand} border-b pb-2`}>
         <img
-            src="/images/logotype.png"
-            style={{height: '50px'}}
+            src="/images/sunshine_logo.png"
+            style={{height: '36px'}}
             alt="logo"
         />
       </h1>}
@@ -124,7 +124,7 @@ export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
         </>
       </nav>}
       <div className={`${styles.navFooter} mb-6 md:mb-0`}>
-        <div className="leading flex">
+        <div className={`${styles.navFooterLeading}`}>
           <Avatar
             size="md"
             name={authUser?.name}
@@ -136,10 +136,10 @@ export default function LeftSideNav({hideLinks= false}: {hideLinks?: boolean}) {
           >
             <AvatarBadge boxSize='1.25em' bg='green.500' />
           </Avatar>
-          <div className="text ml-2">
-            <h2 className={styles.projectFooterTitle}>{authUser?.name}</h2>
-            <p className={styles.projectDescription}>{authUser?.email}</p>
-          </div>
+        </div>
+        <div className="text ml-2">
+          <h2 className={styles.projectFooterTitle}>{authUser?.name}</h2>
+          <p className={styles.sideNavDescription}>{authUser?.email}</p>
         </div>
         <div className="actions">
           <Menu>

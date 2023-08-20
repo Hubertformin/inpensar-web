@@ -9,7 +9,11 @@ import {Types} from "mongoose";
 export const createBudgetController = createController(async (req, res) => {
     const budgetData = await validateCreateBudgetData(req.body);
 
-    const conflict_budget: BudgetDocument = await Budget.findOne({categories: {$in: budgetData.categories}}).populate('categories', '_id name').exec() as BudgetDocument;
+    const conflict_budget: BudgetDocument = await Budget.findOne({
+        categories: {$in: budgetData.categories},
+        owner: req.$currentUser$?._id,
+        project: new Types.ObjectId(req.params.projectId)
+    }).populate('categories', '_id name').exec() as BudgetDocument;
 
     if (conflict_budget) {
         const existing_categories =

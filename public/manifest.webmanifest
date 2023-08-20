@@ -1,29 +1,30 @@
 {
-    "theme_color": "#673ab7",
-    "background_color": "#5e35b1",
+    "theme_color": "#FBBE00",
+    "background_color": "#FB9700",
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "Inpensar",
-    "short_name": "Inpensar",
+    "name": "Sunshine Savings",
+    "short_name": "Sunshine",
+    "description": "Savings Web App for Sunshine",
     "icons": [
         {
-            "src": "/icons/icon-192x192.png",
+            "src": "/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/icons/icon-256x256.png",
+            "src": "/icon-256x256.png",
             "sizes": "256x256",
             "type": "image/png"
         },
         {
-            "src": "/icons/icon-384x384.png",
+            "src": "/icon-384x384.png",
             "sizes": "384x384",
             "type": "image/png"
         },
         {
-            "src": "/icons/icon-512x512.png",
+            "src": "/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }

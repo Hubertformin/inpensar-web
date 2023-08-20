@@ -70,7 +70,7 @@ export default function BudgetDetail() {
                     <h1 className="font-bold text-2xl">{currentBudget?.name}</h1>
                     <ButtonGroup spacing={0}>
                         <Button
-                            colorScheme="purple"
+                            colorScheme="brand"
                             variant="ghost"
                             leftIcon={<HiOutlinePencil/>}
                             onClick={() => setEditModalOpen(true)}

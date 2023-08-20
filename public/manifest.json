@@ -1,12 +1,12 @@
 {
   "id": "/",
-  "theme_color": "#673ab7",
-  "background_color": "#5e35b1",
+  "theme_color": "#FBBE00",
+  "background_color": "#FB9700",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
-  "name": "Inpensar",
-  "short_name": "Inpensar",
+  "name": "Sunshine Savings",
+  "short_name": "Sunshine",
   "icons": [{
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",

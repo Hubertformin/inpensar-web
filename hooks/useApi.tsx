@@ -5,7 +5,7 @@ import {TransactionsModel, TransactionType} from "../models/transactions.model";
 import {
     appendBudgetState,
     removeBudgetFromState,
-    replaceBudgetInState,
+    replaceBudgetInState, setBudgetLoadingState,
     setBudgetState
 } from "../store/slices/budget.slice";
 import {
@@ -19,22 +19,25 @@ import {
     appendAccountsState,
     removeAccountsFromState,
     replaceAccountsInState,
+    setAccountLoadingState,
     setAccountsState
 } from "../store/slices/accounts.slice";
 import axios from "axios";
 import {fireAuth} from "../utils/firebase";
-import {signInWithCustomToken, signInWithEmailAndPassword} from "@firebase/auth";
-import {selectAuthUserIdTokenState, setAuthUserState, setIdTokenState, setUser} from "../store/slices/auth.slice";
+import {signInWithEmailAndPassword} from "@firebase/auth";
+import {selectAuthUserIdTokenState, setAuthUserState, setUser} from "../store/slices/auth.slice";
 import {
+    appendProjectState,
     prependProjectState,
-    selectActiveProjectIdState,
-    setActiveProjectState,
+    selectActiveProjectIdState, setActiveProjectId,
+    setActiveProjectState, setProjectsState,
     updateActiveProjectState
 } from "../store/slices/projects.slice";
 import {UserModel} from "../models/user.model";
 import {ProjectModel} from "../models/project.model";
 import {setCategoriesState} from "../store/slices/categories.slice";
 import {setAnalyticsFiltersState, setAnalyticsState} from "../store/slices/analytics.slice";
+import {UserCredentialImpl} from "@firebase/auth/dist/src/core/user/user_credential_impl";
 
 export default function useApi() {
     const dispatch = useDispatch();
@@ -48,22 +51,61 @@ export default function useApi() {
     /**
      * Set up axios interceptors
      */
-    httpInstance.interceptors.response.use(response => response,
-        async (error) => {
-        // If error was 401, get new token from user
-        if (error.status === 401 && fireAuth?.currentUser?.uid) {
-            const idToken = await fireAuth.currentUser.getIdToken();
-            dispatch(setIdTokenState(idToken));
-            // Retry the request
-            error.config.headers['Authorization'] = `Bearer ${idToken}`;
-            error.config.baseURL = undefined;
-            return httpInstance.request(error.config);
+    // httpInstance.interceptors.response.use(response => response,
+    //     async (error) => {
+    //     // If error was 401, get new token from user
+    //     if (error.status === 401 && fireAuth?.currentUser?.uid) {
+    //         const idToken = await fireAuth.currentUser.getIdToken(true);
+    //         dispatch(setIdTokenState(idToken));
+    //         // Retry the request
+    //         error.config.headers['Authorization'] = `Bearer ${idToken}`;
+    //         error.config.baseURL = undefined;
+    //         return httpInstance.request(error.config);
+    //     }
+    //     return Promise.reject(error);
+    // });
+
+    // Function to refresh the access token
+    async function refreshAccessToken() {
+        const user = fireAuth?.currentUser;
+        if (user) {
+            const refreshedToken = await user.getIdToken(true);
+            return refreshedToken;
+        } else {
+            throw new Error('User not authenticated');
         }
-        return Promise.reject(error);
-    });
+    }
+
+    httpInstance.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            const originalRequest = error.config;
+
+            if (error.response && error.response.status === 401 && !originalRequest._retry) {
+                originalRequest._retry = true;
+
+                try {
+                    const refreshedToken = await refreshAccessToken();
+
+                    // Update authorization header with the new access token
+                    originalRequest.headers['Authorization'] = `Bearer ${refreshedToken}`;
+
+                    // Resend the failed request with the updated token
+                    return httpInstance(originalRequest);
+                } catch (refreshError) {
+                    console.log(refreshError)
+                    // Handle error when refreshing the token
+                    return Promise.reject(refreshError);
+                }
+            }
+
+            // Return any other error
+            return Promise.reject(error);
+        }
+    );
 
 
-    async function createUserAccount(payload: any) {
+    async function createUserAccount(payload: any): Promise<{authUser: UserCredentialImpl, project: ProjectModel}> {
         const {data} = await httpInstance.post('/users', payload);
         const authUser = await signInWithEmailAndPassword(fireAuth, payload.email, payload.password)
         const userData = data['data'].results as UserModel;
@@ -77,8 +119,10 @@ export default function useApi() {
         // set default active project
         dispatch(prependProjectState(data['data'].project));
         dispatch(setActiveProjectState(data['data'].project));
+        // set active project id
+        dispatch(setActiveProjectId(data['data'].project.id));
 
-        return {authUser, project: data['data'].project};
+        return {authUser: authUser as UserCredentialImpl, project: data['data'].project};
     }
 
 
@@ -129,10 +173,24 @@ export default function useApi() {
     /**
      *  ===== PROJECTS =====
      */
+    async function addProject(payload: any): Promise<ProjectModel> {
+        const {data} = await httpInstance.post(`/projects/`, payload, {
+            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        });
+
+        // add to state
+        dispatch(appendProjectState(data['data'].results))
+
+        return data['data'].results;
+    }
+
     async function getProjects(): Promise<ProjectModel[]> {
         const {data} = await httpInstance.get(`/projects/`, {
             ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
         });
+        // Add to state
+        dispatch(setProjectsState(data['data'].results))
+
         return data['data'].results;
     }
 
@@ -285,15 +343,15 @@ export default function useApi() {
      *  ===== Budgets =====
      */
     async function getBudgets() {
+        dispatch(setBudgetLoadingState(true));
+
         const {data} = await httpInstance.get(`/projects/${activeProjectId}/budgets/me`, {
             ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
         });
 
-        // Only update the state if there are results. This is done to prevent infinite re-renders as some hooks
-        // listen to this data
-        if (data['data'].results.length > 0) {
-            dispatch(setBudgetState(data['data'].results));
-        }
+        dispatch(setBudgetState(data['data'].results));
+
+        dispatch(setBudgetLoadingState(false));
     }
 
     async function addBudget(budget: BudgetModel): Promise<BudgetModel> {
@@ -332,14 +390,19 @@ export default function useApi() {
      * ========= ACCOUNTS =========
      */
     async function getAccounts(): Promise<AccountsModel[]> {
+        dispatch(setAccountLoadingState(true));
+
         const {data} = await httpInstance.get(`/accounts/me`, {
             ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
         });
         // Only update the state if there are results. This is done to prevent infinite re-renders as some hooks
         // listen to this data
+        console.log(data.data.results)
         if (data['data'].results.length > 0) {
             dispatch(setAccountsState(data['data'].results));
         }
+
+        dispatch(setAccountLoadingState(false));
 
         return data['data'].results;
     }
@@ -377,6 +440,7 @@ export default function useApi() {
         updateUserSettings,
         getAndSetCurrentUsersData,
         createFirebaseUserData,
+        addProject,
         getProjects,
         getAndSetActiveProject,
         updateProject,

@@ -33,7 +33,7 @@ export default function LoginView() {
             .then((idToken) => api.getAndSetCurrentUsersData({idToken}))
             .then(() => router.push(`/projects/`))
             .catch((e) => {
-                console.dir(e.toString());
+                console.dir(e);
                 // If account data does not exist, redirect the user to complete is account
                 if (e.response.status === 404) {
                     router.push('/auth/complete-account');
@@ -54,7 +54,7 @@ export default function LoginView() {
             <div className={`${styles.pageOverlay}`}>
                 <div className={`${styles.formContainer} md:p-3`}>
                     <div className={`${styles.form} pb-8 pt-6 px-4 md:px-8`}>
-                        <img src="/images/logotype.png" alt="" className={`${styles.logoImage} mb-6`} />
+                        <img src="/images/sunshine_logo.png" alt="" className={`${styles.logoImage} mb-6`} />
                         <h2 className="text-2xl md:text-3xl mb-8 font-bold">Welcome Back</h2>
                         <Formik
                             initialValues={{
@@ -86,7 +86,7 @@ export default function LoginView() {
                                     <FormControl>
                                         <Button
                                             type="submit"
-                                            colorScheme={'purple'}
+                                            colorScheme={'brand'}
                                             className={'w-full'}
                                             isLoading={props.isSubmitting}
                                             loadingText="Signing in.."
@@ -95,10 +95,10 @@ export default function LoginView() {
                                 </Form>
                             )}
                         </Formik>
-                        <p className="mt-4 text-sm text-center">
+                        <p className="mt-4 text-sm flex justify-center items-center text-center">
                             Don&apos;t have an account?&nbsp;
                             <Link href='/auth/create-account'>
-                                <strong className="text-purple-500 cursor-pointer hover:underline">Create Account</strong>
+                                <Button variant="link" colorScheme={'brand'}>Create Account</Button>
                             </Link>
                         </p>
                     </div>

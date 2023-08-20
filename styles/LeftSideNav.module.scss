@@ -39,6 +39,7 @@ $primary-color: var(--theme-base);
   font-weight: 500;
   font-size: 14px;
   color: #666666;
+
 }
 
 
@@ -84,23 +85,37 @@ $primary-color: var(--theme-base);
   border: 1px solid var(--theme-input-border);
   height: 75px;
   border-radius: 12px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 48px 182px 45px;
   align-items: center;
   justify-content: space-between;
   padding: 0 12px;
   @include media-gt-tablet {
     position: absolute;
     bottom: 25px;
-    padding: 0 16px;
+    // padding: 0 16px;
     left: 15px;
     right: 15px;
-
   }
 }
 
 .projectFooterTitle {
   font-weight: 500;
   font-size: 16px;
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sideNavDescription {
+  font-weight: 500;
+  font-size: 14px;
+  color: #666666;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .pageFooterIconButton {

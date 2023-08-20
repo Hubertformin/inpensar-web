@@ -3,6 +3,16 @@ import {CustomError} from "../models/error.model";
 import Project from "../models/projects.model";
 import Category from "../models/category.model";
 
+export const addUserProjectsController = createController(async (req, res) => {
+    const {name} = req.body;
+    // Create project
+    const project = new Project({ name, currency: req.$currentUser$?.settings?.currency, owner: req.$currentUser$?._id});
+    await project.save();
+    // res.status(200).json({.data, success: true});
+    return { statusCode: 200, data: { results: project.toObject() }, message: "" };
+});
+
+
 export const getUserProjectsController = createController(async (req, res) => {
     const page: number = parseInt(req.query.page as string) || 1,
         limit: number = parseInt(req.query.limit as string) || 20,

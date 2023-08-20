@@ -92,7 +92,7 @@ export default function CompleteAccount() {
             <div className={`${styles.pageOverlay}`}>
                 <div className={`w-full md:w-1/3 bg-white md:p-3`}>
                     <div className={`${styles.form} pb-8 pt-6 px-4 md:px-6`}>
-                        <img src="/images/logotype.png" alt="" className={`${styles.logoImage} mb-6`}/>
+                        <img src="/images/sunshine_logo.png" alt="" className={`${styles.logoImage} mb-6`}/>
                         <h2 className="text-2xl mb-8 font-bold">Finish creating your account.</h2>
                         <Formik
                             initialValues={{
@@ -174,7 +174,7 @@ export default function CompleteAccount() {
                                             </Field>
 
                                     <FormControl>
-                                        <Button type="submit" isLoading={props.isSubmitting} loadingText={'Creating account..'} colorScheme={'purple'} className={'w-full'}>Create
+                                        <Button type="submit" isLoading={props.isSubmitting} loadingText={'Creating account..'} colorScheme={'brand'} className={'w-full'}>Create
                                             Account</Button>
                                     </FormControl>
                                 </Form>

@@ -29,6 +29,7 @@ import { BudgetModel } from "../../models/budget.model";
 import useApi from "../../hooks/useApi";
 import {useSelector} from "react-redux";
 import {selectCategoriesState} from "../../store/slices/categories.slice";
+import {selectAuthUserState} from "../../store/slices/auth.slice";
 
 interface CreateBudgetProps {
   open: boolean;
@@ -39,6 +40,7 @@ interface CreateBudgetProps {
 export default function CreateOrEditBudgetForm({ open, budget = null, onClose }: CreateBudgetProps) {
   const disclosure = useDisclosure();
   const categoriesState = useSelector(selectCategoriesState);
+  const authUser = useSelector(selectAuthUserState);
 
   const [categories, setCategories] = React.useState([]);
   const [operation, setOperation] = React.useState<'ADD' | 'EDIT'>('ADD');
@@ -230,7 +232,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
                           >
                             <FormLabel>Amount</FormLabel>
                             <InputGroup>
-                              <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
+                              <InputLeftAddon bg={'purple.100'} color={'purple.500'}>{authUser.settings.currency}</InputLeftAddon>
                               <Input
                                 {...field}
                                 type="number"
@@ -249,7 +251,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
                             <Checkbox
                                 {...field}
                                 defaultChecked={budget ? budget.resetsMonthly : true}
-                                colorScheme={'purple'} size={'lg'}
+                                colorScheme={'brand'} size={'lg'}
                             >
                               This budget resets every month
                             </Checkbox>
@@ -283,7 +285,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
                                     <Checkbox  {...field}>Checkbox</Checkbox>
                                       <Switch
                                         {...field}
-                                        colorScheme="purple"
+                                        colorScheme="brand"
                                         size="md"
                                       />
                                     </FormControl>
@@ -340,7 +342,7 @@ export default function CreateOrEditBudgetForm({ open, budget = null, onClose }:
                       loadingText={"Saving.."}
                       isLoading={props.isSubmitting}
                       type="submit"
-                      colorScheme="purple"
+                      colorScheme="brand"
                     >
                       Save
                     </Button>

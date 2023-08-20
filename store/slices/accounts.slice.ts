@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import { AppState } from "../";
 import { HYDRATE } from "next-redux-wrapper";
 import {Data} from "../../data";
@@ -6,7 +6,8 @@ import {computeAccountBalance} from "../../utils/account";
 
 const initialState = {
     data: [],
-    balance: 0
+    balance: 0,
+    isLoading: false,
 };
 
 
@@ -14,7 +15,9 @@ export const accountsSlice = createSlice({
     name: "accounts",
     initialState,
     reducers: {
-
+        setAccountLoadingState(state, action: PayloadAction<boolean>) {
+          state.isLoading = action.payload;
+        },
         setAccountsState(state, action) {
             state.data = action.payload;
             state.balance = computeAccountBalance(action.payload)
@@ -63,11 +66,14 @@ export const accountsSlice = createSlice({
 
 export const {
     setAccountsState,
+    setAccountLoadingState,
     appendAccountsState,
     prependAccountsState,
     replaceAccountsInState,
     removeAccountsFromState
 } = accountsSlice.actions;
+
+export const selectAccountLoadingState = (state: AppState) => state.accounts.isLoading;
 
 export const selectAccountsState = (state: AppState) => state.accounts.data;
 

@@ -187,11 +187,11 @@ export default function SettingsHome() {
                                                     <FormHelperText>Updating email is not supported at this time</FormHelperText>
                                                 </FormControl>
                                                 <div className="password mt-6">
-                                                    <Button variant="ghost" colorScheme="purple" type="button">Reset Password</Button>
+                                                    <Button variant="ghost" colorScheme="brand" type="button">Reset Password</Button>
                                                 </div>
 
                                                 <div className="action mt-6">
-                                                    <Button isLoading={isLoading} loadingText={'Saving..'} type="submit" colorScheme="purple">Save</Button>
+                                                    <Button isLoading={isLoading} loadingText={'Saving..'} type="submit" colorScheme="brand">Save</Button>
                                                 </div>
                                             </form>
                                         )}
@@ -243,7 +243,7 @@ export default function SettingsHome() {
                                             <Button
                                                 isLoading={isLoading}
                                                 loadingText={'Saving..'}
-                                                colorScheme="purple"
+                                                colorScheme="brand"
                                                 onClick={saveSettings}
                                             >
                                                 Save

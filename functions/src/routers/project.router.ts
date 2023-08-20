@@ -1,5 +1,6 @@
 import {Router} from "express";
 import {
+    addUserProjectsController,
     getUserProjectByIdController,
     getUserProjectCategoriesController,
     getUserProjectsController, updateUserProjectByIdController
@@ -19,7 +20,9 @@ import {withCurrentProject} from "../middlewares/projects.middleware";
 
 const router = Router();
 
-router.get('/', getUserProjectsController);
+router.route("/")
+    .get(getUserProjectsController)
+    .post(addUserProjectsController);
 
 router.route('/:projectId')
     .get(getUserProjectByIdController)

@@ -33,6 +33,7 @@ import { getSelectOption, getSelectOptions } from "../../utils/array";
 import "@uiw/react-md-editor/dist/mdeditor.min.css";
 import "@uiw/react-markdown-preview/dist/markdown.min.css";
 import dynamic from "next/dynamic";
+import {selectAuthUserState} from "../../store/slices/auth.slice";
 
 const MDEditor = dynamic(
     () => import("@uiw/react-md-editor"),
@@ -52,6 +53,7 @@ export default function EditTransaction({
   onClose,
 }: EditTransactionProps) {
   const disclosure = useDisclosure();
+  const authUser = useSelector(selectAuthUserState);
   /**
    * This form states an initialized to use validation
    */
@@ -291,7 +293,7 @@ export default function EditTransaction({
                   >
                     <FormLabel>Amount</FormLabel>
                     <InputGroup>
-                      <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
+                      <InputLeftAddon bg={'purple.100'} color={'purple.500'}>{authUser.settings.currency}</InputLeftAddon>
                       <Input
                         name="amount"
                         value={expenseForm.values.amount}
@@ -399,7 +401,7 @@ export default function EditTransaction({
               <FormControl className="mb-4">
                 <FormLabel>Amount</FormLabel>
                 <InputGroup>
-                  <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
+                  <InputLeftAddon bg={'purple.100'} color={'purple.500'}>{authUser.settings.currency}</InputLeftAddon>
                   <Input
                     name="amount"
                     value={transferForm.values.amount}
@@ -455,7 +457,7 @@ export default function EditTransaction({
                   <FormControl className="mb-4">
                     <FormLabel>Amount</FormLabel>
                     <InputGroup>
-                      <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
+                      <InputLeftAddon bg={'purple.100'} color={'purple.500'}>{authUser.settings.currency}</InputLeftAddon>
                       <Input
                         name="amount"
                         value={incomeForm.values.amount}
@@ -526,7 +528,7 @@ export default function EditTransaction({
               loadingText={"Saving"}
               isLoading={isLoading}
               onClick={updateTransaction}
-              colorScheme="purple"
+              colorScheme="brand"
             >
               Save
             </Button>

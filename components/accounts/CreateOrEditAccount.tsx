@@ -24,18 +24,23 @@ import {Field, Form, Formik} from "formik";
 import React from "react";
 import {AccountsModel, AccountType} from "../../models/accounts.model";
 import useApi from "../../hooks/useApi";
+import {useSelector} from "react-redux";
+import {selectAuthUserState} from "../../store/slices/auth.slice";
 
 
 interface CreateAccontProps {
     open: boolean;
     account?: AccountsModel;
+    onData?: (account: AccountsModel) => void
     onClose: () => void;
 }
 
-export default function CreateOrEditAccount({ open, account = null, onClose }: CreateAccontProps) {
+export default function CreateOrEditAccount({open, account = null, onClose, onData}: CreateAccontProps) {
     const disclosure = useDisclosure();
     const cancelRef = React.useRef();
     const deleteDisclosure = useDisclosure();
+    const authUser = useSelector(selectAuthUserState);
+
     const [isDeleting, setIsDeleting] = React.useState(false);
     const api = useApi();
     const toast = useToast();
@@ -76,7 +81,7 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                 ...values,
                 amount: parseInt(values.amount)
             }
-            promise =  api.updateAccount(_account)
+            promise = api.updateAccount(_account)
         } else {
             _account = {
                 ...values,
@@ -86,7 +91,12 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
         }
 
         promise
-            .then(() => {
+            .then((data) => {
+                // emit date to parent
+                if (typeof onData === "function") {
+                    onData(data);
+                }
+                // close modal
                 closeModal();
             })
             .catch((err) => {
@@ -125,41 +135,41 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
 
     return (
         <>
-        <Modal
-            onClose={closeModal}
-            isOpen={disclosure.isOpen}
-            size="sm"
-            closeOnOverlayClick={false}
-            closeOnEsc={false}
-            colorScheme={"purple"}
-            isCentered={true}
-        >
-            <ModalOverlay />
-            <ModalContent>
-                <Formik
-                    initialValues={{
-                        name: account ? account.name : "",
-                        amount: account ?  account.amount : '',
-                        type: account ?  account.type : AccountType.CHECKING,
-                    }}
-                    onSubmit={addOrEditAccount}
-                >
-                    {(props) => (
-                        <Form>
-                            <ModalHeader>{account ? `Edit ${account.name}` : 'Add an account'}</ModalHeader>
-                            <ModalCloseButton />
-                            <ModalBody style={{ padding: "0 15px" }} className="pb-32">
+            <Modal
+                onClose={closeModal}
+                isOpen={disclosure.isOpen}
+                size="sm"
+                closeOnOverlayClick={false}
+                closeOnEsc={false}
+                colorScheme={"brand"}
+                isCentered={true}
+            >
+                <ModalOverlay/>
+                <ModalContent>
+                    <Formik
+                        initialValues={{
+                            name: account ? account.name : "",
+                            amount: account ? account.amount : '',
+                            type: account ? account.type : AccountType.CHECKING,
+                        }}
+                        onSubmit={addOrEditAccount}
+                    >
+                        {(props) => (
+                            <Form>
+                                <ModalHeader>{account ? `Edit ${account.name}` : 'Add an account'}</ModalHeader>
+                                <ModalCloseButton/>
+                                <ModalBody style={{padding: "0 15px"}} className="pb-32">
                                     <Field
                                         name="name"
                                         validate={(val) => validateRequired("name", val)}
                                     >
-                                        {({ field, form }) => (
+                                        {({field, form}) => (
                                             <FormControl
                                                 className="mb-4"
                                                 isInvalid={form.errors.name && form.touched.name}
                                             >
                                                 <FormLabel>Name</FormLabel>
-                                                <Input {...field} placeholder="Enter account name" />
+                                                <Input {...field} placeholder="Enter account name"/>
                                                 <FormErrorMessage>
                                                     {form.errors.name}
                                                 </FormErrorMessage>
@@ -170,7 +180,7 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                                         name="amount"
                                         validate={(val) => validateRequired("amount", val)}
                                     >
-                                        {({ field, form }) => (
+                                        {({field, form}) => (
                                             <FormControl
                                                 className="mb-4"
                                                 isInvalid={
@@ -179,7 +189,9 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                                             >
                                                 <FormLabel>Initial balance</FormLabel>
                                                 <InputGroup>
-                                                    <InputLeftAddon bg={'purple.100'} color={'purple.500'}>FCFA</InputLeftAddon>
+                                                    <InputLeftAddon
+                                                        bg={'orange.100'}
+                                                        color={'orange.500'}>{authUser.settings.currency}</InputLeftAddon>
                                                     <Input
                                                         {...field}
                                                         type="number"
@@ -196,7 +208,7 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                                         name="type"
                                         validate={(val) => validateRequired("amount", val)}
                                     >
-                                        {({ field, form }) => (
+                                        {({field, form}) => (
                                             <FormControl
                                                 className="mb-4"
                                                 isInvalid={
@@ -215,28 +227,30 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                                             </FormControl>
                                         )}
                                     </Field>
-                            </ModalBody>
-                            <ModalFooter style={{...(account && {justifyContent: 'space-between'})}}>
-                                {account && <Button colorScheme="red" onClick={deleteDisclosure.onOpen} variant="outline">Delete</Button>}
-                                <ButtonGroup spacing={4}>
-                                    <Button type="button" onClick={onClose}>
-                                        Cancel
-                                    </Button>
-                                    <Button
-                                        loadingText={"Saving.."}
-                                        isLoading={props.isSubmitting}
-                                        type="submit"
-                                        colorScheme="purple"
-                                    >
-                                        Save
-                                    </Button>
-                                </ButtonGroup>
-                            </ModalFooter>
-                        </Form>
-                    )}
-                </Formik>
-            </ModalContent>
-        </Modal>
+                                </ModalBody>
+                                <ModalFooter style={{...(account && {justifyContent: 'space-between'})}}>
+                                    {account && <Button colorScheme="red" onClick={deleteDisclosure.onOpen}
+                                                        variant="outline">Delete</Button>}
+                                    <ButtonGroup spacing={4}>
+                                        <Button type="button" onClick={onClose}>
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            loadingText={"Saving.."}
+                                            isLoading={props.isSubmitting}
+                                            type="submit"
+                                            colorScheme="brand"
+                                        >
+                                            Save
+                                        </Button>
+                                    </ButtonGroup>
+                                </ModalFooter>
+                            </Form>
+                        )}
+                    </Formik>
+                </ModalContent>
+            </Modal>
+
             <AlertDialog
                 isOpen={deleteDisclosure.isOpen}
                 leastDestructiveRef={cancelRef}
@@ -271,6 +285,6 @@ export default function CreateOrEditAccount({ open, account = null, onClose }: C
                     </AlertDialogContent>
                 </AlertDialogOverlay>
             </AlertDialog>
-            </>
+        </>
     )
 }

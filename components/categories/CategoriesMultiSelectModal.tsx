@@ -143,7 +143,7 @@ export default function CategoriesMultiSelectModal({
             <Button
               loadingText={"Saving"}
               onClick={onConfirm}
-              colorScheme="purple"
+              colorScheme="brand"
             >
               Confirm
             </Button>

@@ -155,7 +155,7 @@ export default function ViewTransactionDetails({
               <ButtonGroup spacing={0}>
                 <Button
                   onClick={openEditModal}
-                  colorScheme="purple"
+                  colorScheme="brand"
                   variant="ghost"
                     leftIcon={<HiOutlinePencil />}
                 >

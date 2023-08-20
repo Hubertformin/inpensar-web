@@ -56,16 +56,27 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 400px;
+  margin-top: 40px;
   position: absolute;
   // bottom: 0;
   left: 50%;
   top: 50%;
+  width: 95%;
   transform: translate(-50%, -50%);
+
+  @include media-gt-tablet {
+    max-width: 400px;
+    width: 90%;
+    margin: 0;
+  }
 }
 
 .emptyStateImage {
-  height: 180px;
+  height: 100px;
+
+  @include media-gt-tablet {
+    height: 180px;
+  }
 }
 
 .react-datepicker__input-container {
@@ -152,4 +163,12 @@ $picker-radius: 12px !important;
 }
 .react-datepicker__header:not(.react-datepicker__header--has-time-select) {
   border-top-right-radius: $picker-radius;
+}
+
+
+// Chakra modals
+.chakra-modal__content:not(.chakra-slide)  {
+  @include media-phone {
+    width: 97% !important;
+  }
 }

@@ -68,8 +68,8 @@ function SMLayout({children}) {
                 </button>
                 <Link href={'/projects'}>
                     <img
-                        src="/logotype_white.png"
-                        style={{height: '50px'}}
+                        src="/images/sunshine_logo_white.png"
+                        style={{height: '36px'}}
                         alt="logo"
                     />
                 </Link>

@@ -9,16 +9,20 @@ import {useEffect} from "react";
 import {fireAuth} from "../utils/firebase";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    AuthState,
+    AuthState, selectAuthUserIdTokenState,
     selectAuthUserState,
     setAuthState,
     setIdTokenState
 } from "../store/slices/auth.slice";
 import useApi from "../hooks/useApi";
-import {selectActiveProjectState, setActiveProjectId, setActiveProjectState} from "../store/slices/projects.slice";
+import {selectActiveProjectState, setActiveProjectId} from "../store/slices/projects.slice";
 import {selectCategoriesState} from "../store/slices/categories.slice";
 import {useRouter} from "next/router";
 import {AxiosError} from "axios";
+import {BudgetModel} from "../models/budget.model";
+import {selectBudgetState} from "../store/slices/budget.slice";
+import {AccountsModel} from "../models/accounts.model";
+import {selectAccountsState} from "../store/slices/accounts.slice";
 
 function MyApp({Component, pageProps}) {
     const dispatch = useDispatch();
@@ -28,22 +32,23 @@ function MyApp({Component, pageProps}) {
     const authUser = useSelector(selectAuthUserState);
     const activeProject = useSelector(selectActiveProjectState);
     const categories = useSelector(selectCategoriesState);
-
-    useEffect(() => {
-        if (typeof window == 'undefined') {
-            return;
-        }
+    const idTokenState = useSelector(selectAuthUserIdTokenState);
+    // Budgets
+    const budgets: BudgetModel[] = useSelector(selectBudgetState);
+    const accounts: AccountsModel[] = useSelector(selectAccountsState);
+    async function loadApplicationData() {
         const url = new URL(window.location.href);
         let activeProjectId;
         if (url.pathname.startsWith('/projects')) {
             activeProjectId = url.pathname.split('/')[2];
-            dispatch(setActiveProjectId(activeProjectId))
+            await dispatch(setActiveProjectId(activeProjectId));
         }
-        // Listen to authstate changes
+        // Listen to auth-state changes
         fireAuth.onAuthStateChanged(async (user) => {
             // get id token
             if (user) {
-                const idToken = (user as any).accessToken ? (user as any).accessToken : await user.getIdToken();
+                let idToken = await user.getIdToken(true);
+
                 await dispatch(setIdTokenState(idToken));
 
                 if (!authUser._id) {
@@ -77,15 +82,17 @@ function MyApp({Component, pageProps}) {
                     await api.getAndSetCategories({idToken});
                 }
 
-                // if (activeProject && budgets.length == 0) {
+                // if (activeProjectId && budgets.length == 0) {
+                //     console.log(activeProjectId)
                 //     await api.getBudgets().catch(err => console.error(err));
                 // }
                 //
-                // if (accounts.length == 0) {
+                // if (idToken && accounts.length == 0) {
                 //     await api.getAccounts().catch(err => console.error(err));
                 // }
 
                 dispatch(setAuthState(AuthState.AUTHENTICATED));
+
             } else {
                 // in case of log out
                 dispatch(setAuthState(AuthState.UNAUTHENTICATED));
@@ -94,16 +101,25 @@ function MyApp({Component, pageProps}) {
         }, (err) => {
             console.error(err);
         })
-    }, [activeProject, api, authUser._id, categories.expenses.length, categories.income.length, dispatch]);
+    }
+
+    useEffect(() => {
+        if (typeof window == 'undefined') {
+            return;
+        }
+        loadApplicationData();
+
+    }, []);
+
     return (
         <>
             <Head>
-                <title>Inpensar Financial Manager</title>
-                <meta name="description" content="Inpensar Financial Manage"/>
+                <title>Sunshine Financial Manager</title>
+                <meta name="description" content="Sunshine Financial Manage"/>
                 <link rel="manifest" href="/manifest.json"/>
             </Head>
             <NextNProgress
-                color="#673ab7"
+                color="#FB9700"
                 startPosition={0.3}
                 stopDelayMs={200}
                 height={5}

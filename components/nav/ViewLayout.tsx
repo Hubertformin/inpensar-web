@@ -59,7 +59,7 @@ export default function ViewLayout({pageTitle, children}) {
                     <Link href={'/'}>
                         <img
                             className={styles.toolbarImg}
-                            src="/images/logotype.png"
+                            src="/images/sunshine_logo.png"
                             alt="logo"
                         />
                     </Link>
@@ -86,7 +86,7 @@ export default function ViewLayout({pageTitle, children}) {
             <nav id="side_nav" className={`${styles.sideNav} px-4 pt-6 bg-gray-900`}>
                 <div className={`${styles.sideHeader}`}>
                     <img
-                        src="/images/logotype.png"
+                        src="/images/sunshine_logo.png"
                         style={{height: '60px'}}
                         alt="logo"
                     />
@@ -122,7 +122,7 @@ export default function ViewLayout({pageTitle, children}) {
                     <DrawerCloseButton />
                     <DrawerHeader>
                         <img
-                            src="/images/logotype.png"
+                            src="/images/sunshine_logo.png"
                             style={{height: '50px'}}
                             alt="logo"
                         />

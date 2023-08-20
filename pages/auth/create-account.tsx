@@ -17,6 +17,8 @@ import Select from "react-select";
 import {getSelectOptions} from "../../utils/array";
 import useApi from "../../hooks/useApi";
 import {useRouter} from "next/router";
+import authSlice, {setIdTokenState} from "../../store/slices/auth.slice";
+import {useDispatch} from "react-redux";
 
 export default function CreateAccountView() {
     const [countries, setCountries] = React.useState<any[]>([]);
@@ -25,9 +27,9 @@ export default function CreateAccountView() {
     const api = useApi();
     const router = useRouter();
     const toast = useToast();
+    const dispatch = useDispatch();
 
     React.useEffect(() => {
-        console.log(countries.length == 0 || currencies.length == 0)
         if (countries.length == 0 || currencies.length == 0) {
             getCountriesAndCurrencies();
         }
@@ -87,24 +89,37 @@ export default function CreateAccountView() {
         const phoneNumber = `+${values.country?.callingCodes[0]}${values['phoneNumber']}`;
 
         api.createUserAccount({...values, currency, phoneNumber})
-            .then((data) => {
-                // route to transactions list
-                router.push(`/projects/${data.project.id}/transactions`);
-            }).catch((e) => {
-            console.error(e);
-            // In case of invalid phone number, show it on input
-            const includes = err => (e.response?.data?.message as string).includes(err)
-            if (includes('TOO_LONG') || includes('Invalid format') || includes('E.164 standard compliant')) {
-                actions.setErrors({phoneNumber: 'This phone number appears to be invalid. Please correct it and try again'})
-            } else {
-                toast({
-                    title: 'We are unable to create your account',
-                    description: e.response?.data?.message || 'There was an error creating your account. Please try again later',
-                    status: 'error'
-                });
-            }
-            actions.setSubmitting(false);
-        });
+            .then(async (data) => {
+                //  The user will be redirected to the project page if the id token is précised
+                console.log(data.authUser)
+                console.log((data.authUser.user as any).accessToken)
+                if ((data.authUser.user as any).accessToken) {
+                    await dispatch(setIdTokenState((data.authUser.user as any).accessToken));
+
+                    router.push(`/projects/${data.project?.id}/transactions`);
+                } else {
+                    // Else wait the _app.tsx listener to get and set active Id
+                    setTimeout(() => {
+                        router.push(`/projects/${data.project?.id}/transactions`);
+                    }, 3000);
+                }
+
+            })
+            .catch((e) => {
+                console.error(e);
+                // In case of invalid phone number, show it on input
+                const includes = err => (e.response?.data?.message as string).includes(err)
+                if (includes('TOO_LONG') || includes('TOO_SHORT') || includes('Invalid format') || includes('E.164 standard compliant')) {
+                    actions.setErrors({phoneNumber: 'This phone number appears to be invalid. Please correct it and try again'})
+                } else {
+                    toast({
+                        title: 'We are unable to create your account',
+                        description: e.response?.data?.message || 'There was an error creating your account. Please try again later',
+                        status: 'error'
+                    });
+                }
+                actions.setSubmitting(false);
+            });
     }
 
     return (
@@ -112,7 +127,7 @@ export default function CreateAccountView() {
             <div className={`${styles.pageOverlay}`}>
                 <div className={`${styles.createAccountForm} md:p-3`}>
                     <div className={`${styles.form} pb-8 pt-6 px-4 md:px-6`}>
-                        <img src="/images/logotype.png" alt="" className={`${styles.logoImage} mb-6`}/>
+                        <img src="/images/sunshine_logo.png" alt="" className={`${styles.logoImage} mb-6`}/>
                         <h2 className="text-2xl md:text-3xl mb-8 font-bold">Get started.</h2>
                         <Formik
                             initialValues={{
@@ -274,7 +289,7 @@ export default function CreateAccountView() {
                                             type="submit"
                                             isLoading={props.isSubmitting}
                                             loadingText={'Creating account..'}
-                                            colorScheme={'purple'}
+                                            colorScheme={'brand'}
                                             className={'w-full'}
                                             disabled={countries.length == 0 || currencies.length == 0 || props.isSubmitting}
                                         >
@@ -284,10 +299,11 @@ export default function CreateAccountView() {
                                 </Form>
                             )}
                         </Formik>
-                        <p className="mt-4 text-sm text-center">
+                        <p className="mt-4 text-sm flex gap-1.5 items-center justify-center text-center">
                             Have an account?&nbsp;
                             <Link href='/auth/login'>
-                                <strong className="text-purple-500 cursor-pointer hover:underline">Login</strong>
+                                {/*<strong className=" cursor-pointer hover:underline">Login</strong>*/}
+                                <Button variant="link" colorScheme={'brand'}>Login</Button>
                             </Link>
                         </p>
                     </div>

@@ -126,7 +126,7 @@ export default function ProjectSettings() {
                                 </div>
                                 <div className="mt-6">
                                     <Button
-                                        colorScheme="purple"
+                                        colorScheme="brand"
                                         isLoading={isLoading}
                                         onClick={saveSettings}
                                         loadingText={'Saving..'}

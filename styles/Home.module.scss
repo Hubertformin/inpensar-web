@@ -19,3 +19,19 @@
     grid-template-columns: auto 400px;
   }
 }
+
+
+.splash_bg {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: #FFF8E2;
+}
+
+.splash_logo {
+  height: 100px;
+  width: 100px;
+}
