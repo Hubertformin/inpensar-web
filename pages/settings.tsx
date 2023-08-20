@@ -34,7 +34,6 @@ export default function SettingsHome() {
     const router = useRouter();
 
     React.useEffect(() => {
-        console.log(router.query);
         if (router.query.t == 'settings') setDefaultTabIndex(1);
     },[])
 

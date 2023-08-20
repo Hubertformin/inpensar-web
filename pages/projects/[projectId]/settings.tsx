@@ -34,7 +34,7 @@ export default function ProjectSettings() {
         const _currencies = Object.keys(currencies.data).map(key => ({name: currencies.data[key], code: key}));
         setCurrencies(_currencies);
 
-        const userCurrency = _currencies.find(c => c.code == activeProject.settings.currency);
+        const userCurrency = _currencies.find(c => c.code == activeProject.currency.code);
 
        setSelectedCurrencyControl(getSelectOption(userCurrency, 'name', 'code'));
 
