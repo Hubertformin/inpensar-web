@@ -1,43 +1,29 @@
 import React from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {BudgetModel} from "../models/budget.model";
-import {TransactionsModel, TransactionType} from "../models/transactions.model";
-import {
-    appendBudgetState,
-    removeBudgetFromState,
-    replaceBudgetInState, setBudgetLoadingState,
-    setBudgetState
-} from "../store/slices/budget.slice";
-import {
-    prependTransactionState,
-    removeTransactionFromState,
-    replaceTransactionInState,
-    setTransactionState,
-} from "../store/slices/transaction.slice";
-import {AccountsModel} from "../models/accounts.model";
-import {
-    appendAccountsState,
-    removeAccountsFromState,
-    replaceAccountsInState,
-    setAccountLoadingState,
-    setAccountsState
-} from "../store/slices/accounts.slice";
+import { useDispatch, useSelector } from "react-redux";
+import { BudgetModel } from "../models/budget.model";
+import { TransactionsModel, TransactionType } from "../models/transactions.model";
+import { appendBudgetState, removeBudgetFromState, replaceBudgetInState, setBudgetLoadingState, setBudgetState } from "../store/slices/budget.slice";
+import { prependTransactionState, removeTransactionFromState, replaceTransactionInState, setTransactionState } from "../store/slices/transaction.slice";
+import { AccountsModel } from "../models/accounts.model";
+import { appendAccountsState, removeAccountsFromState, replaceAccountsInState, setAccountLoadingState, setAccountsState } from "../store/slices/accounts.slice";
 import axios from "axios";
-import {fireAuth} from "../utils/firebase";
-import {signInWithEmailAndPassword} from "@firebase/auth";
-import {selectAuthUserIdTokenState, setAuthUserState, setUser} from "../store/slices/auth.slice";
+import { fireAuth } from "../utils/firebase";
+import { signInWithEmailAndPassword } from "@firebase/auth";
+import { selectAuthUserIdTokenState, setAuthUserState, setUser } from "../store/slices/auth.slice";
 import {
     appendProjectState,
     prependProjectState,
-    selectActiveProjectIdState, setActiveProjectId,
-    setActiveProjectState, setProjectsState,
-    updateActiveProjectState
+    selectActiveProjectIdState,
+    setActiveProjectId,
+    setActiveProjectState,
+    setProjectsState,
+    updateActiveProjectState,
 } from "../store/slices/projects.slice";
-import {UserModel} from "../models/user.model";
-import {ProjectModel} from "../models/project.model";
-import {setCategoriesState} from "../store/slices/categories.slice";
-import {setAnalyticsFiltersState, setAnalyticsState} from "../store/slices/analytics.slice";
-import {UserCredentialImpl} from "@firebase/auth/dist/src/core/user/user_credential_impl";
+import { UserModel } from "../models/user.model";
+import { ProjectModel } from "../models/project.model";
+import { setCategoriesState } from "../store/slices/categories.slice";
+import { setAnalyticsFiltersState, setAnalyticsState } from "../store/slices/analytics.slice";
+import { UserCredentialImpl } from "@firebase/auth/dist/src/core/user/user_credential_impl";
 
 export default function useApi() {
     const dispatch = useDispatch();
@@ -46,7 +32,7 @@ export default function useApi() {
 
     const httpInstance = axios.create({
         baseURL: process.env.NEXT_PUBLIC_API_URL,
-        httpAgent: 'Inpensar/web'
+        httpAgent: "Inpensar/web",
     });
     /**
      * Set up axios interceptors
@@ -72,7 +58,7 @@ export default function useApi() {
             const refreshedToken = await user.getIdToken(true);
             return refreshedToken;
         } else {
-            throw new Error('User not authenticated');
+            throw new Error("User not authenticated");
         }
     }
 
@@ -88,12 +74,12 @@ export default function useApi() {
                     const refreshedToken = await refreshAccessToken();
 
                     // Update authorization header with the new access token
-                    originalRequest.headers['Authorization'] = `Bearer ${refreshedToken}`;
+                    originalRequest.headers["Authorization"] = `Bearer ${refreshedToken}`;
 
                     // Resend the failed request with the updated token
                     return httpInstance(originalRequest);
                 } catch (refreshError) {
-                    console.log(refreshError)
+                    console.log(refreshError);
                     // Handle error when refreshing the token
                     return Promise.reject(refreshError);
                 }
@@ -104,31 +90,31 @@ export default function useApi() {
         }
     );
 
-
-    async function createUserAccount(payload: any): Promise<{authUser: UserCredentialImpl, project: ProjectModel}> {
-        const {data} = await httpInstance.post('/users', payload);
-        const authUser = await signInWithEmailAndPassword(fireAuth, payload.email, payload.password)
-        const userData = data['data'].results as UserModel;
-        dispatch(setAuthUserState({
-            _id: userData._id,
-            name: authUser.user.displayName,
-            email: authUser.user.email,
-            settings: userData.settings,
-            uid: authUser.user.uid
-        }));
+    async function createUserAccount(payload: any): Promise<{ authUser: UserCredentialImpl; project: ProjectModel }> {
+        const { data } = await httpInstance.post("/users", payload);
+        const authUser = await signInWithEmailAndPassword(fireAuth, payload.email, payload.password);
+        const userData = data["data"].results as UserModel;
+        dispatch(
+            setAuthUserState({
+                _id: userData._id,
+                name: authUser.user.displayName,
+                email: authUser.user.email,
+                settings: userData.settings,
+                uid: authUser.user.uid,
+            })
+        );
         // set default active project
-        dispatch(prependProjectState(data['data'].project));
-        dispatch(setActiveProjectState(data['data'].project));
+        dispatch(prependProjectState(data["data"].project));
+        dispatch(setActiveProjectState(data["data"].project));
         // set active project id
-        dispatch(setActiveProjectId(data['data'].project.id));
+        dispatch(setActiveProjectId(data["data"].project.id));
 
-        return {authUser: authUser as UserCredentialImpl, project: data['data'].project};
+        return { authUser: authUser as UserCredentialImpl, project: data["data"].project };
     }
 
-
     async function updateUser(id: string, payload: any) {
-        const {data} = await httpInstance.put(`/users/${id}`, payload, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.put(`/users/${id}`, payload, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
 
         dispatch(setUser(payload));
@@ -137,36 +123,41 @@ export default function useApi() {
     }
 
     function updateUserSettings(id: string, payload: any) {
-        return updateUser(id, {settings: payload});
+        return updateUser(id, { settings: payload });
     }
 
-    async function getAndSetCurrentUsersData({idToken = null}) {
-        const {data} = await httpInstance.get('/users/me', {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+    async function getAndSetCurrentUsersData({ idToken = null }) {
+        const { data } = await httpInstance.get("/users/me", {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        const userData = data['data'].results;
-        dispatch(setAuthUserState({
-            _id: userData._id,
-            name: userData.name,
-            email: userData.email,
-            settings: userData.settings,
-            uid: userData.uid
-        }));
+        const userData = data["data"].results;
+        dispatch(
+            setAuthUserState({
+                _id: userData._id,
+                name: userData.name,
+                email: userData.email,
+                settings: userData.settings,
+                uid: userData.uid,
+            })
+        );
         return userData;
     }
 
     async function createFirebaseUserData(uid: string, payload) {
-        const {data} = await httpInstance.post(`/users/uid/${uid}`, payload, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.post(`/users/uid/${uid}`, payload, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        const userData = data['data'].results;
-        dispatch(setAuthUserState({
-            _id: userData._id,
-            name: userData.name,
-            email: userData.email,
-            settings: userData.settings,
-            uid: userData.uid
-        }));
+        const userData = data["data"].results;
+
+        dispatch(
+            setAuthUserState({
+                _id: userData._id,
+                name: userData.name,
+                email: userData.email,
+                settings: userData.settings,
+                uid: userData.uid,
+            })
+        );
         return userData;
     }
 
@@ -174,55 +165,56 @@ export default function useApi() {
      *  ===== PROJECTS =====
      */
     async function addProject(payload: any): Promise<ProjectModel> {
-        const {data} = await httpInstance.post(`/projects/`, payload, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.post(`/projects/`, payload, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
 
         // add to state
-        dispatch(appendProjectState(data['data'].results))
+        dispatch(appendProjectState(data["data"].results));
 
-        return data['data'].results;
+        return data["data"].results;
     }
 
     async function getProjects(): Promise<ProjectModel[]> {
-        const {data} = await httpInstance.get(`/projects/`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.get(`/projects/`, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
         // Add to state
-        dispatch(setProjectsState(data['data'].results))
+        dispatch(setProjectsState(data["data"].results));
 
-        return data['data'].results;
+        return data["data"].results;
     }
 
-    async function getAndSetActiveProject({projectId, idToken}): Promise<ProjectModel> {
-        const {data} = await httpInstance.get(`/projects/${projectId}`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+    async function getAndSetActiveProject({ projectId, idToken }): Promise<ProjectModel> {
+        const { data } = await httpInstance.get(`/projects/${projectId}`, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        const projectData = data['data'].results;
-        dispatch(setActiveProjectState({...projectData}));
+        const projectData = data["data"].results;
+        dispatch(setActiveProjectState({ ...projectData }));
         return projectData;
     }
 
     async function updateProject(id: string, payload: any): Promise<ProjectModel> {
-        const {data} = await httpInstance.put(`/projects/${id}`, payload, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.put(`/projects/${id}`, payload, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        const projectData = data['data'].results;
-        dispatch(updateActiveProjectState({...projectData}));
+        const projectData = data["data"].results;
+        dispatch(updateActiveProjectState({ ...projectData }));
         return projectData;
     }
 
     /**
      *  ===== CATEGORIES =====
      */
-    async function getAndSetCategories({idToken = null}) {
-        const {data} = await httpInstance.get(`/projects/categories/all`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+    async function getAndSetCategories({ idToken = null }) {
+        const { data } = await httpInstance.get(`/projects/categories/all`, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        const categoriesData = data['data'].results;
-        const expenses = categoriesData.filter(category => category.type === TransactionType.EXPENSE);
-        const income = categoriesData.filter(category => category.type === TransactionType.INCOME);
-        dispatch(setCategoriesState({income, expenses}));
+
+        const categoriesData = data["data"].results;
+        const expenses = categoriesData.filter((category) => category.type === TransactionType.EXPENSE);
+        const income = categoriesData.filter((category) => category.type === TransactionType.INCOME);
+        dispatch(setCategoriesState({ income, expenses }));
         return categoriesData;
     }
 
@@ -237,17 +229,17 @@ export default function useApi() {
 
     async function getProjectReports(filters: ReportsFilters = {}): Promise<any> {
         // save filters to state
-        dispatch(setAnalyticsFiltersState(filters))
+        dispatch(setAnalyticsFiltersState(filters));
         // Construct query params
         const searchParams = new URLSearchParams(filters as URLSearchParams).toString();
         // Fetch
-        const {data} = await httpInstance.get(`/projects/${activeProjectId}/reports?${searchParams}`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.get(`/projects/${activeProjectId}/reports?${searchParams}`, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        console.log(data['data'])
-        dispatch(setAnalyticsState(data['data']));
+        console.log(data["data"]);
+        dispatch(setAnalyticsState(data["data"]));
 
-        return data['data'];
+        return data["data"];
     }
 
     /**
@@ -264,76 +256,82 @@ export default function useApi() {
 
     async function getTransactions(filters: TransactionFilters = {}): Promise<TransactionsModel[]> {
         const searchParams = new URLSearchParams(filters as URLSearchParams).toString();
-        const {data} = await httpInstance.get(`/projects/${activeProjectId}/transactions/me?${searchParams}`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.get(`/projects/${activeProjectId}/transactions/me?${searchParams}`, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
 
         // Only update the state if there are results. This is done to prevent infinite re-renders as some hooks
         // listen to this data
-        if (data['data'].results.length > 0) {
-            dispatch(setTransactionState(data['data'].results));
+        if (data["data"].results.length > 0) {
+            dispatch(setTransactionState(data["data"].results));
         }
 
-        return data['data'].results;
+        return data["data"].results;
     }
 
-    async function addTransaction(
-        transaction: TransactionsModel
-    ): Promise<TransactionsModel> {
+    async function addTransaction(transaction: TransactionsModel): Promise<TransactionsModel> {
         // Add transaction to database....
-        const payload = {...transaction, category: transaction.category._id, account: transaction.account._id};
-        const {data} = await httpInstance.post(`/projects/${activeProjectId}/transactions`, payload, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const payload = {
+            ...transaction,
+            ...(transaction.from && { from: transaction.from._id }),
+            ...(transaction.to && { to: transaction.to._id }),
+            category: transaction.category?._id || "",
+            account: transaction.account?._id || "",
+        };
+        const { data } = await httpInstance.post(`/projects/${activeProjectId}/transactions`, payload, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        dispatch(prependTransactionState({
-            ...data['data'].results,
-            category: transaction.category,
-            account: transaction.account
-        }));
+        dispatch(
+            prependTransactionState({
+                ...data["data"].results,
+                category: transaction.category,
+                account: transaction.account,
+            })
+        );
         // update the state with the wallet(s) or budget that was updated
-        if (data['data'].accounts) {
-            dispatch(replaceAccountsInState(data['data'].accounts));
+        if (data["data"].accounts) {
+            dispatch(replaceAccountsInState(data["data"].accounts));
         }
 
-        if (data['data'].budget) {
-            dispatch(replaceBudgetInState(data['data'].budget));
+        if (data["data"].budget) {
+            dispatch(replaceBudgetInState(data["data"].budget));
         }
 
-        return data['data'].results;
+        return data["data"].results;
     }
 
-    async function updateTransaction(
-        transaction: TransactionsModel
-    ): Promise<TransactionsModel> {
+    async function updateTransaction(transaction: TransactionsModel): Promise<TransactionsModel> {
         // Update transaction in database....
-        const payload = {...transaction, category: transaction.category._id, account: transaction.account._id};
-        const {data} = await httpInstance.put(`/projects/${activeProjectId}/transactions/${transaction._id}`, payload, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const payload = { ...transaction, category: transaction.category._id, account: transaction.account._id };
+        const { data } = await httpInstance.put(`/projects/${activeProjectId}/transactions/${transaction._id}`, payload, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        dispatch(replaceTransactionInState({
-            ...data['data'].results,
-            category: transaction.category,
-            account: transaction.account
-        }));
+        dispatch(
+            replaceTransactionInState({
+                ...data["data"].results,
+                category: transaction.category,
+                account: transaction.account,
+            })
+        );
         // update the state with the wallet(s) or budget that was updated
-        if (data['data'].accounts) {
-            dispatch(replaceAccountsInState(data['data'].accounts));
+        if (data["data"].accounts) {
+            dispatch(replaceAccountsInState(data["data"].accounts));
         }
 
-        if (data['data'].budget) {
-            dispatch(replaceBudgetInState(data['data'].budget));
+        if (data["data"].budget) {
+            dispatch(replaceBudgetInState(data["data"].budget));
         }
-        return data['data'].results;
+        return data["data"].results;
     }
 
     async function deleteTransaction(transaction: TransactionsModel) {
-        const {data} = await httpInstance.delete(`/projects/${activeProjectId}/transactions/${transaction._id}`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.delete(`/projects/${activeProjectId}/transactions/${transaction._id}`, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
         dispatch(removeTransactionFromState(transaction));
 
-        if (data['data'].budget) {
-            dispatch(replaceBudgetInState(data['data'].budget));
+        if (data["data"].budget) {
+            dispatch(replaceBudgetInState(data["data"].budget));
         }
 
         return transaction._id;
@@ -345,11 +343,11 @@ export default function useApi() {
     async function getBudgets() {
         dispatch(setBudgetLoadingState(true));
 
-        const {data} = await httpInstance.get(`/projects/${activeProjectId}/budgets/me`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.get(`/projects/${activeProjectId}/budgets/me`, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
 
-        dispatch(setBudgetState(data['data'].results));
+        dispatch(setBudgetState(data["data"].results));
 
         dispatch(setBudgetLoadingState(false));
     }
@@ -357,30 +355,30 @@ export default function useApi() {
     async function addBudget(budget: BudgetModel): Promise<BudgetModel> {
         const payload = {
             ...budget,
-            categories: budget.categories.map(c => c._id)
+            categories: budget.categories.map((c) => c._id),
         };
-        const {data} = await httpInstance.post(`/projects/${activeProjectId}/budgets`, payload, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.post(`/projects/${activeProjectId}/budgets`, payload, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        dispatch(appendBudgetState({...data['data'].results, categories: budget.categories}));
-        return data['data'].results;
+        dispatch(appendBudgetState({ ...data["data"].results, categories: budget.categories }));
+        return data["data"].results;
     }
 
     async function updateBudget(budget: BudgetModel): Promise<BudgetModel> {
         const payload = {
             ...budget,
-            categories: budget.categories.map(c => c._id)
+            categories: budget.categories.map((c) => c._id),
         };
-        const {data} = await httpInstance.put(`/projects/${activeProjectId}/budgets/${budget._id}`, payload, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.put(`/projects/${activeProjectId}/budgets/${budget._id}`, payload, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        dispatch(replaceBudgetInState({...data['data'].results, categories: budget.categories}));
-        return data['data'].results;
+        dispatch(replaceBudgetInState({ ...data["data"].results, categories: budget.categories }));
+        return data["data"].results;
     }
 
     async function deleteBudget(budget: BudgetModel): Promise<BudgetModel> {
         await httpInstance.delete(`/projects/${activeProjectId}/budgets/${budget._id}`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
         dispatch(removeBudgetFromState(budget));
         return null;
@@ -392,42 +390,42 @@ export default function useApi() {
     async function getAccounts(): Promise<AccountsModel[]> {
         dispatch(setAccountLoadingState(true));
 
-        const {data} = await httpInstance.get(`/accounts/me`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.get(`/accounts/me`, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
         // Only update the state if there are results. This is done to prevent infinite re-renders as some hooks
         // listen to this data
-        console.log(data.data.results)
-        if (data['data'].results.length > 0) {
-            dispatch(setAccountsState(data['data'].results));
+        console.log(data.data.results);
+        if (data["data"].results.length > 0) {
+            dispatch(setAccountsState(data["data"].results));
         }
 
         dispatch(setAccountLoadingState(false));
 
-        return data['data'].results;
+        return data["data"].results;
     }
 
     async function addAccount(account: AccountsModel): Promise<AccountsModel> {
-        const {data} = await httpInstance.post(`/accounts`, account, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.post(`/accounts`, account, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        dispatch(appendAccountsState(data['data'].results));
+        dispatch(appendAccountsState(data["data"].results));
 
-        return data['data'].results;
+        return data["data"].results;
     }
 
     async function updateAccount(account: AccountsModel): Promise<AccountsModel> {
-        const {data} = await httpInstance.put(`/accounts/${account._id}`, account, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+        const { data } = await httpInstance.put(`/accounts/${account._id}`, account, {
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
-        dispatch(replaceAccountsInState(data['data'].results));
+        dispatch(replaceAccountsInState(data["data"].results));
 
-        return data['data'].results;
+        return data["data"].results;
     }
 
     async function deleteAccount(account: AccountsModel): Promise<AccountsModel> {
         await httpInstance.delete(`/accounts/${account._id}`, {
-            ...(idToken && {headers: {'Authorization': `Bearer ${idToken}`}})
+            ...(idToken && { headers: { Authorization: `Bearer ${idToken}` } }),
         });
         dispatch(removeAccountsFromState(account));
 
@@ -457,6 +455,6 @@ export default function useApi() {
         getAccounts,
         addAccount,
         updateAccount,
-        deleteAccount
+        deleteAccount,
     };
 }

@@ -52,10 +52,12 @@ const TransactionSchema = new Schema<TransactionBaseDocument>(
         account: {
             type: Types.ObjectId,
             ref: "accounts",
+            required: false,
         },
         project: {
             type: Types.ObjectId,
-            ref: 'projects'
+            ref: 'projects',
+            required: true
         },
         owner: {
             type: Types.ObjectId,

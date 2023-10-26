@@ -1,35 +1,38 @@
 import * as functions from "firebase-functions";
 
-import {applicationDefault, initializeApp} from 'firebase-admin/app';
+import { applicationDefault, initializeApp } from "firebase-admin/app";
 import * as express from "express";
 import * as cookieParser from "cookie-parser";
 import * as logger from "morgan";
-import { connect} from "mongoose";
+import { connect } from "mongoose";
 import * as cors from "cors";
-import {useControllers} from "./routers";
+import { useControllers } from "./routers";
 
 // INit admin app
 initializeApp({
-  credential: applicationDefault(),
+    credential: applicationDefault(),
 });
 
 const app = express();
 app.use(cors());
 
 // Connect to database
-const DATABASE_URI = process.env.NODE_ENV === 'production' ? process.env.DATABASE_URI : process.env.TEST_DATABASE_URI;
-connect(DATABASE_URI as string, {
-  // useNewUrlParser: true,
-  // useUnifiedTopology: true,
-  // useFindAndModify: false,
-  // useCreateIndex: true
-}).then(() => {
-  console.log("[SERVER]: connected to database!");
-}).catch((err) => {
-  console.log('DATABASE_URI not loader')
-  console.log(process.env.DATABASE_URI);
-  // console.error(err)
-});
+const DATABASE_URI = process.env.NODE_ENV === "production" ? process.env.DATABASE_URI : process.env.TEST_DATABASE_URI;
+console.log(DATABASE_URI as string);
+connect("mongodb+srv://admin:root@cluster0.tvgbxb3.mongodb.net/test?retryWrites=true&w=majority", {
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
+    // useFindAndModify: false,
+    // useCreateIndex: true
+})
+    .then(() => {
+        console.log("[SERVER]: connected to database!");
+    })
+    .catch((err) => {
+        console.log("DATABASE_URI not loader");
+        console.log(process.env.DATABASE_URI);
+        // console.error(err)
+    });
 
 app.use(logger("dev"));
 app.use(express.json());

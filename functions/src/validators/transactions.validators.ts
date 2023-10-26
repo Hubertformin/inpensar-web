@@ -7,7 +7,7 @@ let transactions = object({
     amount: number().required(),
     notes: string().nullable(),
     // category: array().of(string()).required(),
-    category: string().required(),
+    category: string().nullable(),
     type: mixed().oneOf(Object.values(TransactionType)).required(),
     account: string().nullable(),
     date: string().required(),

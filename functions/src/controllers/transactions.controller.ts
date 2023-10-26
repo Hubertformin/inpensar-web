@@ -43,9 +43,9 @@ export const getUsersTransactionsController = createController(async (req, res) 
     //     query.date = {$gte: start.toISOString(), $lt: end.toISOString()}
     // }
 
-    const count = await Transaction.find({ owner: req.$currentUser$, ...query }).countDocuments().exec();
+    const count = await Transaction.find({owner: req.$currentUser$, ...query}).countDocuments().exec();
 
-    const transactions = await Transaction.find({ owner: req.$currentUser$, ...query })
+    const transactions = await Transaction.find({owner: req.$currentUser$, ...query})
         .sort({date: -1})
         .skip(startIndex)
         .limit(limit)
@@ -53,7 +53,7 @@ export const getUsersTransactionsController = createController(async (req, res) 
         .populate('account')
         .exec();
     // res.status(200).json({.data, success: true});
-    return { statusCode: 200, data: { results: transactions, count }, message: "" };
+    return {statusCode: 200, data: {results: transactions, count}, message: ""};
 });
 
 
@@ -64,9 +64,11 @@ export const createTransactionController = createController(async (req, res) => 
 
     const transaction = new Transaction({
         ...transactionData,
-        owner: req.$currentUser$?._id,
+        ...(transactionData.category && {category: new Types.ObjectId(transactionData.category)}),
+        ...(transactionData.account && {account: new Types.ObjectId(transactionData.account)}),
+        owner: (req.$currentProject$ as any)._id.toString(),
         // date: new Date(transactionData.date),
-        project: req.$currentProject$?._id
+        project: (req.$currentProject$ as any)._id.toString()
     });
     /**
      * When a transaction is created, the cases apply ->
@@ -79,16 +81,19 @@ export const createTransactionController = createController(async (req, res) => 
      *  - Subtract the amount from the target wallet and add the amount to the value t0 the destination wallet
      */
 
-    switch(transactionData.type as TransactionType) {
+    switch (transactionData.type as TransactionType) {
         case TransactionType.EXPENSE:
-            budget = await Budget.findOne({ categories: new Types.ObjectId(transactionData.category) , project: new Types.ObjectId(req.params.projectId) }).exec() as BudgetDocument;
+            budget = await Budget.findOne({
+                categories: new Types.ObjectId(transactionData.category as string),
+                project: (req.$currentProject$ as any)._id
+            }).exec() as BudgetDocument;
 
             if (budget) {
                 budget.amountSpent += transactionData.amount;
                 await budget.save();
             }
 
-            let expense_account = await Account.findOne({ _id: transactionData.account }).exec() as AccountDocument;
+            let expense_account = await Account.findOne({_id: transactionData.account}).exec() as AccountDocument;
             if (expense_account) {
                 /**
                  * The user cannot spend more than is available in a wallet,
@@ -100,7 +105,7 @@ export const createTransactionController = createController(async (req, res) => 
             }
             break;
         case TransactionType.INCOME:
-            let account = await Account.findOne({ _id: transactionData.account }).exec() as AccountDocument;
+            let account = await Account.findOne({_id: transactionData.account}).exec() as AccountDocument;
             if (account) {
                 account.amount += transactionData.amount;
                 await account.save();
@@ -108,8 +113,8 @@ export const createTransactionController = createController(async (req, res) => 
             }
             break;
         case TransactionType.TRANSFER:
-            const from_account = await Account.findOne({ _id: transactionData.from }).exec() as AccountDocument;
-            const to_account = await Account.findOne({ _id: transactionData.to }).exec() as AccountDocument;
+            const from_account = await Account.findOne({_id: transactionData.from}).exec() as AccountDocument;
+            const to_account = await Account.findOne({_id: transactionData.to}).exec() as AccountDocument;
             from_account.amount -= transactionData.amount;
             to_account.amount += transactionData.amount;
             await from_account.save();
@@ -137,7 +142,7 @@ export const createTransactionController = createController(async (req, res) => 
 
 export const getUserTransactionByIdController = createController(async (req, res) => {
 
-    const transaction = await  Transaction.findOne({ _id: req.params.id, owner: req.$currentUser$?._id }).exec();
+    const transaction = await Transaction.findOne({_id: req.params.id, owner: req.$currentUser$?._id}).exec();
 
     if (!transaction) {
         throw CustomError(
@@ -145,12 +150,12 @@ export const getUserTransactionByIdController = createController(async (req, res
         ).status(404);
     }
 
-    return { statusCode: 200, data: { results: transaction.toObject() }, message: "" };
+    return {statusCode: 200, data: {results: transaction.toObject()}, message: ""};
 });
 
 export const updateUserTransactionByIdController = createController(async (req, res) => {
 
-    const transaction = await Transaction.findOne({ _id: req.params.id, owner: req.$currentUser$?._id }).exec();
+    const transaction = await Transaction.findOne({_id: req.params.id, owner: req.$currentUser$?._id}).exec();
 
     if (!transaction) {
         throw CustomError(
@@ -175,17 +180,20 @@ export const updateUserTransactionByIdController = createController(async (req, 
      *  - Subtract the amount from the target wallet and add the amount to the value t0 the destination wallet
      */
 
-    switch(transactionData.type as TransactionType) {
+    switch (transactionData.type as TransactionType) {
         case TransactionType.EXPENSE:
             if (transaction.amount != transactionData.amount) {
-                budget = await Budget.findOne({ categories: new Types.ObjectId(transactionData.category) , project: new Types.ObjectId(req.params.projectId) }).exec() as BudgetDocument;
+                budget = await Budget.findOne({
+                    categories: new Types.ObjectId(transactionData.category),
+                    project: new Types.ObjectId(req.params.projectId)
+                }).exec() as BudgetDocument;
 
                 if (budget) {
                     budget.amountSpent += transactionData.amount - transaction.amount;
                     await budget.save();
                 }
 
-                let expense_account = await Account.findOne({ _id: transactionData.account }).exec() as AccountDocument;
+                let expense_account = await Account.findOne({_id: transactionData.account}).exec() as AccountDocument;
                 if (expense_account) {
                     /**
                      * The user cannot spend more than is available in a wallet,
@@ -199,7 +207,7 @@ export const updateUserTransactionByIdController = createController(async (req, 
             break;
         case TransactionType.INCOME:
             if (transaction.amount != transactionData.amount) {
-                let account = await Account.findOne({ _id: transactionData.account }).exec() as AccountDocument;
+                let account = await Account.findOne({_id: transactionData.account}).exec() as AccountDocument;
                 if (account) {
                     account.amount += transactionData.amount - transaction.amount;
                     await account.save();
@@ -209,8 +217,8 @@ export const updateUserTransactionByIdController = createController(async (req, 
             break;
         case TransactionType.TRANSFER:
             if (transaction.amount != transactionData.amount) {
-                const from_account = await Account.findOne({ _id: transactionData.from }).exec() as AccountDocument;
-                const to_account = await Account.findOne({ _id: transactionData.to }).exec() as AccountDocument;
+                const from_account = await Account.findOne({_id: transactionData.from}).exec() as AccountDocument;
+                const to_account = await Account.findOne({_id: transactionData.to}).exec() as AccountDocument;
 
                 from_account.amount += transaction.amount - transactionData.amount;
                 to_account.amount += transactionData.amount - transaction.amount;
@@ -244,7 +252,7 @@ export const updateUserTransactionByIdController = createController(async (req, 
 
 export const deleteUserTransactionByIdController = createController(async (req, res) => {
 
-    const transaction = await Transaction.findOne({ _id: req.params.id, owner: req.$currentUser$?._id }).exec();
+    const transaction = await Transaction.findOne({_id: req.params.id, owner: req.$currentUser$?._id}).exec();
 
     if (!transaction) {
         throw CustomError(
@@ -254,7 +262,7 @@ export const deleteUserTransactionByIdController = createController(async (req, 
 
     let budget: any = undefined;
 
-    switch(transaction.type as TransactionType) {
+    switch (transaction.type as TransactionType) {
         case TransactionType.EXPENSE:
             const period = getActivePeriod(transaction.date);
             const budgets = await Budget.find({

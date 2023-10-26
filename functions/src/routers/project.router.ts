@@ -48,7 +48,7 @@ router.route("/:projectId/budgets/:id")
 /**
  * Transactions
  */
-router.route("/:projectId/transactions/").post(createTransactionController);
+router.route("/:projectId/transactions/").post(withCurrentProject, createTransactionController);
 
 router.route("/:projectId/transactions/me").get(getUsersTransactionsController);
 
